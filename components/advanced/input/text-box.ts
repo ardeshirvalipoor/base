@@ -8,7 +8,7 @@ import { HIDE, SHOW, X, Y } from '../../../helpers/style'
 
 export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
 
-    const opts = { color: '#ffffff', fontWeight: 100, fontSize: 16, direction: 'ltr', ...options }
+    const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', ...options }
     if (!opts.textAlign) opts.textAlign = opts.direction == 'rtl' ? 'right' : 'left'
 
     const self = Self()
@@ -35,7 +35,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         pointerEvents: 'none',
         wordSpacing: '-2px',
         fontStyle: 'italic',
-        fontWeight: '300',
+        fontWeight: opts.fontWeight,
         width: '100%',
         textAlign: opts.textAlign || 'left'
     })
