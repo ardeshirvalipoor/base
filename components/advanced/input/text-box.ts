@@ -4,7 +4,7 @@ import { Span } from '../../native/span'
 import { Div } from '../../native/div'
 import { CS } from '../../../utils/styler'
 import { emitter } from '../../../utils/emitter'
-import { X, Y } from '../../../helpers/style'
+import { HIDE, SHOW, X, Y } from '../../../helpers/style'
 
 export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
 
@@ -28,7 +28,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         position: 'absolute',
         transition: 'all .16s',
         color: opts.placeholderColor || (opts.color + '55'),
-        bottom:  '15%',
+        bottom:  '18%',
         fontSize: opts.fontSize + 'px',
         right: opts.direction == 'rtl' ? '18px' : '',
         left: opts.direction == 'ltr' ? '0px' : '',
@@ -54,7 +54,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         letterSpacing: opts.letterSpacing + 'px',
         color: opts.color,
         fontSize: opts.fontSize + 'px',
-        padding: type == 'textarea' ? '10px 0 20px 0' : '5px 20px 0 20px',
+        padding: type == 'textarea' ? '10px 0 20px 0' : '5px 20px',
         fontWeight: opts.fontSize
     }
     input.cssClass(inputStyle)
