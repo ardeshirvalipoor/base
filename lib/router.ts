@@ -1,25 +1,26 @@
 import { ISelf } from '../components/self'
 import emitter from '../utils/emitter'
-let prefix = 'app/'
+
 const router = () => {
+    
+    let prefix = ''
     let routes: any = {}
     let currentRoute = ''
     let notFound: any = null
-    let isBusy = false
     let history: any[] = []
+
     function when(route: string, handler: (params: IRouteParams) => any): void {
-        routes[route] = { params: {}, reg: new RegExp('^' + route.replace(/\/:[^\s/]+/g, '/[^\\s/]+') + '$'), handler }
+        routes[route] = { params: {}, reg: new RegExp('^' + route.replace(/^\/$/, '\/([^\s/]+)?').replace(/\/:[^\s/]+/g, '/[^\\s/]+') + '$'), handler }
         const params = <string[]>route.match(/\/:(\w+)/g) || [] //like /:product so dash not allowd
         params.map(param => {
             // To make regexp like this /\/eat\/\w+\/once\/(\w+)/ one matching group
-            routes[route].params[param
-                .replace('/:', '')] = new RegExp(route
-                    .replace(param, '/\([\\w-]+)')
-                    .replace(/:[^\s/]+/g, '[^\\s/]+')) // This one is to ignore the other param and focus on the wanted
+            routes[route].params[param.replace('/:', '')] = new RegExp(route
+                .replace(param, '/\([\\w-]+)')
+                .replace(/:[^\s/]+/g, '[^\\s/]+')) // This one is to ignore the other param and focus on the wanted
         })
-        if (route == location.pathname) {
-            goto(route)
-        }
+        // if (route == location.pathname) {
+        //     goto(route)
+        // }
     }
 
     function otherwise(handler: IRouteParams) {
@@ -33,15 +34,14 @@ const router = () => {
     }
 
     async function goto(to: string, data = {}, fromBack?: string) {
-
-        if (isBusy) return
+        if (to[0] == '?') to = '/' + to 
         history.unshift(to)
-
+        let [, query = ''] = to.split('?')
         const from = fromBack ? fromBack : (location.pathname + location.search)
-        if (to != location.pathname) window.history.pushState(to, '', prefix + to)
+        if (prefix + to != location.pathname) window.history.pushState(to, '', prefix + to)
         currentRoute = to
         const match = to.match(/([^\s]+)/)
-
+        
         if (match) {
             const found = findRouteByReg(match[0])
             if (!found) {
@@ -53,24 +53,21 @@ const router = () => {
                 const exec = found.params[key].exec(to)
                 if (exec) params[key] = exec[1]
             })
-            found.handler({ route: { params, query: {} }, from: from.replace(prefix, ''), to, data })
+            found.handler({ route: { params, query: parseQuery(query) }, from: from.replace(prefix, ''), to, data })
             emitter.emit('route-changed', to, from, data)
         }
-
     }
 
     function findRouteByReg(route: string): any {
         let results = Object.keys(routes).filter(r => routes[r].reg.test(route))
         if (results.length > 1) return routes[route] // Todo: fix it
         return routes[results[0]]
-
     }
 
     function init(options: any = {}) {
         if (options.prefix) prefix = options.prefix
         window.addEventListener('popstate', (event) => {
             const current = history[history.length - 2]
-            if (isBusy) window.history.pushState(current, '', current)
             goto(event.state || '/', {}, currentRoute)
         })
         document.addEventListener('click', (e: MouseEvent) => {
@@ -118,11 +115,9 @@ const router = () => {
                 })
                 async function switchPage(route: string, P: any, routeParams: any) {
                     if (route == currentRoute) return
-                    isBusy = true
                     await currentPage.exit(routeParams)
                     currentPage = await findOrAppendPage(route, P)
                     await currentPage.enter(routeParams)
-                    isBusy = false
                     currentRoute = route
                 }
                 async function findOrAppendPage(route: string, P: any) {
@@ -134,6 +129,14 @@ const router = () => {
                 }
             }
         }
+    }
+
+    function parseQuery(q: string) {
+        return q.split('&').reduce((query: any, item: string) => {
+            const [key, value] = item.split('=')
+            if (key) query[key] = value
+            return query
+        }, {})
     }
 
     return {

@@ -3,7 +3,8 @@ import { Self } from '../../self'
 import { Span } from '../../native/span'
 import { Div } from '../../native/div'
 import { CS } from '../../../utils/styler'
-import { HIDE } from '../../../helpers/style'
+import { emitter } from '../../../utils/emitter'
+import { X, Y } from '../../../helpers/style'
 
 export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
 
@@ -27,7 +28,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         position: 'absolute',
         transition: 'all .16s',
         color: opts.placeholderColor || (opts.color + '55'),
-        top: (opts.fontSize / 2) + 'px',
+        bottom:  '15%',
         fontSize: opts.fontSize + 'px',
         right: opts.direction == 'rtl' ? '18px' : '',
         left: opts.direction == 'ltr' ? '0px' : '',
@@ -35,6 +36,8 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         wordSpacing: '-2px',
         fontStyle: 'italic',
         fontWeight: '300',
+        width: '100%',
+        textAlign: opts.textAlign || 'left'
     })
     const inputStyle = <CS>{
         position: 'absolute',
@@ -58,13 +61,25 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     comma.cssClass({ ...inputStyle, pointerEvents: 'none', width: '', top: '10px' })
     // i.el.value = options.value || ''
     input.el.addEventListener('input', () => {
-        p.el.style.transform = `translateX(${input.el.value ? opts.direction == 'rtl' ? -20 : 20 : 0}px)`
+        if (opts.textAlign == 'center') {
+            p.style(Y(input.el.value ? -20: 0))
+        } else {
+            p.style(X(input.el.value ? opts.direction == 'rtl' ? -20 : 20 : 0))
+        }
         p.el.style.opacity = input.el.value ? '0' : '1'
         self.emit('input', input.el.value)
         if (type == 'number') addCommas()
     })
     input.el.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key == 'Enter') self.emit('submit', input.el.value)
+    })
+    input.el.addEventListener('focus', (e: KeyboardEvent) => {
+        console.log('ON FOCUS');
+        
+        self.emit('focus')
+    })
+    input.el.addEventListener('blur', (e: KeyboardEvent) => {
+        self.emit('blur')
     })
     function addCommas() {
         comma.empty()
