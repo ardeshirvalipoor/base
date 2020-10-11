@@ -6,8 +6,16 @@ export const DropdownItem = (item: any = {}) => {
     self.el.onclick = () => self.emit('item-selected', item)
     self.cssClass({
         margin: '10px',
-        fontWeight: 100
+        fontWeight: '100'
     })
 
-    return self
+    return {
+        ...self,
+        select() {
+
+        },
+        deselect(){
+
+        }
+    }
 }
