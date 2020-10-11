@@ -3,12 +3,13 @@ import { Self } from '../../self'
 import { Span } from '../../native/span'
 import { Div } from '../../native/div'
 import { CS } from '../../../utils/styler'
-import { emitter } from '../../../utils/emitter'
 import { HIDE, SHOW, X, Y } from '../../../helpers/style'
 
 export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
 
-    const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', ...options }
+    const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', letterSpacing: 0, ...options }
+    console.log({ opts })
+
     if (!opts.textAlign) opts.textAlign = opts.direction == 'rtl' ? 'right' : 'left'
 
     const self = Self()
@@ -28,7 +29,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         position: 'absolute',
         transition: 'all .16s',
         color: opts.placeholderColor || (opts.color + '55'),
-        bottom:  '18%',
+        bottom: '18%',
         fontSize: opts.fontSize + 'px',
         right: opts.direction == 'rtl' ? '18px' : '',
         left: opts.direction == 'ltr' ? '0px' : '',
@@ -55,14 +56,14 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         color: opts.color,
         fontSize: opts.fontSize + 'px',
         padding: type == 'textarea' ? '10px 0 20px 0' : '5px 20px',
-        fontWeight: opts.fontSize
+        fontWeight: opts.fontWeight
     }
     input.cssClass(inputStyle)
     comma.cssClass({ ...inputStyle, pointerEvents: 'none', width: '', top: '10px' })
     // i.el.value = options.value || ''
     input.el.addEventListener('input', () => {
         if (opts.textAlign == 'center') {
-            p.style(Y(input.el.value ? -20: 0))
+            p.style(Y(input.el.value ? -20 : 0))
         } else {
             p.style(X(input.el.value ? opts.direction == 'rtl' ? -20 : 20 : 0))
         }
@@ -74,8 +75,8 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         if (e.key == 'Enter') self.emit('submit', input.el.value)
     })
     input.el.addEventListener('focus', (e: KeyboardEvent) => {
-        console.log('ON FOCUS');
-        
+        console.log('ON FOCUS')
+
         self.emit('focus')
     })
     input.el.addEventListener('blur', (e: KeyboardEvent) => {
@@ -93,15 +94,15 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         for (let i = 3; i < String(input.el.value).length; i += 3) {
             dummy.text(input.el.value.slice(-i))
             setTimeout(() => {
-                
+
                 const { width } = dummy.el.getBoundingClientRect()
-                console.log({width});
-                
+                console.log({ width })
+
                 // dummy.text('')
                 const slash = Div(',')
                 slash.style({ right: width - 3 + 'px', top: '8px', position: 'absolute' })
                 // comma.append(slash)
-            }, i);
+            }, i)
         }
     }
     return {
@@ -137,6 +138,7 @@ interface ITextbox {
     value?: string,
     textAlign?: string,
     letterSpacing?: string,
-    fontSize?: number,
+    fontSize?: string,
+    fontWeight?: string,
     color?: string
 }
