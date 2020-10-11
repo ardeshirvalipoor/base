@@ -15,7 +15,7 @@ export const HIDE = <CS>{
 
 export const SHOW = <CS>{
     opacity: '1',
-    pointerEvents: 'all'
+    pointerEvents: 'inherit'
 }
 
 export const Y = (y: number) => <CS>({
