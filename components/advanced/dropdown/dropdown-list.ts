@@ -8,7 +8,7 @@ export const DropdownList = (config: any = {}) => {
     self.cssClass({
         overflowX: 'hidden',
         overflowY: 'scroll',
-        height: config.height || 300 + 'px'
+        height: config.height?  (config.height + 'px') :'100%'
     })
 
     return {

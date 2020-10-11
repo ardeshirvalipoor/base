@@ -2,15 +2,15 @@ import { Self } from '../../self'
 
 export const Editable = () => {
 
-    const self = Self<ElementContentEditable>()
+    const self = Self()
     self.el.contentEditable = 'true'
 
     self.el.addEventListener('input', () => {
         self.emit('input')
     })
     self.cssClass({
-        borderRadius: '16px',
-        border: '1px solid #ffffff8c'
+        overflow: 'scroll',
+        height: '100%'
     })
 
     return {
