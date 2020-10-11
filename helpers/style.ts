@@ -15,7 +15,7 @@ export const HIDE = <CS>{
 
 export const SHOW = <CS>{
     opacity: '1',
-    pointerEvents: 'all'
+    pointerEvents: 'inherit'
 }
 
 export const Y = (y: number) => <CS>({
@@ -24,4 +24,12 @@ export const Y = (y: number) => <CS>({
 
 export const X = (x: number) => <CS>({
     transform: `translateX(${x}px)`,
+})
+
+export const S = (s: number) => <CS>({
+    transform: `scale(${s})`,
+})
+
+export const EASE = (time: number, props = 'all', type = '') => <CS>({
+    transition: `${props} ${time}s ${type}`,
 })
