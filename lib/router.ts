@@ -8,6 +8,7 @@ const router = () => {
     let currentRoute = ''
     let notFound: any = null
     let history: any[] = []
+    let isBusy = false //Todo: check this
 
     function when(route: string, handler: (params: IRouteParams) => any): void {
         routes[route] = { params: {}, reg: new RegExp('^' + route.replace(/^\/$/, '\/([^\s/]+)?').replace(/\/:[^\s/]+/g, '/[^\\s/]+') + '$'), handler }
@@ -34,6 +35,7 @@ const router = () => {
     }
 
     async function goto(to: string, data = {}, fromBack?: string) {
+        if (isBusy) return
         if (to[0] == '?') to = '/' + to 
         history.unshift(to)
         let [, query = ''] = to.split('?')
@@ -68,6 +70,7 @@ const router = () => {
         if (options.prefix) prefix = options.prefix
         window.addEventListener('popstate', (event) => {
             const current = history[history.length - 2]
+            if (isBusy) window.history.pushState(current, '', current)
             goto(event.state || '/', {}, currentRoute)
         })
         document.addEventListener('click', (e: MouseEvent) => {
@@ -115,9 +118,11 @@ const router = () => {
                 })
                 async function switchPage(route: string, P: any, routeParams: any) {
                     if (route == currentRoute) return
+                    isBusy = true
                     await currentPage.exit(routeParams)
                     currentPage = await findOrAppendPage(route, P)
                     await currentPage.enter(routeParams)
+                    isBusy = false
                     currentRoute = route
                 }
                 async function findOrAppendPage(route: string, P: any) {

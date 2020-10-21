@@ -33,3 +33,9 @@ export const S = (s: number) => <CS>({
 export const EASE = (time: number, props = 'all', type = '') => <CS>({
     transition: `${props} ${time}s ${type}`,
 })
+
+export const CENTER = <CS>{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+}
