@@ -72,11 +72,13 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         if (type == 'number') addCommas()
     })
     input.el.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key == 'Enter') self.emit('submit', input.el.value)
+        switch (e.key) {
+            case 'Enter': return self.emit('submit', input.el.value)
+            case 'Escape': return self.emit('escape')
+            // case 'ArrowRight': return self.emit('ArrowRight')
+        }
     })
     input.el.addEventListener('focus', (e: KeyboardEvent) => {
-        console.log('ON FOCUS')
-
         self.emit('focus')
     })
     input.el.addEventListener('blur', (e: KeyboardEvent) => {
