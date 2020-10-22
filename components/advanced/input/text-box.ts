@@ -29,16 +29,18 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         position: 'absolute',
         transition: 'all .16s',
         color: opts.placeholderColor || (opts.color + '55'),
-        bottom: '18%',
         fontSize: opts.fontSize + 'px',
         right: opts.direction == 'rtl' ? '18px' : '',
-        left: opts.direction == 'ltr' ? '0px' : '',
+        left: opts.direction == 'ltr' ? '2px' : '',
         pointerEvents: 'none',
         wordSpacing: '-2px',
         fontStyle: 'italic',
         fontWeight: opts.fontWeight,
         width: '100%',
-        textAlign: opts.textAlign || 'left'
+        textAlign: opts.textAlign || 'left',
+        display: 'flex',
+        alignItems: 'center',
+        height: '100%'
     })
     const inputStyle = <CS>{
         position: 'absolute',
@@ -49,13 +51,13 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         border: 'none',
         outline: 'none',
         textAlign: opts.textAlign || 'left',
-        width: '100%',
+        // width: '100%',
         height: '100%',
         direction: opts.direction,
         letterSpacing: opts.letterSpacing + 'px',
         color: opts.color,
         fontSize: opts.fontSize + 'px',
-        padding: type == 'textarea' ? '10px 0 20px 0' : '5px 20px',
+        padding: type == 'textarea' ? '10px 0 20px 0' : '',
         fontWeight: opts.fontWeight
     }
     input.cssClass(inputStyle)
