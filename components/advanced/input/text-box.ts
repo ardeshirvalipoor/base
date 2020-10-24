@@ -51,7 +51,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         border: 'none',
         outline: 'none',
         textAlign: opts.textAlign || 'left',
-        // width: '100%',
+        width: '100%',
         height: '100%',
         direction: opts.direction,
         letterSpacing: opts.letterSpacing + 'px',
