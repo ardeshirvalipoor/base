@@ -30,6 +30,10 @@ export const S = (s: number) => <CS>({
     transform: `scale(${s})`,
 })
 
+export const R = (r: number) => <CS>({
+    transform: `rotate(${r}deg)`,
+})
+
 export const EASE = (time: number, props = 'all', type = '') => <CS>({
     transition: `${props} ${time}s ${type}`,
 })
