@@ -1,4 +1,4 @@
-export let supportsPassive = false
+let supportsPassive = false
 try {
     var opts = Object.defineProperty({}, 'passive', {
         get: function () {
@@ -6,8 +6,10 @@ try {
         }
     })
     const nil = () => {}
-    window.addEventListener('error',    nil, opts)
+    window.addEventListener('error', nil, opts)
     window.removeEventListener('error', nil, opts)
 } catch (e) {
-
+    console.log({ e })
 }
+
+export const PASSIVE = supportsPassive ? { passive: true } : false
