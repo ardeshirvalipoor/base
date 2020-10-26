@@ -1,4 +1,3 @@
-import { LOCALE } from '../configs/locales'
 import { fetch } from './fetch'
 
 export const TestService = {
