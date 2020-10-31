@@ -18,6 +18,16 @@ export const SHOW = <CS>{
     pointerEvents: 'inherit'
 }
 
+export const CENTER = <CS>{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+}
+
+export const ROUND = <CS>{
+    borderRadius: '50%'
+}
+
 export const Y = (y: number) => <CS>({
     transform: `translateY(${y}px)`,
 })
@@ -38,8 +48,12 @@ export const EASE = (time: number, props = 'all', type = '') => <CS>({
     transition: `${props} ${time}s ${type}`,
 })
 
-export const CENTER = <CS>{
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center'
+export const WH = (d: number | string): CS => {
+    if (typeof d == 'number') d = d.toString() + 'px'
+    return {
+        width: d,
+        height: d
+    }
+    // transition: `${props} ${time}s ${type}`,
 }
+
