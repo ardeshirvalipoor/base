@@ -1,30 +1,33 @@
 export default {
     // static db: IDBDatabase // Todo: multiple dbs
 
-    getnfo(dbName: string, version = 1) {
-        return new Promise<{ stores: string[], version: number }>((resolve, reject) => {
+    getnfo(dbName: string, version?: number) {
+        return new Promise<{ objectStoreNames: DOMStringList, version: number }>((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
                 const { objectStoreNames, version } = request.result
                 request.result.close()
-                return resolve({ stores: Object.values(objectStoreNames), version })
+                return resolve({ objectStoreNames, version })
+            }
+            request.onupgradeneeded = () => {
+                const { objectStoreNames, version } = request.result
+                request.result.close()
+                return resolve({ objectStoreNames, version })
             }
             request.onerror = error => reject(error)
         })
     },
-    createStore(dbName: string, name: string, keyPath = 'id', version = 1) {
+    createStore(dbName: string, name: string, keyPath = 'id', autoIncrement = true, version?: number) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
-            // First time
             request.onupgradeneeded = (event: any) => {
                 const { objectStoreNames, version } = request.result
                 if (!Object.values(objectStoreNames).includes(name)) {
-                    request.result.createObjectStore(name, { keyPath })
+                    request.result.createObjectStore(name, { keyPath, autoIncrement })
                 }
                 request.result.close()
                 return resolve(event)
             }
-            // Next times
             request.onsuccess = (event: any) => {
                 request.result.close()
                 return resolve(event)
@@ -32,7 +35,7 @@ export default {
             request.onerror = error => reject(error)
         })
     },
-    async add(dbName: string, store: string, object: any, version = 1) {
+    async add(dbName: string, store: string, object: any, version?: number) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
@@ -119,7 +122,7 @@ export default {
                 }
                 reader.onsuccess = () => {
                     var updateTitleRequest = objectStore.put(payload)
-                    updateTitleRequest.onsuccess =  () => {
+                    updateTitleRequest.onsuccess = () => {
                         request.result.close()
                         return resolve(true)
                     }
