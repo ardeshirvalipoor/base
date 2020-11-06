@@ -7,6 +7,7 @@ import { HIDE, SHOW, X, Y } from '../../../helpers/style'
 
 export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
 
+    // Todo: should be extendable
     const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', letterSpacing: 0, ...options }
     console.log({ opts })
 
@@ -57,7 +58,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         letterSpacing: opts.letterSpacing + 'px',
         color: opts.color,
         fontSize: opts.fontSize + 'px',
-        padding: type == 'textarea' ? '10px 0 20px 0' : '',
+        padding: type == 'textarea' ? '10px 0 20px 0' : '3px 0 0 0',
         fontWeight: opts.fontWeight
     }
     input.cssClass(inputStyle)
