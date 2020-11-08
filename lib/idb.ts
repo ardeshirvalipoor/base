@@ -53,7 +53,7 @@ export default {
             }
         })
     },
-    async byId(dbName: string, store: string, id: any, version = 1) {
+    async byId(dbName: string, store: string, id: any, version?: number) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
