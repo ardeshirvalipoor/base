@@ -102,15 +102,16 @@ export default {
     },
     query() { },
 
-  /*   remove(store: string, id: string | number | Date | ArrayBufferView | ArrayBuffer | IDBArrayKey | IDBKeyRange) {
-
-        var request = IndexedDB.db.transaction([store], 'readwrite')
-            .objectStore(store)
-            .delete(id)
-        request.onsuccess = function (event) {
-            alert('Kenny\'s entry has been removed from your database.')
-        }
-    } */update(dbName: string, store: any, payload: any, version = 1) {
+    /*   remove(store: string, id: string | number | Date | ArrayBufferView | ArrayBuffer | IDBArrayKey | IDBKeyRange) {
+  
+          var request = IndexedDB.db.transaction([store], 'readwrite')
+              .objectStore(store)
+              .delete(id)
+          request.onsuccess = function (event) {
+              alert('Kenny\'s entry has been removed from your database.')
+          }
+      } */
+    update(dbName: string, store: any, payload: any, version = 1) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e) => {
