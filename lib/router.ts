@@ -2,10 +2,11 @@ import { ISelf } from '../components/self'
 import emitter from '../utils/emitter'
 
 const router = () => {
-    
+
     let prefix = ''
     let routes: any = {}
     let currentRoute = ''
+    let states: any[] = []
     let notFound: any = null
     let history: any[] = []
     let isBusy = false //Todo: check this
@@ -35,15 +36,18 @@ const router = () => {
     }
 
     async function goto(to: string, data = {}, fromBack?: string) {
+        console.log('GOTO', data)
+
         if (isBusy) return
-        if (to[0] == '?') to = '/' + to 
+        if (to[0] == '?') to = '/' + to
         history.unshift(to)
         let [, query = ''] = to.split('?')
         const from = fromBack ? fromBack : (location.pathname + location.search)
-        if (prefix + to != location.pathname) window.history.pushState(to, '', prefix + to)
+        states.unshift(data) // Todo: check deeper
+        if (prefix + to != location.pathname) window.history.pushState(data, '', prefix + to)
         currentRoute = to
         const match = to.match(/([^\s]+)/)
-        
+
         if (match) {
             const found = findRouteByReg(match[0])
             if (!found) {
@@ -55,6 +59,8 @@ const router = () => {
                 const exec = found.params[key].exec(to)
                 if (exec) params[key] = exec[1]
             })
+            console.log({data}, '----->');
+            
             found.handler({ route: { params, query: parseQuery(query) }, from: from.replace(prefix, ''), to, data })
             emitter.emit('route-changed', to, from, data)
         }
@@ -69,9 +75,11 @@ const router = () => {
     function init(options: any = {}) {
         if (options.prefix) prefix = options.prefix
         window.addEventListener('popstate', (event) => {
+            
             const current = history[history.length - 2]
             if (isBusy) window.history.pushState(current, '', current)
-            goto(event.state || '/', {}, currentRoute)
+            console.log('running goto', states, states[0]);
+            goto(event.state || '/', states[0], currentRoute)
         })
         document.addEventListener('click', (e: MouseEvent) => {
             const possibleLink = findPossibleLink(e)
