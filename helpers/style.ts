@@ -28,6 +28,11 @@ export const ROUND = <CS>{
     borderRadius: '50%'
 }
 
+export const SCROLLY = <CS> {
+    overflowX: 'hidden',
+    overflowY: 'scroll'
+}
+
 export const Y = (y: number) => <CS>({
     transform: `translateY(${y}px)`,
 })
