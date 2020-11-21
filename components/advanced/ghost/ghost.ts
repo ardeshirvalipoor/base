@@ -1,5 +1,7 @@
 import { EASE, HIDE, ROUND, S, WH } from '../../../helpers/style'
-import { Self } from '../../self'
+import { PASSIVE } from '../../../utils/passive-support'
+import { CS } from '../../../utils/styler'
+import { ISelf, Self } from '../../self'
 
 export const Ghost = (options: IGhostOptions = {}) => {
 
@@ -43,10 +45,30 @@ export const Ghost = (options: IGhostOptions = {}) => {
     }
 }
 
-
+export const ghostify = (c: ISelf<HTMLDivElement>, options: IGhostOptions = {}) => {
+    const ghost = Ghost(options)
+    const opts = { activeStyle: { ...S(.96) }, normalStyle: { ...S(1) }, ...options }
+    c.el.addEventListener('touchstart', (e) => {
+        const { x, y } = c.el.getBoundingClientRect()
+        const { pageX, pageY } = e.touches[0]
+        ghost.activate(pageX - x, pageY - y)
+        c.style(opts.activeStyle)
+    }, PASSIVE)
+    c.el.addEventListener('touchend', () => {
+        ghost.deactivate()
+        c.style(opts.normalStyle)
+    }, PASSIVE)
+    c.el.addEventListener('touchcancel', () => {
+        ghost.deactivate()
+        c.style(opts.normalStyle)
+    }, PASSIVE)
+    c.append(ghost)
+}
 interface IGhostOptions {
     size?: number,
     opacity?: number,
-    bg?: string
+    bg?: string,
+    activeStyle?: CS,
+    normalStyle?: CS
 }
 
