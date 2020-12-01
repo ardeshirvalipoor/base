@@ -9,8 +9,6 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
 
     // Todo: should be extendable
     const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', letterSpacing: 0, ...options }
-    console.log({ opts })
-
     if (!opts.textAlign) opts.textAlign = opts.direction == 'rtl' ? 'right' : 'left'
 
     const self = Self()

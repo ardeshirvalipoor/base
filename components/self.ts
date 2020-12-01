@@ -41,6 +41,7 @@ export interface ISelf<T> extends IBase<T> {
     cssClass: (style: CS) => void
     style: (style: CS, options?: IStyleOptions | number) => void,
     on: (event: string, handler: Function) => void
+    once: (event: string, handler: Function) => void
     off: (event: string, handler: Function) => void
     emit: (event: string, ...params: any) => void
 }
