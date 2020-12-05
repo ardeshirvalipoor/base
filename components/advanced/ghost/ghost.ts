@@ -40,7 +40,7 @@ export const Ghost = (options: IGhostOptions = {}) => {
             self.style({
                 ...EASE(.5),
                 ...HIDE,
-            }, 500 - new Date().valueOf() + touchStartTime)
+            }, 400 - new Date().valueOf() + touchStartTime)
         }
     }
 }
