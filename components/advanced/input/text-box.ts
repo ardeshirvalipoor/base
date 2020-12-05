@@ -39,6 +39,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         textAlign: opts.textAlign || 'left',
         display: 'flex',
         alignItems: 'center',
+        justifyContent: opts.textAlign || 'left',
         height: '100%'
     })
     const inputStyle = <CS>{

@@ -42,7 +42,9 @@ export default {
                 const transaction = request.result.transaction(store, 'readwrite').objectStore(store).add(object)
                 transaction.onsuccess = (successEvent: Event) => {
                     request.result.close()
-                    return resolve(successEvent)
+                    console.log({ successEvent })
+
+                    return resolve(successEvent.target.result)
                 }
                 transaction.onerror = (err) => {
                     return reject(err)
@@ -54,10 +56,12 @@ export default {
         })
     },
     async byId(dbName: string, store: string, id: any, version?: number) {
+        console.log('inside by ud')
+
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
-                const reader = request.result.transaction([store]).objectStore(store).get(id)
+                const reader = request.result.transaction([store]).objectStore(store).get(+id)
                 reader.onerror = (err) => {
                     return reject(err)
                 }
@@ -102,15 +106,20 @@ export default {
     },
     query() { },
 
-    /*   remove(store: string, id: string | number | Date | ArrayBufferView | ArrayBuffer | IDBArrayKey | IDBKeyRange) {
-  
-          var request = IndexedDB.db.transaction([store], 'readwrite')
-              .objectStore(store)
-              .delete(id)
-          request.onsuccess = function (event) {
-              alert('Kenny\'s entry has been removed from your database.')
-          }
-      } */
+    delete(dbName: string, store: any, id: any, version = 1) {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName)
+            request.onsuccess = (e) => {
+                const transaction = request.result.transaction([store], 'readwrite')
+                const objectStore = transaction.objectStore(store)
+                objectStore.delete(id)
+                return resolve(true)
+            }
+            request.onerror = (err) => {
+                return reject(err)
+            }
+        })
+    },
     update(dbName: string, store: any, payload: any, version = 1) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
