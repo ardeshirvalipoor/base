@@ -13,15 +13,15 @@ export const SliderContents = () => {
         ...self,
         slide(x: number, options: ISlideFunction = {}) {
             self.style({
-                ...EASE(options.smooth ? .44 : 0),
-                ...X(x)
+                ...EASE(options.smooth ? .5 : 0, 'all', 'cubic-bezier(0.22, 0.73, 0.46, 1)'),
+                ...X(x),
             })
         },
-        reset() {
+        reset(delay: number) {
             self.style({
                 ...EASE(0),
                 ...X(0)
-            })
+            }, delay)
         }
     }
 }
