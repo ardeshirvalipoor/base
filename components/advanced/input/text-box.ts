@@ -57,7 +57,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         letterSpacing: opts.letterSpacing + 'px',
         color: opts.color,
         fontSize: opts.fontSize + 'px',
-        padding: type == 'textarea' ? '10px 0 20px 0' : '3px 0 0 0',
+        // padding: type == 'textarea' ? '10px 0 20px 0' : '3px 0 0 0',
         fontWeight: opts.fontWeight
     }
     input.cssClass(inputStyle)

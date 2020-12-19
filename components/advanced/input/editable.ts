@@ -9,8 +9,10 @@ export const Editable = () => {
         self.emit('input')
     })
     self.cssClass({
+        pointerEvents: 'all',
+        userSelect: 'text', // IOS
         overflow: 'scroll',
-        height: '100%'
+        // height: '100%'
     })
 
     return {
@@ -25,10 +27,10 @@ export const Editable = () => {
             return self.el.innerHTML
         },
         setValue(val: string) {
-            self.el.value = val
+            self.el.innerHTML = val
         },
         clear() {
-            self.el.value = ''
+            self.el.innerHTML = ''
         }
     }
 }
