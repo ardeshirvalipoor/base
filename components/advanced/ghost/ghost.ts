@@ -31,16 +31,16 @@ export const Ghost = (options: IGhostOptions = {}) => {
                 top: y - opts.size / 2 + 'px',
             })
             self.style({
-                ...EASE(.16),
+                ...EASE(.12),
                 ...S(2),
                 opacity: opts.opacity + ''
-            }, 10)
+            }, 5)
         },
         deactivate() {
             self.style({
                 ...EASE(.5),
                 ...HIDE,
-            }, 500 - new Date().valueOf() + touchStartTime)
+            }, 300 - new Date().valueOf() + touchStartTime)
         }
     }
 }

@@ -1,11 +1,11 @@
-import { EASE, X } from '../../../helpers/style'
+import { X } from '../../../helpers/style'
 import { Self } from '../../self'
 import { SliderContents } from './slider-contents'
 
 export const Slider = (items: any[], options: ISlideOptions = {}) => {
-    const W = options.width || window.innerWidth
-
-    // const { width, height } = options
+    let W = 0
+    let index = 0
+    let acc = {}
     let slides: any[] = []
     const self = Self()
     const container = SliderContents()
@@ -18,18 +18,28 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         height: '100%'
     })
 
-
-    items.forEach((slide, i) => {
-        slides.push(slide)
-        container.append(slide)
-        slide.style(X(-W * i))
-        slide.requestNext  = () => next()
-        slide.requestPrev  = () => prev()
-        slide.requestReset = () => reset()
-    })
+    self.mounted = () => {
+        W = options.width || self.el.getBoundingClientRect().width
+        items.forEach((slide, i) => {
+            slides.push(slide)
+            container.append(slide)
+            slide.style(X((options.direction == 'rtl' ? W : -W) * i))
+            slide.requestNext = (v: any) => {
+                acc = { ...acc, ...v }
+                if (index == items.length - 1) {
+                    self.emit('done', acc)
+                } else {
+                    next()
+                }
+            }
+            slide.requestPrev = () => prev()
+            slide.requestReset = () => reset()
+        })
+        slides[0].onEnter()
+    }
 
     let ox = 0
-    let containerX = 0
+    let x = 0
     let tx = 0
     self.el.addEventListener('touchstart', (e: TouchEvent) => {
         tx = 0
@@ -38,7 +48,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     self.el.addEventListener('touchmove', (e: TouchEvent) => {
         if (!options.touchable) return
         tx = e.touches[0].pageX - ox
-        container.slide(tx + containerX)
+        container.slide(tx + x)
     })
     self.el.addEventListener('touchend', () => {
         if (!options.touchable) return
@@ -48,30 +58,37 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         if (!options.touchable) return
         move()
     })
+
     function move(dt = tx) {
         let dx = 0
         if (dt > 60) {
-            if (containerX == (slides.length - 1) * W) dx = 0
-            else dx = W
+            if (x == (slides.length - 1) * W) dx = 0
+            else dx = -(options.direction == 'rtl' ? W : -W)
         }
         if (dt < -60) {
-            if (containerX == 0) dx = 0
-            else dx = -W
+            if (x == 0) dx = 0
+            else dx = (options.direction == 'rtl' ? W : -W)
         }
-        container.slide(containerX += dx, {smooth: true})
-        const index = Math.round(containerX/W)
-        if('onEnter' in slides[index]) slides[index].onEnter()
+        container.slide(x += dx, { smooth: true })
+        index = Math.abs(Math.round(x / W))
+        slides[index].onEnter()
     }
 
     function next() {
-        move(W)
+        move(options.direction == 'rtl' ? W : -W)
     }
+
     function prev() {
-        move(-W)
+        move(options.direction == 'rtl' ? -W : W)
     }
-    function reset() {
-        containerX = 0
-        container.reset()
+
+    function reset(delay = 0) {
+        setTimeout(() => {
+            index = 0
+            x = 0
+            container.reset(delay)
+            slides.map(slide => slide.reset())
+        }, delay)
     }
 
     return {
@@ -83,14 +100,17 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             slides.push(slide)
             container.append(slide)
             slide.style(X(-W * (slides.length - 1)))
-            slide.requestNext = () => next()
+            slide.requestNext = (value: any) => { slide.resolve(value); next() }
             slide.requestPrev = () => prev()
             slide.requestReset = () => reset()
         },
         clear() {
             slides = [slides[0]] // Todo: fix
-            container.children.map((child, i) => i > 0 ? child.destroy(): null)
+            container.children.map((child, i) => i > 0 ? child.destroy() : null)
             reset()
+        },
+        enter() {
+            slides[0].onEnter()
         }
     }
 }
