@@ -8,7 +8,7 @@ export const Dropdown = (data: any = []) => {
     
     const self = Self()
     const search = DropdownSearch()
-    const list = DropdownList()
+    const list = DropdownList({height: 300})
     list.fill(data.slice(0, 10))
 
     list.on('item-selected', (item:any)=> self.emit('item-selected', item))
