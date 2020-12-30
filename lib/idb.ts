@@ -57,7 +57,6 @@ export default {
                 const db = event?.target?.result
                 const upgradeTransaction = event?.target?.transaction
                 const os = upgradeTransaction.objectStore(_store)
-                console.log(os.indexNames, _store, os.indexNames.contains(index));
                 
                 if (!os.indexNames.contains(index)) {
                     os.createIndex(index, index, { unique: options?.unique || false, multiEntry: options?.multiEntry || false })
@@ -125,7 +124,6 @@ export default {
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
 
                 if (options?.index) {
-                    console.log('Y', options);
                     
                     const index = os.index(options.index)
                     // const cr = index.count(options?.value)
@@ -134,7 +132,6 @@ export default {
                     if (options?.value) {
                         keyRng = options.upperBound ? IDBKeyRange.upperBound(options.value) : IDBKeyRange.only(options.value)
                     }
-                    console.log(keyRng);
                     
                     cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
                 } else {

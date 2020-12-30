@@ -5,17 +5,19 @@ const get = (url: string, options: IXHROptoins = {}) => {
         const xhr = new XMLHttpRequest
         xhr.open(opts.method, url, true)
         xhr.setRequestHeader('Content-Type', opts.type)
-        xhr.send()
+        // xhr.onerror = (err) => alert(JSON.stringify({ err, m: 'x' }))
+        
         xhr.onreadystatechange = () => {
-            if (xhr.readyState == 4) {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
                 try {
                     return resolve({
                         ok: true,
                         error: false,
-                        status: xhr.status,
+                        status: xhr.status, //others
                         data: opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response
                     })
                 } catch (error) {
+                    console.warn(error)
                     return reject({
                         ok: false,
                         error,
@@ -25,10 +27,11 @@ const get = (url: string, options: IXHROptoins = {}) => {
                 }
             }
         }
+        xhr.send()
     })
 }
 
-const post = (url: string, headers: any, body?:any) => {
+const post = (url: string, headers: any, body?: any) => {
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open('POST', url, true)
