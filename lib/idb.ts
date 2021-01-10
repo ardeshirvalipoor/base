@@ -50,6 +50,27 @@ export default {
             request.onerror = error => reject(error)
         })
     },
+    createindex(dbName: string, _store: string, version: number, index: string, options?: { unique?: boolean, multiEntry?: boolean }) {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, version)
+            request.onupgradeneeded = (event) => {
+                const db = event?.target?.result
+                const upgradeTransaction = event?.target?.transaction
+                const os = upgradeTransaction.objectStore(_store)
+                
+                if (!os.indexNames.contains(index)) {
+                    os.createIndex(index, index, { unique: options?.unique || false, multiEntry: options?.multiEntry || false })
+                }
+                db.close()
+                return resolve(event)
+            }
+            request.onsuccess = (event: any) => {
+                request.result.close()
+                return resolve(event)
+            }
+            request.onerror = error => reject(error)
+        })
+    },
     async save(dbName: string, store: string, object: any, version?: number) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
@@ -102,18 +123,25 @@ export default {
 
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
 
-                if (options?.index && options?.value) {
+                if (options?.index) {
+                    
                     const index = os.index(options.index)
                     // const cr = index.count(options?.value)
                     // cr.onsuccess = (f) => console.log(store, options, cr.result)
-                    const keyRng = options.upperBound ? IDBKeyRange.upperBound(options.value) : IDBKeyRange.only(options.value)
+                    let keyRng = null
+                    if (options?.value) {
+                        keyRng = options.upperBound ? IDBKeyRange.upperBound(options.value) : IDBKeyRange.only(options.value)
+                    }
+                    
                     cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
                 } else {
+                    console.log('OS');
+                    
                     cursorRequest = os.openCursor(null, options?.reverse ? 'prev' : 'next') //nextunique
                 }
                 cursorRequest.onsuccess = (event: any) => {
                     const cursor = event.target.result
-                    if (!hasSkipped && skip > 0) {
+                    if (cursor && !hasSkipped && skip > 0) {
                         hasSkipped = true
                         cursor.advance(skip)
                         return

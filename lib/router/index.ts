@@ -2,7 +2,6 @@ import emitter from '../../utils/emitter'
 import { PASSIVE } from '../../utils/passive-support'
 import { findPossibleLink, parseQuery } from './helpers'
 import { IRoutes, TRouteHandler } from './interfaces'
-import { fill } from './fill'
 
 const router = () => {
 
@@ -89,7 +88,6 @@ const router = () => {
         when,
         goto,
         init,
-        fill
     }
 }
 
