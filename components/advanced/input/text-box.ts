@@ -21,7 +21,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     self.cssClass({
         position: 'relative',
         height: '100%',
-        width: '100%'
+        // width: '100%'
     })
 
     p.cssClass({
