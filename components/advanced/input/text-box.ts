@@ -33,14 +33,16 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         left: opts.direction == 'ltr' ? '2px' : '',
         pointerEvents: 'none',
         wordSpacing: '-2px',
-        fontStyle: 'italic',
+        // fontStyle: 'italic',
         fontWeight: opts.fontWeight,
         width: '100%',
         textAlign: opts.textAlign || 'left',
         display: 'flex',
         alignItems: 'center',
         justifyContent: opts.textAlign || 'left',
-        height: '100%'
+        height: '100%',
+        direction: opts.direction,
+        letterSpacing: opts.letterSpacing + 'px'
     })
     const inputStyle = <CS>{
         position: 'absolute',
