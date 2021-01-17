@@ -15,9 +15,11 @@ export function fill(container: ISelf<HTMLElement>) {
             })
             async function switchPage(route: string, P: any, routeParams: any) {
                 if (route == currentRoute) return
+                router.busy()
                 await currentPage.exit(routeParams)
                 currentPage = await findOrAppendPage(route, P)
                 await currentPage.enter(routeParams)
+                router.free()
                 currentRoute = route
             }
             async function findOrAppendPage(route: string, P: any) {
