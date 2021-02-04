@@ -124,7 +124,6 @@ export default {
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
 
                 if (options?.index) {
-                    
                     const index = os.index(options.index)
                     // const cr = index.count(options?.value)
                     // cr.onsuccess = (f) => console.log(store, options, cr.result)
@@ -135,8 +134,6 @@ export default {
                     
                     cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
                 } else {
-                    console.log('OS');
-                    
                     cursorRequest = os.openCursor(null, options?.reverse ? 'prev' : 'next') //nextunique
                 }
                 cursorRequest.onsuccess = (event: any) => {

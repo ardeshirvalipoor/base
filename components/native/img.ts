@@ -4,7 +4,7 @@ export const Img = (path: string = '', options: IImage = {}) => {
 
 
     const self = Self<HTMLImageElement>('img')
-    const opts = {width: 'auto', height: 'auto', ...options}
+    const opts = { width: 'auto', height: 'auto', ...options }
 
     self.style({
         width: opts.width + 'px',
