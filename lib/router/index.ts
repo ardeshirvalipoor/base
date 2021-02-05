@@ -8,6 +8,7 @@ const router = () => {
     let prefix = ''
     let routes: IRoutes = {}
     let current = ''
+    let isBusy = false
     let history: any[] = [{ data: {}, to: '/' }]
 
     function when(route: string, handler: TRouteHandler): void {
@@ -27,13 +28,14 @@ const router = () => {
     // function otherwise(handler: IRouteParams) {
     //     notFound = handler
     // }
-
     function back(data?: any) {
         if (data) history[0].data = { ...history[0].data, ...data }
         window.history.back()
     }
 
     async function goto(to: string = '', data = {}, from = location.pathname) {
+        if (to.includes('tel:')) return
+        if (isBusy) return
         if (to !== history[0].to) {
             window.history.pushState({ data, to }, '', prefix + to)
             history.unshift({ data, to })
@@ -88,6 +90,12 @@ const router = () => {
         when,
         goto,
         init,
+        busy() {
+            isBusy = true
+        },
+        free(){
+            isBusy = false
+        }
     }
 }
 
