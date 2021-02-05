@@ -47,7 +47,8 @@ export const Ghost = (options: IGhostOptions = {}) => {
 
 export const ghostify = (c: ISelf<HTMLDivElement>, options: IGhostOptions = {}) => {
     const ghost = Ghost(options)
-    const opts = { activeStyle: { ...S(.96) }, normalStyle: { ...S(1) }, ...options }
+    const opts = { activeStyle: { /* ...S(.96) */
+        filter: 'brightness(0.9)' }, normalStyle: { /* ...S(1) */ filter: ''}, ...options }
     c.el.addEventListener('touchstart', (e) => {
         const { x, y } = c.el.getBoundingClientRect()
         const { pageX, pageY } = e.touches[0]
