@@ -2,11 +2,11 @@ import { styler, CS, IStyleOptions } from '../utils/styler'
 import { destroyer } from '../utils/destroyer'
 import { appender } from '../utils/appender'
 import { nextId } from '../utils/id-generator'
-import { emitter } from '../utils/emitter'
+import emitter from '../utils/emitter'
 
-export function Self<T extends HTMLElement = HTMLDivElement>(type: string = 'div'): ISelf<T> {
+export function Self<T extends HTMLElement = HTMLDivElement, U = ISelf<T, any>>(type: string = 'div'): ISelf<T, U> {
     const id = 'core-' + nextId()
-    const base: IBase<T> = {
+    const base: IBase<T, U> = {
         el: type == 'svg' ? document.createElementNS('http://www.w3.org/2000/svg', 'svg') : <T>document.createElement(type),
         children: [],
         listeners: [], // Todo: do we need this?
@@ -25,15 +25,15 @@ export function Self<T extends HTMLElement = HTMLDivElement>(type: string = 'div
     }
 }
 
-export interface IBase<T> {
-    el: T,
+export interface IBase<T, U = any> {
+    el: T | SVGElement,
     listeners: any[]
-    children: ISelf<T>[]
-    parent?: ISelf<T> | null
+    children: U[]
+    parent?: ISelf<T, U> | null
     id: string
     mounted: () => void
 }
-export interface ISelf<T> extends IBase<T> {
+export interface ISelf<T, U = any> extends IBase<T, U> {
     append: Function // a => component
     prepend: Function
     destroy: () => void,

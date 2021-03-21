@@ -3,12 +3,12 @@ const userAgent = window.navigator?.userAgent?.toLowerCase() || window.navigator
 export const isIOS = /iphone|ipad|ipod/.test(userAgent) && !window.MSStream
 export const isAndroid = /android/i.test(userAgent)
 export const otherOS = !isIOS && !isAndroid
-export const isInStandaloneMode = () => ('standalone' in window.navigator) && (window.navigator.standalone);
+export const isInStandaloneMode = () => 'standalone' in window.navigator
 
 export const H = Math.max(window.innerHeight, window.outerHeight) + (isIOS ? 20 : 0)
 export const ST = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0
 export const SB = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0
-export function SAFE() {
+export function SAFE_MARGIN() {
     var result, computed, div = document.createElement('div')
 
     div.style.padding = 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)'

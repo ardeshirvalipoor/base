@@ -1,6 +1,6 @@
 import { ISelf } from '../../components/self'
 import { IRouteParams } from './interfaces'
-import router from './index'
+import Router from './router'
 
 export function fill(container: ISelf<HTMLElement>) {
     return {
@@ -11,15 +11,15 @@ export function fill(container: ISelf<HTMLElement>) {
             currentPage.enter()
             pages[currentRoute] = currentPage
             Object.entries(routes).map(([route, P]: any) => {
-                router.when(route, async (routeParams: IRouteParams) => await switchPage(route, P, routeParams))
+                Router.when(route, async (routeParams: IRouteParams) => await switchPage(route, P, routeParams))
             })
             async function switchPage(route: string, P: any, routeParams: any) {
                 if (route == currentRoute) return
-                router.busy()
+                Router.busy()
                 await currentPage.exit(routeParams)
                 currentPage = await findOrAppendPage(route, P)
                 await currentPage.enter(routeParams)
-                router.free()
+                Router.free()
                 currentRoute = route
             }
             async function findOrAppendPage(route: string, P: any) {

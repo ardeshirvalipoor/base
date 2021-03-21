@@ -38,9 +38,10 @@ export const Ghost = (options: IGhostOptions = {}) => {
         },
         deactivate() {
             self.style({
-                ...EASE(.5),
+                ...EASE(.36),
                 ...HIDE,
-            }, 300 - new Date().valueOf() + touchStartTime)
+                ...S(3),
+            }, 100 - new Date().valueOf() + touchStartTime)
         }
     }
 }

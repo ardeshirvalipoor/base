@@ -3,8 +3,8 @@ import { PASSIVE } from '../../utils/passive-support'
 import { findPossibleLink, parseQuery } from './helpers'
 import { IRoutes, TRouteHandler } from './interfaces'
 
-const router = () => {
-
+const Router = () => {
+    const routerEmitter = emitter()
     let prefix = ''
     let routes: IRoutes = {}
     let current = ''
@@ -55,7 +55,7 @@ const router = () => {
             if (exec) params[key] = exec[1]
         })
         found.handler({ route: { params, query: parseQuery(to) }, from: from.replace(prefix, ''), to, data })
-        emitter.emit('route-changed', to, from, data)
+        routerEmitter.emit('route-changed', to, from, data)
     }
 
     function findRouteByReg(route: string): any {
@@ -93,11 +93,12 @@ const router = () => {
         busy() {
             isBusy = true
         },
-        free(){
+        free() {
             isBusy = false
-        }
+        },
+        ...routerEmitter
     }
 }
 
-export default router()
+export default Router()
 

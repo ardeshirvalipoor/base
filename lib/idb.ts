@@ -111,7 +111,7 @@ export default {
         })
     },
     // Count
-    all(dbName: string, store: string, version?: number, options?: IGetAllOptions) {
+    all(dbName: string, store: string, options?: IGetAllOptions) {
         const { skip = 0, limit = 0 } = options || {}
         return new Promise<any[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)

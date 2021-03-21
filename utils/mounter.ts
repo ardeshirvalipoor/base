@@ -12,7 +12,11 @@ function findChildrenAndEmitId(el: Node | Element) {
     if (el) {
         if (el instanceof Element) {
             const possibleId = el.attributes.getNamedItem('id')
-            if (possibleId && elements[possibleId.value] && 'mounted' in elements[possibleId.value]) elements[possibleId.value].mounted()
+            if (possibleId && elements[possibleId.value] && 'mounted' in elements[possibleId.value]) {
+                elements[possibleId.value].mounted()
+                elements[possibleId.value].emit('mounted')
+                // 
+            }
         }
         for (let i = 0; i < el.childNodes.length; i++) {
             findChildrenAndEmitId(el.childNodes[i])
