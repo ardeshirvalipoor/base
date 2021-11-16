@@ -1,6 +1,6 @@
 
 <!-- 1 -->
-# Self
+# Base
 A component based vanillajs library
 
 ## How to use
