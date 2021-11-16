@@ -1,18 +1,21 @@
-import { Self } from '../self'
+import { Base } from '../base'
 
-export const Input = (placeholder = '', type = 'text', options = {}) => {
+export const Input = (placeholder = '', type = 'text', options: any = { }) => {
 
-    const self = type == 'textarea'?  Self<HTMLInputElement>('textarea'):  Self<HTMLInputElement>('input')
-    self.el.setAttribute('type', type)
-    self.el.setAttribute('placeholder', placeholder)
+    const base = type == 'textarea' ? Base<HTMLInputElement>('textarea') : Base<HTMLInputElement>('input')
+    base.el.setAttribute('type', type)
+    base.el.setAttribute('placeholder', placeholder)
+    if (options['accept']) base.el.setAttribute('accept', options['accept']) // For now
 
-    return {
-        ...self,
-        focus() {
-            self.el.focus()
-        },
-        blur() {
-            self.el.blur()
+    return Object.assign(
+        base,
+        {
+            focus() {
+                base.el.focus()
+            },
+            blur() {
+                base.el.blur()
+            }
         }
-    }
+    )
 }

@@ -1,13 +1,17 @@
 import { texter } from '../../utils/texter'
-import { Self } from '../self'
+import { Base } from '../base'
 
 export const Div = (content: string = '') => {
 
-    const self = Self<HTMLDivElement>('div')
-    self.el.innerHTML = content
+    const base = Base<HTMLDivElement>('div')
+    base.el.innerHTML = content
+    // base.el.textContent = content
 
-    return {
-        ...self,
-        ...texter(self)
-    }
+
+    return Object.assign(
+        base,
+        {
+            ...texter(base)
+        }
+    )
 }

@@ -1,17 +1,25 @@
-export default <T>() => {
+const _emitter = <T>() => {
     const listeners: any = {}
 
     function on(event: T, handler: Function) {
         if (!listeners[event]) listeners[event] = []
         listeners[event].push(handler)
     }
+    function solo(event: T, handler: Function) {
+        listeners[event] = [handler]
+    }
 
-    function once(eventName: T, listener: Function) {
+    function once(event: T, handler: Function) {
+        // const possibleEvent = (listeners[event] || []).find((e: any) => e === handler)
+        // console.log('possibleEvent', possibleEvent)
+        // if (possibleEvent) return
+        // on(event, handler)
+
         const onceFunction = (...args: any) => {
-            off(eventName, onceFunction)
-            listener(...args)
+            handler(...args)
+            off(event, onceFunction)
         }
-        on(eventName, onceFunction)
+        on(event, onceFunction)
     }
 
     function off(event: T, handler: Function) {
@@ -21,12 +29,19 @@ export default <T>() => {
 
     function emit(event: T, ...params: any) {
         (listeners[event] || []).map((e: any) => e(...params))
+        // (listeners[event] || []).forEach((handler: any) => handler.apply(this, params)); // Check this?
+        // Only needed when there is a use of this?
     }
+
 
     return {
         on,
+        solo, // Todo: :))
         once,
         off,
-        emit
+        emit,
+        listeners
     }
 }
+export default _emitter
+export const globalEmitter = _emitter()

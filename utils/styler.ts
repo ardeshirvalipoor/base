@@ -1,16 +1,16 @@
-import { IBase } from '../components/self'
+import { IBase } from '../components/base'
 
-export function TM() {
-    let x: number | string = 0, y = 0
-    return function T(options = <ITransformOptions>{}) {
-        x = _V(options.x)
-        y = typeof options.y == 'number' ? options.y : y
-        return `X: ${x} Y: ${y}`
-    }
-    function _V(v: number | string) {
-        return typeof v == 'number' ? `${v}px` : v
-    }
-}
+// export function TM() {
+//     let x: number | string = 0, y = 0
+//     return function T(options = <ITransformOptions>{}) {
+//         x = _V(options.x)
+//         y = typeof options.y == 'number' ? options.y : y
+//         return `X: ${x} Y: ${y}`
+//     }
+//     function _V(v: number | string) {
+//         return typeof v == 'number' ? `${v}px` : v
+//     }
+// }
 
 
 interface ITransformOptions {
@@ -34,7 +34,7 @@ export function styler(base: IBase<HTMLElement>) {
         style(style: CS, options: IStyleOptions | number): void {
             const delay = typeof options == 'number' ? options : options?.delay
             // console.log({style});
-            if (delay) {
+            if (delay !== null && delay !== undefined) {
                 setTimeout(applyStyle, delay)
             } else {
                 applyStyle()

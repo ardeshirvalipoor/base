@@ -1,20 +1,18 @@
-import { Self } from '../self'
+import { Base } from '../base'
 
 export const Img = (path: string = '', options: IImage = {}) => {
 
 
-    const self = Self<HTMLImageElement>('img')
+    const base = Base<HTMLImageElement>('img')
     const opts = { width: 'auto', height: 'auto', ...options }
 
-    self.style({
+    base.style({
         width: opts.width + 'px',
         height: opts.height + 'px'
     })
-    self.el.src = path
+    base.el.src = path
 
-    return {
-        ...self,
-    }
+    return base
 }
 
 interface IImage {

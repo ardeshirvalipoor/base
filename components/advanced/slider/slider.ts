@@ -1,5 +1,5 @@
 import { X } from '../../../helpers/style'
-import { Self } from '../../self'
+import { Base } from '../../base'
 import { SliderContents } from './slider-contents'
 
 export const Slider = (items: any[], options: ISlideOptions = {}) => {
@@ -7,27 +7,28 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     let index = 0
     let acc = {}
     let slides: any[] = []
-    const self = Self()
+    const base = Base()
     const container = SliderContents()
-    self.append(container)
+    base.append(container)
 
-    self.cssClass({
+    base.cssClass({
         position: 'relative',
         overflow: 'hidden',
         width: '100%',
         height: '100%'
     })
 
-    self.mounted = () => {
-        W = options.width || self.el.getBoundingClientRect().width
+    base.mounted = () => {
+        W = options.width || base.el.getBoundingClientRect().width
         items.forEach((slide, i) => {
             slides.push(slide)
             container.append(slide)
             slide.style(X((options.direction == 'rtl' ? W : -W) * i))
+            slide.getAcc = () => acc
             slide.requestNext = (v: any) => {
                 acc = { ...acc, ...v }
                 if (index == items.length - 1) {
-                    self.emit('done', acc)
+                    base.emit('done', acc)
                 } else {
                     next()
                 }
@@ -41,20 +42,20 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     let ox = 0
     let x = 0
     let tx = 0
-    self.el.addEventListener('touchstart', (e: TouchEvent) => {
+    base.el.addEventListener('touchstart', (e: TouchEvent) => {
         tx = 0
         ox = e.touches[0].pageX
     })
-    self.el.addEventListener('touchmove', (e: TouchEvent) => {
+    base.el.addEventListener('touchmove', (e: TouchEvent) => {
         if (!options.touchable) return
         tx = e.touches[0].pageX - ox
         container.slide(tx + x)
     })
-    self.el.addEventListener('touchend', () => {
+    base.el.addEventListener('touchend', () => {
         if (!options.touchable) return
         move()
     })
-    self.el.addEventListener('touchcancel', () => {
+    base.el.addEventListener('touchcancel', () => {
         if (!options.touchable) return
         move()
     })
@@ -91,28 +92,34 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         }, delay)
     }
 
-    return {
-        ...self,
-        reset,
-        next,
-        prev,
-        add(slide: any) {
-            slides.push(slide)
-            container.append(slide)
-            slide.style(X(-W * (slides.length - 1)))
-            slide.requestNext = (value: any) => { slide.resolve(value); next() }
-            slide.requestPrev = () => prev()
-            slide.requestReset = () => reset()
-        },
-        clear() {
-            slides = [slides[0]] // Todo: fix
-            container.children.map((child, i) => i > 0 ? child.destroy() : null)
-            reset()
-        },
-        enter() {
-            slides[0].onEnter()
+
+    return Object.assign(
+        base,
+        {
+            reset,
+            next,
+            prev,
+            add(slide: any) {
+                slides.push(slide)
+                container.append(slide)
+                slide.style(X(-W * (slides.length - 1)))
+                slide.requestNext = (value: any) => { slide.resolve(value); next() }
+                slide.requestPrev = () => prev()
+                slide.requestReset = () => reset()
+            },
+            clear() {
+                slides = [slides[0]] // Todo: fix
+                container.children.map((child, i) => i > 0 ? child.destroy() : null)
+                reset()
+            },
+            enter() {
+                slides[0].onEnter()
+            },
+            setAcc(v: any) {
+                acc = v
+            }
         }
-    }
+    )
 }
 
 

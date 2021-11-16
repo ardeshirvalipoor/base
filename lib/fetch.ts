@@ -1,4 +1,4 @@
-import { XHR } from '../self/lib/xhr'
+import { XHR } from "./xhr"
 
 let _cache: any = {}
 let _queue: any = {}

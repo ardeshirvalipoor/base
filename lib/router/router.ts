@@ -1,4 +1,4 @@
-import emitter from '../../utils/emitter'
+import emitter, { globalEmitter } from '../../utils/emitter'
 import { PASSIVE } from '../../utils/passive-support'
 import { findPossibleLink, parseQuery } from './helpers'
 import { IRoutes, TRouteHandler } from './interfaces'
@@ -33,28 +33,33 @@ const Router = () => {
         window.history.back()
     }
 
+    async function replace(to: string = '', data = {}) {
+        window.history.replaceState({ data, to }, '', prefix + to)
+        history.shift()
+    }
+
     async function goto(to: string = '', data = {}, from = location.pathname) {
-        if (to.includes('tel:')) return
+        if (to.includes('tel:')) return // Todo: find a better way to handle isBusy
         if (isBusy) return
-        if (to !== history[0].to) {
-            window.history.pushState({ data, to }, '', prefix + to)
-            history.unshift({ data, to })
-        }
+
         const match = to.match(/([^\s]+)/)
         current = to
         if (!match) return
-        const found = findRouteByReg(match[0])
-
-        // if (!found) {
-        //     if (notFound) notFound()
-        //     return
-        // }
+        let found = findRouteByReg(match[0])
+        if (!found) {
+            found = findRouteByReg('/404')
+            // to = '/404' // Todo: fix this
+        }
+        if (to !== history?.[0]?.to) {
+            window.history.pushState({ data, to }, '', prefix + to)
+            history.unshift({ data, to })
+        }
         let params: { [index: string]: string } = {}
         Object.keys(found.params).map(key => {
             const exec = found.params[key].exec(to)
             if (exec) params[key] = exec[1]
         })
-        found.handler({ route: { params, query: parseQuery(to) }, from: from.replace(prefix, ''), to, data })
+        found.handler({ route: { params, query: parseQuery() }, from: from.replace(prefix, ''), to, data })
         routerEmitter.emit('route-changed', to, from, data)
     }
 
@@ -66,10 +71,25 @@ const Router = () => {
 
     function init(options: any = {}) {
         if (options.prefix) prefix = options.prefix
-        window.addEventListener('popstate', (event) => {
+        window.onpopstate = (event) => {
+            if(history.length === 0) return // Fix me deeply
+            // window.history.back()
             const data = history.shift().data
-            const { to } = history[0]
+            const { to } = history[0] || {}
             goto(to, data, current)
+        }
+
+
+        globalEmitter.on('set-new-back-target', (target: string) => {
+            window.onpopstate = null
+        })
+        globalEmitter.on('reset-back-target', (target: string) => {
+            window.onpopstate = (event) => {
+                // window.history.back()
+                const data = history.shift().data
+                const { to } = history[0]
+                goto(to, data, current)
+            }
         })
         document.addEventListener('click', (e: MouseEvent) => {
             const possibleLink = findPossibleLink(e)
@@ -88,6 +108,7 @@ const Router = () => {
     return {
         back,
         when,
+        replace,
         goto,
         init,
         busy() {
@@ -101,4 +122,8 @@ const Router = () => {
 }
 
 export default Router()
+
+function notFound() {
+    throw new Error('Function not implemented.')
+}
 

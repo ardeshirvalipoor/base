@@ -1,13 +1,12 @@
-import { Self } from '../self'
+import { Base } from '../base'
 
 export const SVG = (content: string = '', boxWidth: number, boxHeight: number) => {
 
-    const self = Self<HTMLElement>('svg')
-    self.el.innerHTML = content
-    self.el.setAttributeNS(null, 'viewBox', '0 0 ' + boxWidth + ' ' + boxHeight)
-    self.el.setAttributeNS(null, 'width', boxWidth)
-    self.el.setAttributeNS(null, 'height', boxHeight)
-    return {
-        ...self
-    }
+    const base = Base<HTMLElement>('svg')
+    base.el.innerHTML = content
+    base.el.setAttributeNS(null, 'viewBox', '0 0 ' + boxWidth + ' ' + boxHeight)
+    base.el.setAttributeNS(null, 'width', boxWidth)
+    base.el.setAttributeNS(null, 'height', boxHeight)
+
+    return base
 }

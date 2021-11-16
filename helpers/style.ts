@@ -29,7 +29,7 @@ export const ROUND = <CS>{
 }
 
 export const SCROLLY = <CS> {
-    overflowX: 'hidden',
+    // overflowX: 'hidden',
     overflowY: 'scroll'
 }
 

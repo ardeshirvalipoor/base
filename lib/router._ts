@@ -1,4 +1,4 @@
-import { ISelf } from '../components/self'
+import { ISelf } from '../components/base'
 import emitter from '../utils/emitter'
 
 const router = () => {

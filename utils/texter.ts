@@ -1,11 +1,11 @@
-import { ISelf } from '../components/self'
+import { ISelf } from '../components/base'
 
 export function texter<T extends HTMLElement>(base: ISelf<T>){
     return {
-        text(content: string) {
+        text(content = '') {
             base.el.textContent = content
         },
-        html(content: string) {
+        html(content = '') {
             base.el.innerHTML = content
         }
     }

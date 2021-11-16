@@ -29,3 +29,4 @@ export type EVENTS =
     | 'node-added'
     | 'child-appended'
     | 'route-changed'
+    | 'paste'

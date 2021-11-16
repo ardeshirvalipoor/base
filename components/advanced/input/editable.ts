@@ -1,36 +1,25 @@
-import { Self } from '../../self'
+import { editable } from '../../../utils/editable'
+import { Base } from '../../base'
 
-export const Editable = () => {
+export const Editable = (options: any = {}) => {
 
-    const self = Self()
-    self.el.contentEditable = 'true'
-
-    self.el.addEventListener('input', () => {
-        self.emit('input')
+    const base = Base()
+    base.el.contentEditable = 'true'
+    base.el.dir = 'auto'
+    base.el.addEventListener('input', () => {
+        base.emit('input')
     })
-    self.cssClass({
+    base.cssClass({
         pointerEvents: 'all',
         userSelect: 'text', // IOS
         overflow: 'scroll',
+        maxHeight: (options.maxHeight || 100) + 'px'
         // height: '100%'
     })
 
-    return {
-        ...self,
-        focus() {
-            self.el.focus()
-        },
-        blur() {
-            self.el.blur()
-        },
-        getValue() {
-            return self.el.innerHTML
-        },
-        setValue(val: string) {
-            self.el.innerHTML = val
-        },
-        clear() {
-            self.el.innerHTML = ''
-        }
-    }
+
+    return Object.assign(
+        base,
+        editable(base)
+    )
 }

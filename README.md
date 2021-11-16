@@ -7,14 +7,14 @@ A component based vanillajs library
 To create a component just use:
 
 	// Component child.js
-    const self = Self()
+    const base = Base()
     // or
-    consr seld = Div('Hi')
+    consr base = Div('Hi')
 
 It will create a div element.
 Styling is easy:
 
-    self.cssClass({
+    base.cssClass({
 		color: 'red',
 		height: '20px'
 	})
@@ -22,7 +22,7 @@ Styling is easy:
 Once we exported this component, we can import that inside another component:
 
     // Component parent.js
-    const self = Self()
+    const base = Base()
     const child = Child()
-    self.append(child)
+    base.append(child)
     // will be rendered as <parent><child/><parent/>

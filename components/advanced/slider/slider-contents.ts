@@ -1,29 +1,32 @@
 import { EASE, X } from '../../../helpers/style'
-import { Self } from '../../self'
+import { Base } from '../../base'
 
 export const SliderContents = () => {
-    const self = Self()
+    const base = Base()
 
-    self.cssClass({
+    base.cssClass({
         position: 'relative',
         height: '100%'
     })
 
-    return {
-        ...self,
-        slide(x: number, options: ISlideFunction = {}) {
-            self.style({
-                ...EASE(options.smooth ? .5 : 0, 'all', 'cubic-bezier(0.22, 0.73, 0.46, 1)'),
-                ...X(x),
-            })
-        },
-        reset(delay: number) {
-            self.style({
-                ...EASE(0),
-                ...X(0)
-            }, delay)
+
+    return Object.assign(
+        base,
+        {
+            slide(x: number, options: ISlideFunction = {}) {
+                base.style({
+                    ...EASE(options.smooth ? .5 : 0, 'all', 'cubic-bezier(0.22, 0.73, 0.46, 1)'),
+                    ...X(x),
+                })
+            },
+            reset(delay: number) {
+                base.style({
+                    ...EASE(0),
+                    ...X(0)
+                }, delay)
+            }
         }
-    }
+    )
 }
 
 export interface ISlideFunction {

@@ -6,20 +6,22 @@ export const DropdownItem = (item: any = {}) => {
             title: item, value: item
         }
     }
-    const self = Div(item.title || item.value)
-    self.el.onclick = () => self.emit('item-selected', item)
-    self.cssClass({
+    const base = Div(item.title || item.value)
+    base.el.onclick = () => base.emit('item-selected', item)
+    base.cssClass({
         margin: '10px',
         fontWeight: '100'
     })
 
-    return {
-        ...self,
-        select() {
+    return Object.assign(
+        base,
+        {
+            select() {
 
-        },
-        deselect(){
+            },
+            deselect() {
 
+            }
         }
-    }
+    )
 }

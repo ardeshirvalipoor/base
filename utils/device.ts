@@ -6,6 +6,7 @@ export const otherOS = !isIOS && !isAndroid
 export const isInStandaloneMode = () => 'standalone' in window.navigator
 
 export const H = Math.max(window.innerHeight, window.outerHeight) + (isIOS ? 20 : 0)
+export const NUM_BOUNCINGS = Math.floor(H / 80)
 export const ST = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sat")) || 0
 export const SB = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--sab")) || 0
 export function SAFE_MARGIN() {

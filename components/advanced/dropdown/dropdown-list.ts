@@ -1,25 +1,28 @@
-import { Self } from '../../self'
+import { Base } from '../../base'
 import { DropdownItem } from './dropdown-item'
 
 export const DropdownList = (config: any = {}) => {
 
-    const self = Self()
+    const base = Base()
 
-    self.cssClass({
+    base.cssClass({
         overflowX: 'hidden',
         overflowY: 'scroll',
-        height: config.height?  (config.height + 'px') :'100%'
+        height: config.height ? (config.height + 'px') : '100%'
     })
 
-    return {
-        ...self,
-        fill(data: any[]) {
-            self.empty()
-            data.map(item => {
-                const i = DropdownItem(item)
-                i.on('item-selected', (item: any) => self.emit('item-selected', item))
-                self.append(i)
-            })
+
+    return Object.assign(
+        base,
+        {
+            fill(data: any[]) {
+                base.empty()
+                data.map(item => {
+                    const i = DropdownItem(item)
+                    i.on('item-selected', (item: any) => base.emit('item-selected', item))
+                    base.append(i)
+                })
+            }
         }
-    }
+    )
 }

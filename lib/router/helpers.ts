@@ -1,10 +1,8 @@
 export function parseQuery() {
     const q = location.search
     if (!q) return {}
-    return q.split('&').reduce((query: any, item: string) => {
+    return q.split(/&|\?/).reduce((query: any, item: string) => {
         const [key, value] = item.split('=')
-        console.log({ key, value })
-
         if (key) query[key] = value
         return query
     }, {})

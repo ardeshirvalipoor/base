@@ -8,11 +8,11 @@ export interface IRoute {
 export interface IRoutes {
     [index: string]: IRoute
 }
-export interface IRouteParams {
+export interface IRouteParams<T = any> {
     route?: IRoute
     from?: string
     to?: string | undefined
-    data?: any
+    data: T
 }
 
 // export interface IRoute {

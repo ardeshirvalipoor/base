@@ -1,5 +1,5 @@
 import { Input } from '../../native/input'
-import { Self } from '../../self'
+import { Base } from '../../base'
 import { Span } from '../../native/span'
 import { Div } from '../../native/div'
 import { CS } from '../../../utils/styler'
@@ -11,16 +11,16 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', letterSpacing: 0, ...options }
     if (!opts.textAlign) opts.textAlign = opts.direction == 'rtl' ? 'right' : 'left'
 
-    const self = Self()
+    const base = Base()
     const input = Input('', type)
     const p = Span(placeholder)
     const comma = Div()
-    self.append(input, p, comma)
-
+    base.append(input, p)
+    if (type == 'number') base.append(comma)
     // Todo: implement direciton
-    self.cssClass({
+    base.cssClass({
         position: 'relative',
-        height: '100%',
+        // height: '100%',
         // width: '100%'
     })
 
@@ -29,10 +29,9 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         transition: 'all .16s',
         color: opts.placeholderColor || (opts.color + '55'),
         fontSize: opts.fontSize + 'px',
-        right: opts.direction == 'rtl' ? '18px' : '',
-        left: opts.direction == 'ltr' ? '2px' : '',
+        right: opts.direction == 'rtl' ? '18px' : 'unset',
+        left: opts.direction == 'ltr' ? '2px' : 'unset',
         pointerEvents: 'none',
-        wordSpacing: '-2px',
         // fontStyle: 'italic',
         fontWeight: opts.fontWeight,
         width: '100%',
@@ -65,28 +64,32 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     input.cssClass(inputStyle)
     comma.cssClass({ ...inputStyle, pointerEvents: 'none', width: '', top: '10px' })
     // i.el.value = options.value || ''
+    let t = 0
     input.el.addEventListener('input', () => {
+        clearTimeout(t)
         if (opts.textAlign == 'center') {
             p.style(Y(input.el.value ? -20 : 0))
         } else {
             p.style(X(input.el.value ? opts.direction == 'rtl' ? -20 : 20 : 0))
         }
         p.el.style.opacity = input.el.value ? '0' : '1'
-        self.emit('input', input.el.value)
+        t = setTimeout(async () => {
+            base.emit('input', input.el.value)
+        }, options.timeout || 0)
         if (type == 'number') addCommas()
     })
     input.el.addEventListener('keydown', (e: KeyboardEvent) => {
         switch (e.key) {
-            case 'Enter': return self.emit('submit', input.el.value)
-            case 'Escape': return self.emit('escape')
-            // case 'ArrowRight': return self.emit('ArrowRight')
+            case 'Enter': return base.emit('submit', input.el.value)
+            case 'Escape': return base.emit('escape')
+            // case 'ArrowRight': return base.emit('ArrowRight')
         }
     })
     input.el.addEventListener('focus', (e: KeyboardEvent) => {
-        self.emit('focus')
+        base.emit('focus')
     })
     input.el.addEventListener('blur', (e: KeyboardEvent) => {
-        self.emit('blur')
+        base.emit('blur')
     })
     function addCommas() {
         comma.empty()
@@ -102,7 +105,6 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
             setTimeout(() => {
 
                 const { width } = dummy.el.getBoundingClientRect()
-                console.log({ width })
 
                 // dummy.text('')
                 const slash = Div(',')
@@ -111,30 +113,36 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
             }, i)
         }
     }
-    return {
-        ...self,
-        focus() {
-            input.el.focus()
-        },
-        select() {
-            input.el.select()
-        },
-        blur() {
-            input.blur()
-        },
-        getValue() {
-            return input.el.value
-        },
-        setValue(val: string) {
-            input.el.value = val
-        },
-        clear() {
-            input.el.value = ''
-            p.el.style.transform = `translateX(0px)`
-            p.el.style.opacity = '1'
-            self.emit('input', input.el.value)
+
+    // Todo: move this to editable
+    return Object.assign(
+        base,
+        {
+            input,
+            placeholder: p,
+            focus() {
+                input.el.focus()
+            },
+            select() {
+                input.el.select()
+            },
+            blur() {
+                input.blur()
+            },
+            getValue() {
+                return input.el.value
+            },
+            setValue(val: string) {
+                input.el.value = val
+            },
+            clear() {
+                input.el.value = ''
+                p.el.style.transform = `translateX(0px)`
+                p.el.style.opacity = '1'
+                base.emit('input', input.el.value)
+            }
         }
-    }
+    )
 }
 
 interface ITextbox {
@@ -146,5 +154,6 @@ interface ITextbox {
     letterSpacing?: string,
     fontSize?: string,
     fontWeight?: string,
-    color?: string
+    color?: string,
+    timeout?: number
 }

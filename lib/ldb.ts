@@ -9,7 +9,7 @@ export default {
     },
     save(value: any) {
         if (typeof value == 'object') value = JSON.stringify(value)
-        if (typeof value != 'string') value = value.toString()
+        if (typeof value != 'string') value = value?.toString()
         return {
             value,
             as(key: string) {

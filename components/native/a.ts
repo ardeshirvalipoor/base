@@ -1,14 +1,12 @@
 import { texter } from '../../utils/texter'
-import { Self } from '../self'
+import { Base } from '../base'
 
 export const A = (href: string, title: string, target = '_self') => {
 
-    const self = Self<HTMLLinkElement>('a')
-    self.el.href = href
-    self.el.setAttribute('target', target)
-    self.el.textContent = title
+    const base = Base<HTMLLinkElement>('a')
+    base.el.href = href
+    base.el.setAttribute('target', target)
+    base.el.textContent = title
 
-    return {
-        ...self,
-    }
+    return base
 }

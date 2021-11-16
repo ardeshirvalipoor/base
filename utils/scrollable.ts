@@ -1,7 +1,6 @@
-import { Base } from '../../base'
+import { IBase, ISelf } from '../components/base'
 
-export function List<U>() {
-    const base = Base<HTMLUListElement, U>()
+export function Scrollable(base: ISelf<HTMLElement>) {
     let height = 0
     base.on('mounted', () => {
         height = base.el.getBoundingClientRect().height
@@ -19,7 +18,7 @@ export function List<U>() {
 
     // Todo: functional mentality?
     // Make it scrollable
-    
+
 
     return base
 }

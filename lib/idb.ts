@@ -1,6 +1,6 @@
 interface IGetAllOptions {
-    skip: number
-    limit: number
+    skip?: number
+    limit?: number
     index?: string // comma separated
     value?: any // comma separated
     reverse?: boolean,
@@ -8,10 +8,10 @@ interface IGetAllOptions {
     lowerBound?: any
 }
 
-export default {
+export default (dbName: string) => ({
     // static db: IDBDatabase // Todo: multiple dbs
 
-    getnfo(dbName: string, version?: number) {
+    info(version?: number) {
         return new Promise<{ objectStoreNames: DOMStringList, version: number }>((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
@@ -27,7 +27,7 @@ export default {
             request.onerror = error => reject(error)
         })
     },
-    createStore(dbName: string, name: string, version: number, options?: { keyPath: string, autoIncrement?: boolean, indices?: string[] }) {
+    createStore(name: string, version: number, options?: { keyPath: string, autoIncrement?: boolean, indices?: string[] }) {
         const opts = { keyPath: 'id', autoIncrement: true, indices: [], ...options }
         // keyPath = 'id', autoIncrement = true
         return new Promise((resolve, reject) => {
@@ -50,14 +50,14 @@ export default {
             request.onerror = error => reject(error)
         })
     },
-    createindex(dbName: string, _store: string, version: number, index: string, options?: { unique?: boolean, multiEntry?: boolean }) {
+    createindex(_store: string, version: number, index: string, options?: { unique?: boolean, multiEntry?: boolean }) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onupgradeneeded = (event) => {
                 const db = event?.target?.result
                 const upgradeTransaction = event?.target?.transaction
                 const os = upgradeTransaction.objectStore(_store)
-                
+
                 if (!os.indexNames.contains(index)) {
                     os.createIndex(index, index, { unique: options?.unique || false, multiEntry: options?.multiEntry || false })
                 }
@@ -71,7 +71,7 @@ export default {
             request.onerror = error => reject(error)
         })
     },
-    async save(dbName: string, store: string, object: any, version?: number) {
+    async save(store: string, object: any, version?: number) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
@@ -89,7 +89,70 @@ export default {
             }
         })
     },
-    async get(dbName: string, store: string, id: any, version?: number) {
+    async clear(store: string, version?: number) {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName, version)
+            request.onsuccess = () => {
+                const otransaction = request.result.transaction(store, 'readwrite').objectStore(store)
+                otransaction.clear()
+            }
+            request.onerror = (err) => {
+                return reject(err)
+            }
+        })
+    },
+    // request.onsuccess = () => {
+    //     const db = request.result;
+    //     const transaction = db.transaction(['invoices'], 'readwrite');
+    //     const invStore = transaction.objectStore('invoices');
+    //     const vendorIndex = invStore.index('VendorIndex');
+    //     const keyRng = IDBKeyRange.only('GE');
+    //     const cursorRequest = vendorIndex.openCursor(keyRng);
+    //     cursorRequest.onsuccess = e => {
+    //         const cursor = e.target.result;
+    //         if (cursor) {
+    //             const invoice = cursor.value;
+    //             invoice.vendor = 'P&GE';
+    //             const updateRequest = cursor.update(invoice);
+
+    //             cursor.continue();
+    //         }
+    //     }
+    // };
+
+    // request.onsuccess = () => {
+    //     const db = request.result;
+    //     const transaction = db.transaction(
+    //         ['invoices', 'invoice-items'],
+    //         'readwrite'
+    //     );
+    //     const invStore = transaction.objectStore('invoices');
+    //     const invItemStore = transaction.objectStore('invoice-items');
+    //     // Get invoice cursor
+    //     const invoiceCursorRequest = invStore.index('VendorIndex')
+    //         .openCursor(IDBKeyRange.only('Frigidaire'));
+    //     invoiceCursorRequest.onsuccess = e => {
+    //         const invCursor = e.target.result;
+    //         if (invCursor) {
+    //             // Get invoice item cursor
+    //             const invItemCursorRequest = invItemStore
+    //                 .index('InvoiceIndex')
+    //                 .openCursor(
+    //                     IDBKeyRange.only(invCursor.value.invoiceId)
+    //                 );
+    //             invItemCursorRequest.onsuccess = e => {
+    //                 const invItemCursor = e.target.result;
+    //                 if (invItemCursor) {
+    //                     invItemCursor.delete();
+    //                     invItemCursor.continue();
+    //                 }
+    //             }
+    //             invCursor.delete();
+    //             invCursor.continue();
+    //         }
+    //     }
+    // };
+    async byId(store: string, id: any, version?: number) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
@@ -110,9 +173,8 @@ export default {
             }
         })
     },
-    // Count
-    all(dbName: string, store: string, options?: IGetAllOptions) {
-        const { skip = 0, limit = 0 } = options || {}
+    find(store: string, options?: IGetAllOptions) {
+        const { skip = 0, limit = 1000 } = options || {}
         return new Promise<any[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e: Event | any) => {
@@ -131,7 +193,6 @@ export default {
                     if (options?.value) {
                         keyRng = options.upperBound ? IDBKeyRange.upperBound(options.value) : IDBKeyRange.only(options.value)
                     }
-                    
                     cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
                 } else {
                     cursorRequest = os.openCursor(null, options?.reverse ? 'prev' : 'next') //nextunique
@@ -166,8 +227,7 @@ export default {
         })
     },
     count() { },
-
-    delete(dbName: string, store: any, id: any, version = 1) {
+    delete(store: any, id: any, version = 1) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e) => {
@@ -177,13 +237,12 @@ export default {
                 return resolve(true)
             }
             request.onerror = (err) => {
+                console.log('idb delete', err);
                 return reject(err)
             }
         })
     },
-    update(dbName: string, store: any, payload: any, version = 1) {
-        console.log('UPDATE', payload)
-
+    update(store: any, payload: any, version = 1) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e) => {
@@ -206,6 +265,6 @@ export default {
             }
         })
     }
-}
+})
 
 

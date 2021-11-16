@@ -1,14 +1,16 @@
-import { Self, ISelf } from '../self'
+import { Base, ISelf } from '../base'
 
 export const Span = (content: string = '') => {
 
-    const self = Self<HTMLSpanElement>('span')
-    self.el.textContent = content
+    const base = Base<HTMLSpanElement>('span')
+    base.el.textContent = content
 
-    return {
-        ...self,
-        text(content: string) {
-            self.el.textContent = content
+    return Object.assign(
+        base,
+        {
+            text(content: string) {
+                base.el.textContent = content
+            }
         }
-    }
+    )
 }
