@@ -1,4 +1,4 @@
-import { ISelf, IBase } from '../components/base'
+import { IBase } from '../components/base'
 
 export function destroyer<T extends HTMLElement>(base: IBase<T>) {
     return {

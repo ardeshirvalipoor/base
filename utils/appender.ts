@@ -1,7 +1,7 @@
-import { ISelf, IBase } from '../components/base'
+import { IBase } from '../components/base'
 import { elements } from './elements-db'
 
-export function appender<T extends HTMLElement, U>(base: ISelf<T, U>) {
+export function appender<T extends HTMLElement, U>(base: IBase<T, U>) {
     // let children: any[] = []
     return {
         // children,

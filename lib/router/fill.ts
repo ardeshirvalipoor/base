@@ -1,8 +1,8 @@
-import { ISelf } from '../../components/base'
+import { IBase } from '../../components/base'
 import { IRouteParams } from './interfaces'
 import Router from './router'
 
-export function fill(container: ISelf<HTMLElement>) {
+export function fill(container: IBase<HTMLElement>) {
     return {
         with: (routes: any, { currentRoute = '/' } = { currentRoute: '/' }) => {
             const pages: { [index: string]: any } = {}

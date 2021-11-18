@@ -1,6 +1,6 @@
-import { ISelf } from '../components/base'
+import { IBase } from '../components/base'
 
-export function texter<T extends HTMLElement>(base: ISelf<T>){
+export function texter<T extends HTMLElement>(base: IBase<T>){
     return {
         text(content = '') {
             base.el.textContent = content

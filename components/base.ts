@@ -9,7 +9,7 @@ var styleEl = document.createElement('style')
 styleEl.type = 'text/css'
 document.getElementsByTagName('head')[0].appendChild(styleEl)
 
-export function Base<T extends HTMLElement = HTMLDivElement, U = ISelf<T, any>>(type: string = 'div')/* : ISelf<T, U> */ {
+export function Base<T extends HTMLElement = HTMLDivElement, U = IBase<T, any>>(type: string = 'div') {
     const id = 'base-' + nextId()
     let data:any = undefined
     const base: IBase<T, U> = {
@@ -18,7 +18,7 @@ export function Base<T extends HTMLElement = HTMLDivElement, U = ISelf<T, any>>(
         children: [],
         parent: null,
         mounted() { },
-        append(...args: ISelf<T>[]) {
+        append(...args: IBase<T>[]) {
             for (const component of args) {
                 const c = /* await */ component
                 elements[c.id] = c //els db
@@ -27,7 +27,7 @@ export function Base<T extends HTMLElement = HTMLDivElement, U = ISelf<T, any>>(
                 c.parent = base // should pass a base
             }
         },
-        prepend(...args: ISelf<T>[]) {
+        prepend(...args: IBase<T>[]) {
             args.map(async component => {
                 const c = /* await */ component
                 elements[c.id] = c
@@ -124,9 +124,9 @@ export function Base<T extends HTMLElement = HTMLDivElement, U = ISelf<T, any>>(
 }
 
 export interface IBase<T, U = any> {
-    el: T /* | SVGElement */,
+    el: T | SVGElement ,
     children: U[]
-    parent?: ISelf<T, U> | null
+    parent?: IBase<T, U> | null
     id: string
     mounted: () => void
     // IDestroyer
@@ -138,8 +138,6 @@ export interface IBase<T, U = any> {
     destroy: () => void,
     cssClass: (style: CS) => void
     style: (style: CS, options?: IStyleOptions | number) => void,
-}
-export interface ISelf<T, U = any> extends IBase<T, U> {
     on: (event: string, handler: Function) => void
     once: (event: string, handler: Function) => void
     off: (event: string, handler: Function) => void

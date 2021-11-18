@@ -1,7 +1,7 @@
 import { EASE, HIDE, ROUND, S, WH } from '../../../helpers/style'
 import { PASSIVE } from '../../../utils/passive-support'
 import { CS } from '../../../utils/styler'
-import { ISelf, Base } from '../../base'
+import { IBase, Base } from '../../base'
 
 export const Ghost = (options: IGhostOptions = {}) => {
 
@@ -49,7 +49,7 @@ export const Ghost = (options: IGhostOptions = {}) => {
     )
 }
 
-export const ghostify = (c: ISelf<HTMLDivElement>, options: IGhostOptions = {}) => {
+export const ghostify = (c: IBase<HTMLDivElement>, options: IGhostOptions = {}) => {
     const ghost = Ghost(options)
     const opts = {
         activeStyle: { /* ...S(.96) */

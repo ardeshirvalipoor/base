@@ -1,6 +1,6 @@
-import { IBase, ISelf } from '../components/base'
+import { IBase } from '../components/base'
 
-export function Scrollable(base: ISelf<HTMLElement>) {
+export function Scrollable(base: IBase<HTMLElement>) {
     let height = 0
     base.on('mounted', () => {
         height = base.el.getBoundingClientRect().height

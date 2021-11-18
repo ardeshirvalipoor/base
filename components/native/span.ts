@@ -1,4 +1,4 @@
-import { Base, ISelf } from '../base'
+import { Base, IBase } from '../base'
 
 export const Span = (content: string = '') => {
 
