@@ -163,7 +163,7 @@ export const XHR = {
 
 
 
-interface IXHROptoins {
+export interface IXHROptoins {
     method?: string,
     type?: string,
     cache?: number,
