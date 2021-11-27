@@ -123,8 +123,8 @@ export function Base<T extends HTMLElement = HTMLDivElement, U = IBase<T, any>>(
     // }
 }
 
-export interface IBase<T, U = any> {
-    el: T | SVGElement ,
+export interface IBase<T = HTMLElement, U = any> {
+    el: T /* | SVGElement */ ,
     children: U[]
     parent?: IBase<T, U> | null
     id: string
