@@ -8,12 +8,12 @@ export function fill(container: IBase<HTMLElement>) {
             const pages: { [index: string]: any } = {}
             let currentPage = routes[currentRoute]()
             container.append(currentPage)
-            currentPage.enter()
+            currentPage.enter({})
             pages[currentRoute] = currentPage
             Object.entries(routes).map(([route, P]: any) => {
                 Router.when(route, async (routeParams: IRouteParams) => await switchPage(route, P, routeParams))
             })
-            async function switchPage(route: string, P: any, routeParams: any) {
+            async function switchPage(route: string, P: any, routeParams: IRouteParams) {
                 if (route == currentRoute) return
                 Router.busy()
                 await currentPage.exit(routeParams)

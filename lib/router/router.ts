@@ -94,11 +94,12 @@ const Router = () => {
         document.addEventListener('click', (e: MouseEvent) => {
             const possibleLink = findPossibleLink(e)
             if (!possibleLink) return
-            if (possibleLink.href.indexOf(location.origin) == 0 || /(\/|^)\w+\.\w+/.test(possibleLink.href) == false) {
+            if (possibleLink === '/' || possibleLink.href.indexOf(location.origin) == 0 || /(\/|^)\w+\.\w+/.test(possibleLink.href) == false) {
                 e.preventDefault()
-                let route = possibleLink.href.replace(location.origin, '')
-                if (route.charAt(0) != '/') route = '/' + route
-                goto(route)
+                // let route = possibleLink.href.replace(location.origin, '')
+                // if (route.charAt(0) != '/') route = '/' + route
+                // goto(route)
+                goto(location.pathname)
             } else {
                 window.open(possibleLink.href, possibleLink.target)
             }
