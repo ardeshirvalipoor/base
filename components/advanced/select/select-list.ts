@@ -14,6 +14,7 @@ export const SelectList = (config: ISelectConfig = { height: 102 }) => {
         height: config.height + 'px',
         overflowY: 'auto'
     })
+
     return Object.assign(base, {
         fill(_items: ISelectItem[]) {
             base.empty()
@@ -21,7 +22,7 @@ export const SelectList = (config: ISelectConfig = { height: 102 }) => {
             items = _items
             items.map(item => base.append(item))
             current = items[0]
-            current.select()
+            if (current) current.select()
         },
         up() {
             index--;
