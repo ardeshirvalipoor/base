@@ -4,14 +4,14 @@ import { ISelectItem, SelectListItem } from "./select-list-item"
 
 export const SelectList = (config: ISelectConfig = { height: 102 }) => {
     const base = Base()
-    let items: ISelectItem[] = []
+    let items: ISelectItem[] = [] // Todo pass T
     let index = 0
     let current: ISelectItem
 
     base.append(...items)
     base.cssClass({
         overflow: 'hidden',
-        height: config.height + 'px',
+        maxHeight: config.height + 'px',
         overflowY: 'auto'
     })
 
@@ -20,7 +20,14 @@ export const SelectList = (config: ISelectConfig = { height: 102 }) => {
             base.empty()
             index = 0
             items = _items
-            items.map(item => base.append(item))
+            items.map((item, i) => {
+                item.on('item-clicked', (data: any) => {
+                    index = i
+                    handleSelection()
+                    base.emit('item-selected', data )
+                })
+                base.append(item)
+            })
             current = items[0]
             if (current) current.select()
         },
@@ -33,6 +40,10 @@ export const SelectList = (config: ISelectConfig = { height: 102 }) => {
             index++;
             if (index > items.length - 1) index = 0
             handleSelection()
+        },
+        getValue() {
+            if(!current) return
+            return current.getValue()
         }
     })
 

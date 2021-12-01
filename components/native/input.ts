@@ -7,7 +7,10 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
     base.el.setAttribute('placeholder', placeholder)
     if (options['accept']) base.el.setAttribute('accept', options['accept']) // For now
 
-    base.el.oninput = (v: Event) => base.emit('input', v)
+    base.el.onblur  = (e: Event) => base.emit('blur' , e)
+    base.el.onfocus = (e: Event) => base.emit('focus', e)
+    base.el.oninput = (e: Event) => base.emit('input', e)
+    base.el.onclick = (e: Event) => base.emit('click', e)
     base.el.onkeydown = (v: KeyboardEvent) => { base.emit('keydown', v) }
     return Object.assign(
         base,
@@ -20,6 +23,9 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             },
             getValue() {
                 return type == 'textarea' ? base.el.innerHTML : base.el.value
+            },
+            setValue(val:T) {
+                base.el.value = <string>val
             }
         }
     )

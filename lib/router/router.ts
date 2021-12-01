@@ -38,11 +38,15 @@ const Router = () => {
         history.shift()
     }
 
-    async function goto(to: string = '', data = {}, from = location.pathname) {
+    async function goto(_to: string = '', data = {}, from = location.pathname) {
+        let [to] = _to.split('?')
+        if (to === '') to = '/'
+
         if (to.includes('tel:')) return // Todo: find a better way to handle isBusy
         if (isBusy) return
 
         const match = to.match(/([^\s]+)/)
+
         current = to
         if (!match) return
         let found = findRouteByReg(match[0])
@@ -50,17 +54,17 @@ const Router = () => {
             found = findRouteByReg('/404')
             // to = '/404' // Todo: fix this
         }
-        if (to !== history?.[0]?.to) {
-            window.history.pushState({ data, to }, '', prefix + to)
-            history.unshift({ data, to })
+        if (_to !== history?.[0]?._to) {
+            window.history.pushState({ data, _to }, '', prefix + _to)
+            history.unshift({ data, _to })
         }
         let params: { [index: string]: string } = {}
         Object.keys(found.params).map(key => {
             const exec = found.params[key].exec(to)
             if (exec) params[key] = exec[1]
         })
-        found.handler({ route: { params, query: parseQuery() }, from: from.replace(prefix, ''), to, data })
-        routerEmitter.emit('route-changed', to, from, data)
+        found.handler({ route: { params, query: parseQuery() }, from: from.replace(prefix, ''), _to, data })
+        routerEmitter.emit('route-changed', _to, from, data)
     }
 
     function findRouteByReg(route: string): any {
@@ -72,11 +76,11 @@ const Router = () => {
     function init(options: any = {}) {
         if (options.prefix) prefix = options.prefix
         window.onpopstate = (event) => {
-            if(history.length === 0) return // Fix me deeply
+            if (history.length === 0) return // Fix me deeply
             // window.history.back()
             const data = history.shift().data
-            const { to } = history[0] || {}
-            goto(to, data, current)
+            const { _to } = history[0] || {}
+            goto(_to, data, current)
         }
 
 

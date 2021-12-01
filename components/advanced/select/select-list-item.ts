@@ -7,7 +7,7 @@ export const SelectListItem = (base: IBase) => {
         base,
         {
             select() {
-                base.style({ backgroundColor: '#ccc' })
+                base.style({ backgroundColor: '#eee' })
             },
             deselect() {
                 base.style({ backgroundColor: '#fff' })

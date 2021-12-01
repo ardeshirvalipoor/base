@@ -11,11 +11,13 @@ const get = (url: string, options: IXHROptoins = {}) => {
         xhr.onreadystatechange = () => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 try {
-                    return resolve({
-                        status: xhr.status, //others
-                        // data: opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response */
-                        ...JSON.parse(xhr.response)
-                    })
+                    return resolve(
+                        // status: xhr.status, //others
+                        // // data: 
+                        // ...
+                        opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response 
+                        // JSON.parse(xhr.response)
+                    )
                 } catch (error) {
                     // console.warn(error)
                     return resolve({
