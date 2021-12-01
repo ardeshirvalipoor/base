@@ -12,6 +12,13 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
     base.el.oninput = (e: Event) => base.emit('input', e)
     base.el.onclick = (e: Event) => base.emit('click', e)
     base.el.onkeydown = (v: KeyboardEvent) => { base.emit('keydown', v) }
+
+    base.cssClass({
+        border: '1px solid gray',
+        borderRadius: '5px',
+        padding: '10px'
+    })
+
     return Object.assign(
         base,
         {

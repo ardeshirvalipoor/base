@@ -5,7 +5,9 @@ export const Button = (text: string, options = {}) => {
     const base = Base<HTMLButtonElement>('button')
     base.el.innerHTML = text
     base.cssClass({
-        cursor: 'pointer'
+        cursor: 'pointer',
+        padding: '10px',
+        borderRadius: '5px'
     })
 
     return Object.assign(
