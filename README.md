@@ -9,9 +9,24 @@ To create a component just use:
 // Component child.js
 const base = Base()
 // or
-consr base = Div('Hi')
+const base = Div('Hi')
+
+return base
 ```
-Example:
+Once we exported this component, we can import and use it inside another component:
+```javascript
+// Component parent.js
+import { Child } from './child'
+
+const base = Base()
+const child = Child()
+base.append(child)
+
+return base
+// will be rendered as <div><div>Hi</div><div/>
+```
+
+Examples of difference with a regular html/js code:
 ```html
 <div>
     <p>Hello</p>
@@ -32,7 +47,7 @@ So instead of
 ```html
 <div class="some-style-class">
 ```
-We'll have
+We'll have:
 ```javascript
 base.cssClass({
   color: 'red',
@@ -40,11 +55,3 @@ base.cssClass({
 })
 ```
 
-Once we exported this component, we can import that inside another component:
-```javascript
-// Component parent.js
-const base = Base()
-const child = Child()
-base.append(child)
-// will be rendered as <parent><child/><parent/>
-```
