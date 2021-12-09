@@ -1,5 +1,5 @@
 import { IBaseComponent, IBaseSVGComponent } from "../components/base"
-const STYLE_EL = document.getElementsByTagName('heastyled')[0]
+const STYLE_EL = document.getElementsByTagName('style')[0]
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
     style(style: CS, options: IStyleOptions | number): void {

@@ -1,9 +1,11 @@
 import { IBaseComponent } from '../components/base'
 
-export function Scrollable(base: IBaseComponent<HTMLElement>) {
+export function Scrollable(base: IBaseComponent<any>) {
     let height = 0
-    base.on('mounted', () => {
-        height = base.el.getBoundingClientRect().height
+    base.on('mounted', (id: string) => {
+        if (id === base.id) {
+            height = base.el.getBoundingClientRect().height
+        }
     })
 
     base.el.addEventListener('scroll', () => {
@@ -15,10 +17,8 @@ export function Scrollable(base: IBaseComponent<HTMLElement>) {
             base.emit('scrolled-to-top')
         }
     })
-
     // Todo: functional mentality?
     // Make it scrollable
-
 
     return base
 }

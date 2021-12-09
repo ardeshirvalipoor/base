@@ -1,4 +1,4 @@
-import { globalEmitter } from '../components/base'
+import { globalEmitter } from "./emitter"
 
 export const mounter = {
     init() {

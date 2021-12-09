@@ -1,7 +1,6 @@
 const idGenerator = (id = 0) => () => id++
 export const nextId = idGenerator()
 
-
 export const shortUUID = () => {
     return (new Date().valueOf().toString(36).slice(2) + Math.random().toString(36).slice(2)).slice(-12)
 }

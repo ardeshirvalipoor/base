@@ -25,9 +25,6 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
     },
 })
 
-
-
-
 export interface IAppender {
     children: IBaseComponent<any>[]
     append: (...args: IBaseComponent<any>[]) => void,

@@ -19,7 +19,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         height: '100%'
     })
 
-    globalglobalEmitter.on('mounted', (id: string) => {
+    globalEmitter .on('mounted', (id: string) => {
         if (id !== base.id) return
         W = options.width || base.el.getBoundingClientRect().width
         items.forEach((slide, i) => {

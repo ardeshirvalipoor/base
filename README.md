@@ -5,12 +5,12 @@ A component based vanillajs library
 
 ## How to use
 To create a component just use:
-
-	// Component child.js
-    const base = Base()
-    // or
-    consr base = Div('Hi')
-
+```javascript
+// Component child.js
+const base = Base()
+// or
+consr base = Div('Hi')
+```
 Example:
 ```html
 <div>
@@ -35,8 +35,8 @@ So instead of
 We'll have
 ```javascript
 base.cssClass({
-	color: 'red',
-	height: '20px'
+  color: 'red',
+  height: '20px'
 })
 ```
 

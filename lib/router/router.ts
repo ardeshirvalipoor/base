@@ -1,4 +1,4 @@
-import emitter, { globalEmitter } from '../../utils/emitter'
+import { emitter, globalEmitter } from '../../utils/emitter'
 import { PASSIVE } from '../../utils/passive-support'
 import { findPossibleLink, parseQuery } from './helpers'
 import { IRoutes, TRouteHandler } from './interfaces'
@@ -84,10 +84,10 @@ const Router = () => {
         }
 
 
-        globalglobalEmitter.on('set-new-back-target', (target: string) => {
+        globalEmitter.on('set-new-back-target', (target: string) => {
             window.onpopstate = null
         })
-        globalglobalEmitter.on('reset-back-target', (target: string) => {
+        globalEmitter.on('reset-back-target', (target: string) => {
             window.onpopstate = (event) => {
                 // window.history.back()
                 const data = history.shift().data
