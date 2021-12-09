@@ -3,11 +3,11 @@ import { Base } from '../../base'
 
 export const Editable = (options: any = {}) => {
 
-    const base = Base()
+    const base = Base('div')
     base.el.contentEditable = 'true'
     base.el.dir = 'auto'
     base.el.addEventListener('input', () => {
-        base.emit('input')
+        base.emit('input', null)
     })
     base.cssClass({
         pointerEvents: 'all',

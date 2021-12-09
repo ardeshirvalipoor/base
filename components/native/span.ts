@@ -1,16 +1,12 @@
-import { Base, IBase } from '../base'
+import { texter } from '../../utils/texter'
+import { Base, IBaseComponent } from '../base'
 
 export const Span = (content: string = '') => {
 
-    const base = Base<HTMLSpanElement>('span')
-    base.el.textContent = content
+    const base = Base('a')
 
     return Object.assign(
         base,
-        {
-            text(content: string) {
-                base.el.textContent = content
-            }
-        }
+        texter(base)
     )
 }

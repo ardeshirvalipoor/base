@@ -2,7 +2,7 @@ import { EASE, X } from '../../../helpers/style'
 import { Base } from '../../base'
 
 export const SliderContents = () => {
-    const base = Base()
+    const base = Base('div')
 
     base.cssClass({
         position: 'relative',

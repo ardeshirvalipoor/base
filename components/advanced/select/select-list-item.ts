@@ -1,7 +1,7 @@
-import { IBase } from "../../base"
+import { IBaseComponent } from "../../base"
 import { Div } from "../../native/div"
 
-export const SelectListItem = (base: IBase) => {
+export const SelectListItem = (base: IBaseComponent<any>) => {
 
     return Object.assign(
         base,
@@ -16,7 +16,7 @@ export const SelectListItem = (base: IBase) => {
     )
 }
 
-export interface ISelectItem extends IBase {
+export interface ISelectItem extends IBaseComponent<any> {
     select: Function,
     deselect: Function,
 }

@@ -2,7 +2,8 @@ import { Base } from '../base'
 
 export const Button = (text: string, options = {}) => {
 
-    const base = Base<HTMLButtonElement>('button')
+    const base = Base('button')
+    
     base.el.innerHTML = text
     base.cssClass({
         cursor: 'pointer',
@@ -18,6 +19,12 @@ export const Button = (text: string, options = {}) => {
             },
             blur() {
                 base.el.blur()
+            },
+            disable() {
+                base.el.disabled = true
+            },
+            enable() {
+                base.el.disabled = false
             }
         }
     )

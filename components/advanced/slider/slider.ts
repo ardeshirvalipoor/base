@@ -1,4 +1,5 @@
 import { X } from '../../../helpers/style'
+import { globalEmitter } from '../../../utils/emitter'
 import { Base } from '../../base'
 import { SliderContents } from './slider-contents'
 
@@ -7,7 +8,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     let index = 0
     let acc = {}
     let slides: any[] = []
-    const base = Base()
+    const base = Base('div')
     const container = SliderContents()
     base.append(container)
 
@@ -18,7 +19,8 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         height: '100%'
     })
 
-    base.mounted = () => {
+    globalglobalEmitter.on('mounted', (id: string) => {
+        if (id !== base.id) return
         W = options.width || base.el.getBoundingClientRect().width
         items.forEach((slide, i) => {
             slides.push(slide)
@@ -37,8 +39,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             slide.requestReset = () => reset()
         })
         slides[0].onEnter()
-    }
-
+    })
     let ox = 0
     let x = 0
     let tx = 0

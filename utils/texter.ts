@@ -1,6 +1,6 @@
-import { IBase } from '../components/base'
+import { IBaseComponent } from '../components/base'
 
-export function texter<T extends HTMLElement>(base: IBase<T>){
+export function texter(base: IBaseComponent<any>) {
     return {
         text(content = '') {
             base.el.textContent = content

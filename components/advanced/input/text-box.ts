@@ -5,13 +5,15 @@ import { Div } from '../../native/div'
 import { CS } from '../../../utils/styler'
 import { HIDE, SHOW, X, Y } from '../../../helpers/style'
 
+
+// Needs huge refactoring
 export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
 
     // Todo: should be extendable
     const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', letterSpacing: 0, ...options }
     if (!opts.textAlign) opts.textAlign = opts.direction == 'rtl' ? 'right' : 'left'
 
-    const base = Base()
+    const base = Base('div')
     const input = Input('', type)
     const p = Span(placeholder)
     const comma = Div()

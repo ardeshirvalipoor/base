@@ -1,11 +1,11 @@
 import { EASE, HIDE, ROUND, S, WH } from '../../../helpers/style'
 import { PASSIVE } from '../../../utils/passive-support'
 import { CS } from '../../../utils/styler'
-import { IBase, Base } from '../../base'
+import { IBaseComponent, Base } from '../../base'
 
 export const Ghost = (options: IGhostOptions = {}) => {
 
-    const base = Base()
+    const base = Base('div')
 
     const opts = { opacity: .15, bg: '#000', size: 48, ...options }
     base.cssClass({
@@ -19,7 +19,6 @@ export const Ghost = (options: IGhostOptions = {}) => {
         pointerEvents: 'none'
     })
     let touchStartTime = 0
-
 
     return Object.assign(
         base,
@@ -49,7 +48,7 @@ export const Ghost = (options: IGhostOptions = {}) => {
     )
 }
 
-export const ghostify = (c: IBase<HTMLDivElement>, options: IGhostOptions = {}) => {
+export const ghostify = (c: IBaseComponent<'div'>, options: IGhostOptions = {}) => {
     const ghost = Ghost(options)
     const opts = {
         activeStyle: { /* ...S(.96) */

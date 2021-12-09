@@ -1,146 +1,29 @@
-import { styler, CS, IStyleOptions } from '../utils/styler'
-import { destroyer } from '../utils/destroyer'
-import { appender } from '../utils/appender'
 import { nextId } from '../utils/id-generator'
-import emitter from '../utils/emitter'
-import { elements } from '../utils/elements-db'
+import { emitter, IEmitter } from '../utils/emitter'
+import appender, { IAppender } from '../utils/appender'
+import styler, { IStyler } from '../utils/styler'
 
-var styleEl = document.createElement('style')
-styleEl.type = 'text/css'
-document.getElementsByTagName('head')[0].appendChild(styleEl)
-
-export function Base<T extends HTMLElement = HTMLDivElement, U = IBase<T, any>>(type: string = 'div') {
+export function Base<K extends keyof HTMLElementTagNameMap = 'div'>(name: K): IBaseComponent<K> {
     const id = 'base-' + nextId()
-    let data:any = undefined
-    const base: IBase<T, U> = {
-        id,
-        el: type == 'svg' ? document.createElementNS('http://www.w3.org/2000/svg', 'svg') : <T>document.createElement(type),
-        children: [],
-        parent: null,
-        mounted() { },
-        append(...args: IBase<T>[]) {
-            for (const component of args) {
-                const c = /* await */ component
-                elements[c.id] = c //els db
-                base.el.appendChild(c.el)
-                base.children.push(c)
-                c.parent = base // should pass a base
-            }
-        },
-        prepend(...args: IBase<T>[]) {
-            args.map(async component => {
-                const c = /* await */ component
-                elements[c.id] = c
-                base.el.insertBefore(c.el, base.el.childNodes[0])
-                base.children.unshift(c)
-                c.parent = base // should pass a base
-            })
-        },
-        destroy() {
-            // No base destroyer?
-            base.children.map(child => child.destroy())
-            base.listeners = []
-            base.el.remove()
-            // component.parent.children = component.parent.children.filter((child: any) => child != component)
-        },
-        setData(_data: any) {
-            data = _data
-        },
-        getData() {
-            return data
-        },
-        empty() {
-            base.children.map(child => child.destroy())
-            base.children = []
-        },
-        style(style: CS, options: IStyleOptions | number): void {
-            const delay = typeof options == 'number' ? options : options?.delay
-            // console.log({style});
-            if (delay !== null && delay !== undefined) {
-                setTimeout(applyStyle, delay)
-            } else {
-                applyStyle()
-            }
-            function applyStyle() {
-                Object.keys(style).map((s: any) => {
-                    base.el.style[s] = typeof style[s] == 'function' ? style[s]() : style[s]
-                })
-            }
+    const el = document.createElement(name); el.setAttribute('id', id)
+    const base = <IBaseComponent<K>>{ id, el }
 
-        },
-        cssClass(style: CS, options: IStyleOptions = {}): void {
-            return base.style(style, options)
-            if (options.delay) {
-                setTimeout(() => applyCssClass(style), options.delay)
-            } else {
-                applyCssClass(style)
-            }
-            function applyCssClass(style: CS) {
-                let styleString = ''
-                var name = 'style-' + base.id
-                Object.keys(style).map((s: any) => {
-                    if (s.includes('&')) {
-                        const key = s.slice(1)
-                        let body = generateStyle(style[s])
-                        styleString += '}.' + name + key + '{' + body
-                    } else if (s.includes('@')) {
-                        let body = generateStyle(style[s])
-                        styleString += '}' + s + '{.' + name + '{' + body + '}'
-                    } else {
-                        styleString += getBody(s, style)
-                    }
-                })
-                styleEl.innerHTML += `.${name}{${styleString}}`
-                base.el.setAttribute('class', name)
-                function generateStyle(obj: any) {
-                    return Object.keys(obj).reduce((body, o) => body + getBody(o, obj), '')
-                }
-                function getBody(o: string, obj: any) {
-                    let snake = o.replace(/[A-Z]/g, (w: string) => `-${w.toLowerCase()}`)
-                    let value = typeof obj[o] == 'function' ? obj[o]() : obj[o]
-                    return snake + ':' + value + ';'
-                }
-            }
-        }
-    }
-
-    base.el.setAttribute('id', id)
-    
-    return Object.assign(
-        base,
-        // appender(base),
-        // destroyer(base),
-        // styler(base),
-        emitter()
-    )
-    
-    // return {
-    //     ...base,
-    //     ...appender(base),
-    //     ...destroyer(base),
-    //     ...styler(base),
-    //     ...emitter(base)
-    // }
+    return Object.assign(base, emitter(), appender(base), styler(base))
 }
 
-export interface IBase<T = HTMLElement, U = any> {
-    el: T /* | SVGElement */ ,
-    children: U[]
-    parent?: IBase<T, U> | null
+export function BaseSVG<K extends keyof SVGElementTagNameMap = 'svg'>(name: K): IBaseSVGComponent<K> {
+    const id = 'base-' + nextId()
+    const el = document.createElementNS('http://www.w3.org/2000/svg', name); el.setAttribute('id', id)
+    const base = <IBaseSVGComponent<K>>{ id, el }
+
+    return Object.assign(base, emitter(), appender(base), styler(base))
+}
+
+export interface IBaseComponent<K extends keyof HTMLElementTagNameMap> extends IEmitter, IAppender, IStyler {
+    el: HTMLElementTagNameMap[K]
     id: string
-    mounted: () => void
-    // IDestroyer
-    append: Function // a => component
-    prepend: Function
-    empty: () => void,
-    setData: (data :any) => void,
-    getData: () => any,
-    destroy: () => void,
-    cssClass: (style: CS) => void
-    style: (style: CS, options?: IStyleOptions | number) => void,
-    on: (event: string, handler: Function) => void
-    once: (event: string, handler: Function) => void
-    off: (event: string, handler: Function) => void
-    emit: (event: string, ...params: any) => void
 }
 
+export interface IBaseSVGComponent<K extends keyof SVGElementTagNameMap> extends IBaseComponent<any> {
+    el: SVGElementTagNameMap[K]
+}

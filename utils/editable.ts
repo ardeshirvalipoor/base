@@ -1,6 +1,6 @@
-import { IBase } from '../components/base'
+import { IBaseComponent } from '../components/base'
 
-export function editable<T extends HTMLElement>(base: IBase<T>) {
+export function editable(base: IBaseComponent<any>) {
     return {
         focus() {
             base.el.focus()

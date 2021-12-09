@@ -3,7 +3,7 @@ import { DropdownItem } from './dropdown-item'
 
 export const DropdownList = (config: any = {}) => {
 
-    const base = Base()
+    const base = Base('div')
 
     base.cssClass({
         overflowX: 'hidden',

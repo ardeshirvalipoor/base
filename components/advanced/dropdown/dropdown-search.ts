@@ -3,8 +3,8 @@ import { TextBox } from '../input/text-box'
 
 export const DropdownSearch = (config: any = {}) => {
 
-    const base = Base()
-    const input = TextBox(config.placeholder || 'جستجو', 'text', { direction: 'rtl' })
+    const base = Base('div')
+    const input = TextBox(config.placeholder || 'Search', 'text', { direction: 'rtl' })
     input.on('input', (value: any) => base.emit('input', value))
     input.cssClass({
         borderRadius: '14px',

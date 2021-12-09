@@ -2,8 +2,7 @@ import { Base } from '../base'
 
 export const Img = (path: string = '', options: IImage = {}) => {
 
-
-    const base = Base<HTMLImageElement>('img')
+    const base = Base('img')
     const opts = { width: 'auto', height: 'auto', ...options }
 
     base.style({
@@ -15,7 +14,7 @@ export const Img = (path: string = '', options: IImage = {}) => {
     return base
 }
 
-interface IImage {
+export interface IImage {
     width?: number
     height?: number
 }

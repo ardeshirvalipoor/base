@@ -84,10 +84,10 @@ const Router = () => {
         }
 
 
-        globalEmitter.on('set-new-back-target', (target: string) => {
+        globalglobalEmitter.on('set-new-back-target', (target: string) => {
             window.onpopstate = null
         })
-        globalEmitter.on('reset-back-target', (target: string) => {
+        globalglobalEmitter.on('reset-back-target', (target: string) => {
             window.onpopstate = (event) => {
                 // window.history.back()
                 const data = history.shift().data

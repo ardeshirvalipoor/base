@@ -3,7 +3,7 @@ import { Div } from "../../native/div"
 import { ISelectItem, SelectListItem } from "./select-list-item"
 
 export const SelectList = (config: ISelectConfig = { height: 102 }) => {
-    const base = Base()
+    const base = Base('div')
     let items: ISelectItem[] = [] // Todo pass T
     let index = 0
     let current: ISelectItem

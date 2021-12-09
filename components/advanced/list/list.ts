@@ -1,7 +1,7 @@
 import { Base } from '../../base'
 
 export function List<U>() {
-    const base = Base<HTMLUListElement, U>()
+    const base = Base('ul')
     let height = 0
     base.on('mounted', () => {
         height = base.el.getBoundingClientRect().height

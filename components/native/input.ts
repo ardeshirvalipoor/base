@@ -2,7 +2,7 @@ import { Base } from '../base'
 
 export const Input = <T extends string | number>(placeholder = '', type = 'text', options: any = {}) => {
 
-    const base = type == 'textarea' ? Base<HTMLInputElement>('textarea') : Base<HTMLInputElement>('input')
+    const base = type == 'textarea' ? Base('textarea') : Base('input')
     base.el.setAttribute('type', type)
     base.el.setAttribute('placeholder', placeholder)
     if (options['accept']) base.el.setAttribute('accept', options['accept']) // For now
