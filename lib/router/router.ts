@@ -83,7 +83,6 @@ const Router = () => {
             goto(_to, data, current)
         }
 
-
         globalEmitter.on('set-new-back-target', (target: string) => {
             window.onpopstate = null
         })

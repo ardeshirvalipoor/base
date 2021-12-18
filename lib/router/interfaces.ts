@@ -9,9 +9,9 @@ export interface IRoutes {
     [index: string]: IRoute
 }
 export interface IRouteParams<T = any> {
-    route?: IRoute
-    from?: string
-    to?: string | undefined
+    route: IRoute
+    from: string
+    to: string | undefined
     data: T
 }
 
