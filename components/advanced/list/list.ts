@@ -3,7 +3,7 @@ import { Base } from '../../base'
 export function List<U>() {
     const base = Base('ul')
     let height = 0
-    base.on('mounted', () => {
+    base.on(`${base.id}-mounted`, () => {
         height = base.el.getBoundingClientRect().height
     })
 
@@ -15,6 +15,11 @@ export function List<U>() {
         if (base.el.scrollTop == 0) {
             base.emit('scrolled-to-top')
         }
+    })
+
+    base.style({
+        margin: '0',
+        overflow: 'scroll'
     })
 
     // Todo: functional mentality?

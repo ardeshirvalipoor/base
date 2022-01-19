@@ -26,6 +26,8 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
                     let body = generateStyle(style[s])
                     styleString += '}.' + name + key + '{' + body
                 } else if (s.includes('@')) {
+                    console.log(style[s]);
+                    
                     let body = generateStyle(style[s])
                     styleString += '}' + s + '{.' + name + '{' + body + '}'
                 } else {

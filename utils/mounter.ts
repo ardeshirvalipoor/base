@@ -1,4 +1,4 @@
-import { globalEmitter } from "./emitter"
+import emitter from "./emitter"
 
 export const mounter = {
     init() {
@@ -12,7 +12,7 @@ function findChildrenAndEmitId(el: Node | Element) {
     if (el) {
         if (el instanceof Element) {
             const possibleId = el.attributes.getNamedItem('id')
-            if (possibleId) globalEmitter.emit('component-mounted', possibleId.value)
+            if (possibleId) emitter.emit(`${possibleId}-mounted`, possibleId.value)
         }
         for (let i = 0; i < el.childNodes.length; i++) {
             findChildrenAndEmitId(el.childNodes[i])

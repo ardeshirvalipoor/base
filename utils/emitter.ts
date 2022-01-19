@@ -35,7 +35,7 @@ export const emitter = <T>() => {
     }
 }
 
-export const globalEmitter = emitter()
+export default emitter()
 
 export interface IEmitter {
     on: (e: string, handler: Function) => void

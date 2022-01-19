@@ -1,5 +1,5 @@
 import { X } from '../../../helpers/style'
-import { globalEmitter } from '../../../utils/emitter'
+import emitter from '../../../utils/emitter'
 import { Base } from '../../base'
 import { SliderContents } from './slider-contents'
 
@@ -19,7 +19,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         height: '100%'
     })
 
-    globalEmitter .on('mounted', (id: string) => {
+    emitter.on(`${base.id}-mounted`, (id: string) => {
         if (id !== base.id) return
         W = options.width || base.el.getBoundingClientRect().width
         items.forEach((slide, i) => {
