@@ -4,6 +4,14 @@ export function editable(base: IBaseComponent<any>) {
     return {
         focus() {
             base.el.focus()
+            var range = document.createRange()
+            range.selectNodeContents(base.el)
+            range.collapse(false)
+            var sel = window.getSelection()
+            if (sel) {
+                sel.removeAllRanges()
+                sel.addRange(range)
+            }
         },
         blur() {
             base.el.blur()

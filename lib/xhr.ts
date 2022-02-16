@@ -46,7 +46,6 @@ const post = (url: string, body?: any, _headers: any = {}) => {
         xhr.onreadystatechange = () => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 try {
-                    console.log('resolving post');
                     return resolve(
                         headers.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response 
                     )

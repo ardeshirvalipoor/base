@@ -51,9 +51,8 @@ export default (() => {
     async function navigate(to: string = '', data = {}, from: string) {
 
         if (to.includes('tel:')) return
-
+        
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
-
         if (!found) {
             // Todo: 404
             return
@@ -80,7 +79,7 @@ export default (() => {
             return
         }
 
-        await current.page.exit({ from: location.pathname, to: route, ...routeParams })
+        current.page.exit({ from: location.pathname, to: route, ...routeParams })
 
         const next = _routes.find(_route => {
             return _route.reg.test(_root + route)

@@ -1,49 +1,87 @@
 import { Base } from "../../base"
-import { Div } from "../../native/div"
-import { ISelectItem, SelectListItem } from "./select-list-item"
+import { ISelectListItemComponent } from "./select-item"
 
-export const SelectList = (config: ISelectConfig = { height: 102 }) => {
-    const base = Base('div')
-    let items: ISelectItem[] = [] // Todo pass T
+export const SelectList = <T>() => {
+    const base = Base('ul')
+    let items: ISelectListItemComponent<T>[] = [] // Todo: pass T
     let index = 0
-    let current: ISelectItem
+    let current: ISelectListItemComponent<T> | undefined
 
-    base.append(...items)
     base.cssClass({
         overflow: 'hidden',
-        maxHeight: config.height + 'px',
-        overflowY: 'auto'
+        overflowY: 'auto',
+        overscrollBehavior: 'contain',
     })
 
     return Object.assign(base, {
-        fill(_items: ISelectItem[]) {
+        fill(_items: ISelectListItemComponent<T>[]) {
+            // Todo: implement pagination
             base.empty()
             index = 0
             items = _items
             items.map((item, i) => {
-                item.on('item-clicked', (data: any) => {
+                item.el.addEventListener('click', (data: any) => {
                     index = i
                     handleSelection()
-                    base.emit('item-selected', data )
+                    base.emit('item-selected', item.getValue())
                 })
                 base.append(item)
             })
             current = items[0]
             if (current) current.select()
         },
+        filter(q: string | null = '', fields: string[] = ['value']) {
+            // base.empty()
+            index = 0
+            const n = items.filter(item => {
+                const isThere = fields.some(field => {
+                    const value: any = item.getValue()
+                    const compare = typeof value === 'string' ? value : value[field]
+                    return q === '' || q === null || compare.toLowerCase().includes(q?.toString().toLowerCase())
+                })
+                if (isThere) {
+                    item.style({ display: 'block' })
+                    // base.append(item)
+                } else {
+                    item.style({ display: 'none' })
+                    if (item === current) {
+                        current.deselect()
+                        current = undefined
+                    }
+                    // base.remove(item)
+                }
+                return isThere
+            })
+
+            // found.map((item, i) => {
+            // base.append(item)
+            // })
+
+            if (!current) current = n[0]
+            if (current) current.select()
+        },
         up() {
-            index--;
+            index--
             if (index < 0) index = items.length - 1
             handleSelection()
         },
         down() {
-            index++;
+            index++
             if (index > items.length - 1) index = 0
             handleSelection()
         },
         getValue() {
-            if(!current) return
+            if (!current) return
             return current.getValue()
+        },
+        removeItem(item: ISelectListItemComponent<T>) {
+            // base.remove(item)
+            // Todo: implement...
+            items = items.filter(i => i !== item)
+        },
+        addItem(item: ISelectListItemComponent<T>) {
+            // base.append(item)
+            items.push(item)
         }
     })
 
@@ -52,7 +90,7 @@ export const SelectList = (config: ISelectConfig = { height: 102 }) => {
         if (current) current.deselect()
         current = items[index]
         current.select()
-        if (outOfView(base, current)) current.el.scrollIntoView({ behavior: 'smooth' })
+        // if (outOfView(base, current)) current.el.scrollIntoView({ behavior: 'smooth' }) // Todo: check intersection API
     }
 }
 
@@ -61,7 +99,6 @@ function outOfView(base: any, current: any) { //?
     const baseBox = base.el.getBoundingClientRect()
     return currentBox.top < baseBox.top || currentBox.bottom > baseBox.bottom
 }
-
 
 export interface ISelectConfig {
     height: number

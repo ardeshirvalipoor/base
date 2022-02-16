@@ -154,6 +154,7 @@ export default (dbName: string) => ({
     // };
     async byId(store: string, id: any, version?: number) {
         return new Promise((resolve, reject) => {
+            if (id === undefined) { return resolve(null) }
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
                 const reader = request.result.transaction([store]).objectStore(store).get(id)

@@ -1,5 +1,7 @@
 import { IBaseComponent, IBaseSVGComponent } from "../components/base"
-const STYLE_EL = document.getElementsByTagName('style')[0]
+let STYLE_DB: any = {}
+const STYLE_EL = document.createElement('style')
+document.head.appendChild(STYLE_EL)
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
     style(style: CS, options: IStyleOptions | number): void {
@@ -13,11 +15,22 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         }
     },
     cssClass(style: CS, options: IStyleOptions | number): void {
+        // Todo: urgent fix
         // TODO: check multiple classes
         const delay = typeof options === 'number' ? options : options?.delay
         typeof delay === 'number' ? setTimeout(applyCssClass, delay) : applyCssClass()
 
         function applyCssClass() {
+            var { name, styleString } = generateStyleString()
+            if (STYLE_DB[styleString]) {
+                base.el.classList.add(STYLE_DB[styleString])
+                return
+            }
+            STYLE_DB[styleString] = name
+            STYLE_EL.innerHTML += `.${name}{${styleString}}`
+            base.el.setAttribute('class', name)
+        }
+        function generateStyleString() {
             let styleString = ''
             var name = 'style-' + base.id
             Object.keys(style).forEach((s: any) => {
@@ -26,17 +39,15 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
                     let body = generateStyle(style[s])
                     styleString += '}.' + name + key + '{' + body
                 } else if (s.includes('@')) {
-                    console.log(style[s]);
-                    
                     let body = generateStyle(style[s])
                     styleString += '}' + s + '{.' + name + '{' + body + '}'
                 } else {
                     styleString += getBody(s, style)
                 }
             })
-            STYLE_EL.innerHTML += `.${name}{${styleString}}`
-            base.el.setAttribute('class', name)
+            return { name, styleString }
         }
+
         function generateStyle(obj: any) {
             return Object.keys(obj).reduce((body, o) => body + getBody(o, obj), '')
         }
