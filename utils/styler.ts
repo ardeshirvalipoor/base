@@ -23,17 +23,18 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         function applyCssClass() {
             var { name, styleString } = generateStyleString()
             const nameReg = new RegExp(name, 'g')
-            if (STYLE_DB[styleString.replace(nameReg, '')]) {
-                base.el.classList.add(STYLE_DB[styleString.replace(nameReg, '')])
+            const key = styleString.replace(nameReg, '')
+            if (STYLE_DB[key]) {
+                base.el.classList.add(STYLE_DB[key])
                 return
             }
-            STYLE_DB[styleString.replace(nameReg, '')] = name
+            STYLE_DB[key] = name
             STYLE_EL.innerHTML += `.${name}{${styleString}}`
             base.el.setAttribute('class', name)
         }
+
         function generateStyleString() {
             let styleString = ''
-            let mainBody = ''
             var name = 'style-' + base.id
             Object.keys(style).forEach((s: any) => {
                 if (s.includes('&')) {
@@ -53,6 +54,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         function generateStyle(obj: any) {
             return Object.keys(obj).reduce((body, o) => body + getBody(o, obj), '')
         }
+        
         function getBody(o: string, obj: any) {
             let snake = o.replace(/[A-Z]/g, (w: string) => `-${w.toLowerCase()}`)
             let value = typeof obj[o] == 'function' ? obj[o]() : obj[o]
