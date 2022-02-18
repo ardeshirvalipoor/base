@@ -22,16 +22,18 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
 
         function applyCssClass() {
             var { name, styleString } = generateStyleString()
-            if (STYLE_DB[styleString]) {
-                base.el.classList.add(STYLE_DB[styleString])
+            const nameReg = new RegExp(name, 'g')
+            if (STYLE_DB[styleString.replace(nameReg, '')]) {
+                base.el.classList.add(STYLE_DB[styleString.replace(nameReg, '')])
                 return
             }
-            STYLE_DB[styleString] = name
+            STYLE_DB[styleString.replace(nameReg, '')] = name
             STYLE_EL.innerHTML += `.${name}{${styleString}}`
             base.el.setAttribute('class', name)
         }
         function generateStyleString() {
             let styleString = ''
+            let mainBody = ''
             var name = 'style-' + base.id
             Object.keys(style).forEach((s: any) => {
                 if (s.includes('&')) {

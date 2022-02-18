@@ -31,10 +31,12 @@ export default (() => {
     }
 
     function back(data?: any) {
+        if (_isBusy) return
         window.history.back()
     }
 
     function forward(data?: any) {
+        if (_isBusy) return
         window.history.forward()
     }
 
@@ -43,15 +45,15 @@ export default (() => {
     }
 
     async function goto(to: string = '', data = {}) {
+        if (_isBusy) return
+
         const from = location.pathname
         window.history.pushState({ data, to, from }, '', _root + to)
         navigate(_root + to, data, from)
     }
 
     async function navigate(to: string = '', data = {}, from: string) {
-
         if (to.includes('tel:')) return
-        
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
         if (!found) {
             // Todo: 404
@@ -80,7 +82,6 @@ export default (() => {
         }
 
         current.page.exit({ from: location.pathname, to: route, ...routeParams })
-
         const next = _routes.find(_route => {
             return _route.reg.test(_root + route)
         })

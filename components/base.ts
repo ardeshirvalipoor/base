@@ -1,5 +1,7 @@
 import { nextId } from '../utils/id-generator'
 import { emitter, IEmitter } from '../utils/emitter'
+import _emitter from '../utils/emitter'
+
 import appender, { IAppender } from '../utils/appender'
 import styler, { IStyler } from '../utils/styler'
 
@@ -7,7 +9,7 @@ export function Base<K extends keyof HTMLElementTagNameMap = 'div'>(name: K): IB
     const id = 'base-' + nextId()
     const el = document.createElement(name); el.setAttribute('id', id)
     const base = <IBaseComponent<K>>{ id, el }
-
+    _emitter.on('theme-changed', (theme: string) => base.el.classList.toggle(theme))
     return Object.assign(base, emitter(), appender(base), styler(base))
 }
 
