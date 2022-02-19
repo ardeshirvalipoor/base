@@ -30,12 +30,12 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
             }
             STYLE_DB[key] = name
             STYLE_EL.innerHTML += `.${name}{${styleString}}`
-            base.el.setAttribute('class', name)
+            base.el.classList.add(name)
         }
 
         function generateStyleString() {
             let styleString = ''
-            var name = 'style-' + base.id
+            var name = 'style-' + base.id + '-' + Math.floor(Math.random() * 100000)
             Object.keys(style).forEach((s: any) => {
                 if (s.includes('&')) {
                     const key = s.slice(1)
