@@ -3,11 +3,11 @@ import { PASSIVE } from '../../../utils/passive-support'
 import { CS } from '../../../utils/styler'
 import { IBaseComponent, Base } from '../../base'
 
-export const Ghost = (options: IGhostOptions = {}) => {
+export const Ghost = (options = <IGhostOptions>{}) => {
 
     const base = Base('div')
 
-    const opts = { opacity: .15, bg: '#000', size: 48, ...options }
+    const opts = { opacity: .15, bg: '#00000055', bgDark: '#ffffff', size: 48, ...options }
     base.cssClass({
         ...HIDE,
         ...WH(opts.size),
@@ -16,7 +16,10 @@ export const Ghost = (options: IGhostOptions = {}) => {
         position: 'absolute',
         willChange: 'transform,opacity',
         transformOrigin: 'center',
-        pointerEvents: 'none'
+        pointerEvents: 'none',
+        '&.dark': {
+            backgroundColor: opts.bgDark ,
+        }
     })
     let touchStartTime = 0
 
@@ -75,6 +78,7 @@ interface IGhostOptions {
     size?: number,
     opacity?: number,
     bg?: string,
+    bgDark?: string,
     activeStyle?: CS,
     normalStyle?: CS
 }
