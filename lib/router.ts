@@ -55,11 +55,12 @@ export default (() => {
     async function navigate(to: string = '', data = {}, from: string) {
         if (to.includes('tel:')) return
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
-        if (!found) {
-            // Todo: 404
-            return
+        if (found) {
+            // Todo: 404calling transit through handler
+            // Todo: fix 
+            found.handler({ route: { params: parseParams(found), query: parseQuery() }, from, to, data })
+            // return
         }
-        found.handler({ route: { params: parseParams(found), query: parseQuery() }, from, to, data })
         emitter.emit('route-changed', to, { to, from, data })
     }
 
@@ -186,9 +187,9 @@ export interface IRouteParams<T = any> {
     data?: T
 }
 
-export interface IPage extends IBaseComponent<any>{
-    enter: (params: IRouteParams) => void
-    exit: (params: IRouteParams) => void
+export interface IPage extends IBaseComponent<any> {
+    enter: (params: IRouteParams) => Promise<any>
+    exit: (params: IRouteParams) => Promise<any>
 }
 
 export type TRouteHandler = (routeParams: IRouteParams) => Promise<void>
