@@ -36,7 +36,6 @@ export const Select = (options: any) => {
         search.setValue('')
         search.focus()
         list.style({ display: 'none' }, 100)
-
     })
     base.el.addEventListener
     base.append(search, list)
