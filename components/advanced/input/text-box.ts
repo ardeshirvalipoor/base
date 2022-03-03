@@ -154,7 +154,7 @@ interface ITextbox {
     value?: string,
     textAlign?: string,
     letterSpacing?: string,
-    fontSize?: string,
+    fontSize?: number,
     fontWeight?: string,
     color?: string,
     timeout?: number
