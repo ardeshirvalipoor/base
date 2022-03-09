@@ -5,7 +5,7 @@ const get = (url: string, options: IXHROptoins = {}) => {
         const xhr = new XMLHttpRequest
         xhr.open(opts.method, url, true)
         xhr.setRequestHeader('Content-Type', opts.type)
-        xhr.setRequestHeader('Authorization', 'Bearer ' + opts.auth)
+        if (opts.auth) xhr.setRequestHeader('Authorization', 'Bearer ' + opts.auth)
         // xhr.onerror = (err) => alert(JSON.stringify({ err, m: 'x' }))
 
         xhr.onreadystatechange = () => {
@@ -15,7 +15,7 @@ const get = (url: string, options: IXHROptoins = {}) => {
                         // status: xhr.status, //others
                         // // data: 
                         // ...
-                        opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response 
+                        opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response
                         // JSON.parse(xhr.response)
                     )
                 } catch (error) {
@@ -32,22 +32,23 @@ const get = (url: string, options: IXHROptoins = {}) => {
 }
 
 const post = (url: string, body?: any, _headers: any = {}) => {
-    const headers = { type: 'application/json', cache: 0, ..._headers }
+    const headers = { 'Content-Type': 'application/json', cache: 0, ..._headers }
+    
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open('POST', url, true)
+
         Object.keys(headers).map(key => {
             xhr.setRequestHeader(key, headers[key])
         }) // Todo: fix it
-        xhr.setRequestHeader('Content-Type', headers.type)
-        xhr.setRequestHeader('Authorization', 'Bearer ' + headers.auth)
+        if (headers.auth) xhr.setRequestHeader('Authorization', 'Bearer ' + headers.auth)
         // xhr.send(headers['Content-Type'] === 'application/json' ? JSON.stringify(body) : body)
-        xhr.send(JSON.stringify(body))
+        xhr.send(body ? JSON.stringify(body) : null)
         xhr.onreadystatechange = () => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 try {
                     return resolve(
-                        headers.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response 
+                        headers.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response
                     )
                 } catch (error) {
                     // console.warn(error)
@@ -131,8 +132,8 @@ const uploader = (file: File | string, url: string) => {
         start() {
             const xhr = new XMLHttpRequest
             xhr.open('POST', url)
-            const name = typeof file === 'string' ? 'profile.jpg': file.name
-            const type = typeof file === 'string' ? 'image/jpg': file.type || 'image/jpg'
+            const name = typeof file === 'string' ? 'profile.jpg' : file.name
+            const type = typeof file === 'string' ? 'image/jpg' : file.type || 'image/jpg'
             xhr.setRequestHeader('File-Type', type || 'image/jpg')
             xhr.setRequestHeader('File-Name', encodeURIComponent(name) || 'test.jpg')
             xhr.onload = () => xhr.status === 200 || xhr.status === 201 ? this.done(xhr) : this.failed(xhr)
