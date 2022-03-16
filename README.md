@@ -7,7 +7,7 @@ A component based vanillajs library
 You can create a component by using:
 ```javascript
 // Component child.js
-const base = Base()
+const base = Base('div')
 // or
 const base = Div('Hi')
 
@@ -18,7 +18,7 @@ We can import and use this component inside another component once we export it:
 // Component parent.js
 import { Child } from './child'
 
-const base = Base()
+const base = Base('div')
 const child = Child()
 base.append(child)
 

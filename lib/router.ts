@@ -114,9 +114,9 @@ export default (() => {
         }
     }
 
-    function init({ routes, container, root }: any) {
+    function init({ routes, view, root }: any) {
         _root = root
-        _container = container
+        _container = view
         Object.entries(routes).map(([route, Page]: any) => {
             when(route, async (routeParams: IRouteParams) => await transit(route, Page, routeParams)) //66
         })
