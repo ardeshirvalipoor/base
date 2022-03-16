@@ -1,8 +1,9 @@
 import { IBaseComponent } from '../components/base'
+import emitter from './emitter'
 
 export function Scrollable(base: IBaseComponent<any>) {
     let height = 0
-    base.on('mounted', (id: string) => {
+    emitter.on(`${base.id}-mounted`, (id: string) => {
         if (id === base.id) {
             height = base.el.getBoundingClientRect().height
         }

@@ -55,9 +55,13 @@ export default (() => {
     async function navigate(to: string = '', data = {}, from: string) {
         if (to.includes('tel:')) return
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
+        console.log('found', found, 'to', to, 'in navigate');
+        
         if (found) {
             // Todo: 404calling transit through handler
             // Todo: fix 
+            console.log('in found handler', found.handler);
+            
             found.handler({ route: { params: parseParams(found), query: parseQuery() }, from, to, data })
             // return
         }
@@ -87,6 +91,8 @@ export default (() => {
             return _route.reg.test(_root + route)
         })
         if (!next) {
+            console.log('404', {next, _root , route})
+            
             // Todo: 404
             return
         }
@@ -122,6 +128,8 @@ export default (() => {
         })
         navigate(location.pathname, {}, location.pathname)
         window.addEventListener('popstate', (event) => {
+            console.log('in popstate', event, location.pathname, _current);
+            
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
 
