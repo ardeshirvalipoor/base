@@ -36,6 +36,9 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             focus() {
                 base.el.focus()
             },
+            select() {
+                base.el.select()
+            },
             blur() {
                 base.el.blur()
             },

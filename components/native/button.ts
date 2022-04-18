@@ -21,10 +21,10 @@ export const Button = (text: string, options = {}) => {
                 base.el.blur()
             },
             disable() {
-                base.el.disabled = true
+                base.el.setAttribute('disabled', 'true')
             },
             enable() {
-                base.el.disabled = false
+                base.el.removeAttribute('disabled')
             }
         }
     )

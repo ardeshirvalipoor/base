@@ -1,4 +1,4 @@
-const idGenerator = (id = 0) => () => id++
+const idGenerator = (id = 0) => () => (id++).toString()
 export const nextId = idGenerator()
 
 export const shortUUID = () => {
