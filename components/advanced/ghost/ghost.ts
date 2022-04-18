@@ -37,7 +37,7 @@ export const Ghost = (options = <IGhostOptions>{}) => {
                 base.style({
                     ...EASE(.12),
                     ...S(2),
-                    opacity: opts.opacity + ''
+                    opacity: '.2'
                 }, 5)
             },
             deactivate() {
@@ -53,16 +53,11 @@ export const Ghost = (options = <IGhostOptions>{}) => {
 
 export const ghostify = (c: IBaseComponent<'div'>, options: IGhostOptions = {}) => {
     const ghost = Ghost(options)
-    const opts = {
-        activeStyle: { /* ...S(.96) */
-            filter: 'brightness(0.9)'
-        }, normalStyle: { /* ...S(1) */ filter: '' }, ...options
-    }
     c.el.addEventListener('touchstart', (e) => {
         const { x, y } = c.el.getBoundingClientRect()
         const { pageX, pageY } = e.touches[0]
         ghost.activate(pageX - x, pageY - y)
-        c.style(opts.activeStyle)
+        // c.style(opts.activeStyle)
     }, PASSIVE)
     c.el.addEventListener('touchend', () => {
         ghost.deactivate()

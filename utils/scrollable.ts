@@ -18,8 +18,8 @@ export function Scrollable(base: IBaseComponent<any>) {
             base.emit('scrolled-to-top')
         }
     })
-    // Todo: functional mentality?
-    // Make it scrollable
 
     return base
+    // Todo: functional mentality?
+    // Make it scrollable
 }

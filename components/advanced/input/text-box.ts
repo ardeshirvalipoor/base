@@ -10,7 +10,7 @@ import { HIDE, SHOW, X, Y } from '../../../helpers/style'
 export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
 
     // Todo: should be extendable
-    const opts = { color: '#ffffff', fontWeight: '100', fontSize: 16, direction: 'ltr', letterSpacing: 0, ...options }
+    const opts = { ...options }
     if (!opts.textAlign) opts.textAlign = opts.direction == 'rtl' ? 'right' : 'left'
 
     const base = Base('div')
@@ -18,7 +18,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     const p = Span(placeholder)
     const comma = Div()
     base.append(input, p)
-    if (type == 'number') base.append(comma)
+    if (type === 'number') base.append(comma)
     // Todo: implement direciton
     base.cssClass({
         position: 'relative',
@@ -26,25 +26,6 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         // width: '100%'
     })
 
-    p.cssClass({
-        position: 'absolute',
-        transition: 'all .16s',
-        color: opts.placeholderColor || (opts.color + '55'),
-        fontSize: opts.fontSize + 'px',
-        right: opts.direction == 'rtl' ? '18px' : 'unset',
-        left: opts.direction == 'ltr' ? '2px' : 'unset',
-        pointerEvents: 'none',
-        // fontStyle: 'italic',
-        fontWeight: opts.fontWeight,
-        width: '100%',
-        textAlign: opts.textAlign || 'left',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: opts.textAlign || 'left',
-        height: '100%',
-        direction: opts.direction,
-        letterSpacing: opts.letterSpacing + 'px'
-    })
     const inputStyle = <CS>{
         position: 'absolute',
         boxShadow: 'none',
@@ -94,6 +75,8 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         base.emit('blur')
     })
     function addCommas() {
+        console.log('in add comma');
+        
         comma.empty()
         const dummy = Div()
         dummy.style({

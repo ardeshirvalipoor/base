@@ -11,7 +11,7 @@ export const mounter = {
 function findChildrenAndEmitId(el: Node | Element) {
     if (el) {
         if (el instanceof Element) {
-            const possibleId = el.attributes.getNamedItem('id')
+            const possibleId = el.attributes.getNamedItem('data-base-id')
             if (possibleId) emitter.emit(`${possibleId.value}-mounted`, possibleId.value)
         }
         for (let i = 0; i < el.childNodes.length; i++) {

@@ -1,6 +1,8 @@
-import { X } from '../../../helpers/style'
+import { HIDE, SHOW, X } from '../../../helpers/style'
 import emitter from '../../../utils/emitter'
 import { Base } from '../../base'
+import { Div } from '../../native/div'
+import { Handle } from './handle'
 import { SliderContents } from './slider-contents'
 
 export const Slider = (items: any[], options: ISlideOptions = {}) => {
@@ -8,11 +10,23 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     let index = 0
     let acc = {}
     let slides: any[] = []
-    const base = Base('div')
-    const container = SliderContents()
-    base.append(container)
+    const base = Base()
+    const view = Div()
+    const handleR = Handle('r')
+    const handleL = Handle('l')
 
+    handleR.el.onclick = next
+    handleL.el.onclick = prev
+    const container = SliderContents()
+    view.append(container)
+    base.append(view, handleR, handleL)
+    handleR.style({display: 'none'})
     base.cssClass({
+        position: 'relative',
+        width: '100%',
+        height: '100%'
+    })
+    view.cssClass({
         position: 'relative',
         overflow: 'hidden',
         width: '100%',
@@ -74,6 +88,16 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         container.slide(x += dx, { smooth: true })
         index = Math.abs(Math.round(x / W))
         slides[index].onEnter()
+        handleL.style({ display: 'block' })
+        handleR.style({ display: 'block' })
+        if (index == items.length - 1) {
+            handleL.style({ display: 'none' })
+        }
+        if (index == 0) {
+            handleR.style({ display: 'none' })
+        }
+
+        base.emit('next-slide', slides[index].getValue()) // Todo: fix it later
     }
 
     function next() {
@@ -115,6 +139,9 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             },
             enter() {
                 slides[0].onEnter()
+            },
+            getValue() {
+                return slides[index].getValue()
             },
             setAcc(v: any) {
                 acc = v

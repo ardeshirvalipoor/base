@@ -1,4 +1,4 @@
-import { DEFAULT_TTL } from "../../configs/ttl"
+// import { DEFAULT_TTL } from "../../configs/ttl"
 import { IXHROptoins, XHR } from "./xhr"
 
 let _cache: any = {}
