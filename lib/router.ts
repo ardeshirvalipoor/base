@@ -65,7 +65,7 @@ export default (() => {
             found.handler({ route: { params: parseParams(found), query: parseQuery() }, from, to, data })
             // return
         }
-        emitter.emit('route-changed', to, { to, from, data })
+        emitter.emit('route-changed', to.replace(_root, ''), { to, from, data })
     }
 
     async function transit(route: string, Page: () => IPage, routeParams: IRouteParams) {
