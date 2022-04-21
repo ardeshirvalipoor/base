@@ -6,7 +6,8 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
     base.el.setAttribute('type', type)
     base.el.setAttribute('placeholder', placeholder)
     if (options['accept']) base.el.setAttribute('accept', options['accept']) // For now
-
+    if ('value' in options) base.el.value = options['value']
+    
     base.el.onblur = (e: Event) => base.emit('blur', e)
     base.el.onfocus = (e: Event) => base.emit('focus', e)
     base.el.oninput = (e: Event) => base.emit('input', { e, value: base.el.value })
