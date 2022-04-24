@@ -4,7 +4,7 @@ import { Base } from '../../base'
 export function List<U>() {
     const base = Base('ul')
     let height = 0
-    emitter.on(`${base.id}-mounted`, () => {
+    base.on('mounted', () => {
         height = base.el.getBoundingClientRect().height
     })
 

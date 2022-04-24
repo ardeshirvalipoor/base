@@ -7,7 +7,7 @@ export default (() => {
     let _isBusy = false
     let _root = ''
     let _current: string
-    let _container: IBaseComponent<any>
+    let _container: IBaseComponent<keyof HTMLElementTagNameMap>
 
     function when(path: string, handler: TRouteHandler): void {
         // parse params: Example: replace /:id with /([^/]+) per placeholder

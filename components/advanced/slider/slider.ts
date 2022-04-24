@@ -20,7 +20,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     const container = SliderContents()
     view.append(container)
     base.append(view, handleR, handleL)
-    handleR.style({display: 'none'})
+    handleR.style({ display: 'none' })
     base.cssClass({
         position: 'relative',
         width: '100%',
@@ -33,7 +33,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
         height: '100%'
     })
 
-    emitter.on(`${base.id}-mounted`, (id: string) => {
+    base.on('mounted', (id: string) => {
         if (id !== base.id) return
         W = options.width || base.el.getBoundingClientRect().width
         items.forEach((slide, i) => {
