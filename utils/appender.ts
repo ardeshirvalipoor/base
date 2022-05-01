@@ -3,13 +3,19 @@ import { observe } from "./mounter";
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender => {
     let children: IBaseComponent<any>[] = []
-    observe(base.el).then(nodes => {
-        nodes.forEach(node => {
-            const id = node?.getAttribute('data-base-id')
-            const found = children.find(c => c.id === id)
-            found?.emit('mounted', id)
-        })
+    const o = observe(base.el)
+    o.on('mutate', (id: string) => {
+        const found = children.find(c => c.id === id)
+        found?.emit('mounted', id)
     })
+
+    // .then(nodes => {
+    // nodes.forEach(node => {
+    //     const id = node?.getAttribute('data-base-id')
+    //     const found = children.find(c => c.id === id)
+    //     found?.emit('mounted', id)
+    // })
+    // })
 
     return {
         children,

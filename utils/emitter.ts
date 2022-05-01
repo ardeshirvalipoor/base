@@ -31,6 +31,7 @@ export const emitter = <T>() => {
         once,
         off,
         emit,
+        listeners: _listeners,
         removeAllListeners
     }
 }

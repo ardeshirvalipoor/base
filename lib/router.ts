@@ -55,20 +55,16 @@ export default (() => {
     async function navigate(to: string = '', data = {}, from: string) {
         if (to.includes('tel:')) return
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
-        console.log('found', found, 'to', to, 'in navigate');
-        
         if (found) {
             // Todo: 404calling transit through handler
             // Todo: fix 
-            console.log('in found handler', found.handler);
-            
-            found.handler({ route: { params: parseParams(found), query: parseQuery() }, from, to, data })
+            found.handler({ params: parseParams(found), query: parseQuery(), from, to, data })
             // return
         }
         emitter.emit('route-changed', to.replace(_root, ''), { to, from, data })
     }
 
-    async function transit(route: string, Page: () => IPage, routeParams: IRouteParams) {
+    async function transit(route: string, P: () => IPage, routeParams: IRouteParams) {
         const current = _routes.find(_route => _route.reg.test(_current || routeParams.from || ''))
         if (_isBusy) return
         _isBusy = true
@@ -77,30 +73,34 @@ export default (() => {
             // Todo: 404
             return
         }
-        if (!current.page) {
-            current.page = Page()
-            _container.append(current.page)
-            await current.page.enter(routeParams)
-            _isBusy = false
+        // if (!current.page) {
+        //     current.page = Page()
+        //     console.log('created page', current.page);
+            
+        //     _container.append(current.page)
+        //     await current.page.enter(routeParams)
+        //     current.page.emit('enter', routeParams)
+        //     _isBusy = false
 
-            return
-        }
+        //     return
+        // }
 
-        current.page.exit({ from: location.pathname, to: route, ...routeParams })
+        current?.page?.exit({ from: location.pathname, to: route, ...routeParams })
         const next = _routes.find(_route => {
             return _route.reg.test(_root + route)
         })
         if (!next) {
-            console.log('404', {next, _root , route})
-            
+            console.log('404', { next, _root, route })
+
             // Todo: 404
             return
         }
         if (!next.page) {
-            next.page = Page()
+            next.page = P()
             _container.append(next.page)
         }
         await next.page.enter({ from: location.pathname, to: route, ...routeParams })
+        next.page.emit('enter', { from: location.pathname, to: route, ...routeParams })
         _current = _root + route
         _isBusy = false
     }
@@ -128,8 +128,6 @@ export default (() => {
         })
         navigate(location.pathname, {}, location.pathname)
         window.addEventListener('popstate', (event) => {
-            console.log('in popstate', event, location.pathname, _current);
-            
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
 
@@ -191,7 +189,7 @@ export interface IRouteParams<T = any> {
     route?: IRoute
     from?: string
     to?: string | undefined
-    query?: any
+    query: any
     data?: T
 }
 
