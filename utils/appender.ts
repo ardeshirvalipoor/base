@@ -24,18 +24,21 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
                 base.el.appendChild(c.el)
                 children.push(c)
             }
+            return base
         },
         appendBefore(component: IBaseComponent<any>, ...args) {
             for (const c of args) {
                 base.el.insertBefore(c.el, component.el)
                 children.unshift(c) // Todo: check if this is correct
             }
+            return base
         },
         prepend(...args) {
             for (const c of args) {
                 base.el.insertBefore(c.el, base.el.childNodes[0])
                 children.unshift(c)
             }
+            return base
         },
         destroy() {
             children.forEach(child => child.destroy())
@@ -51,7 +54,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
 
 export interface IAppender {
     children: IBaseComponent<any>[]
-    append: (...args: IBaseComponent<any>[]) => void,
+    append: (...args: IBaseComponent<any>[]) => IBaseComponent<any>,
     prepend: (...args: IBaseComponent<any>[]) => void,
     appendBefore: (component: IBaseComponent<any>, ...args: IBaseComponent<any>[]) => void,
     empty: () => void,

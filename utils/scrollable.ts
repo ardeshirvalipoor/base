@@ -19,7 +19,11 @@ export function Scrollable(base: IBaseComponent<any>) {
         }
     })
 
-    return base
+    return Object.assign(base, {
+        scrollToBottom() {
+            base.el.scrollTop = base.el.scrollHeight
+        }
+    })
     // Todo: functional mentality?
     // Make it scrollable
 }
