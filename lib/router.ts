@@ -74,6 +74,9 @@ export default (() => {
         const current = _routes.find(_route => _route.reg.test(_current || routeParams.from || ''))
         if (_isBusy) return
         _isBusy = true
+        setTimeout(() => {
+            _isBusy = false
+        }, 240);
         if (!current) {
             _isBusy = false
             // Todo: 404
@@ -82,7 +85,7 @@ export default (() => {
         // if (!current.page) {
         //     current.page = Page()
         //     console.log('created page', current.page);
-            
+
         //     _container.append(current.page)
         //     await current.page.enter(routeParams)
         //     current.page.emit('enter', routeParams)
@@ -129,13 +132,13 @@ export default (() => {
         }
     }
 
-    function init({ routes, view, root }: any) {
+    function init({ routes, view, root, home = location.pathname }: any) {
         _root = root
         _container = view
         Object.entries(routes).map(([route, Page]: any) => {
             when(route, async (routeParams: IRouteParams) => await transit(route, Page, routeParams)) //66
         })
-        navigate(location.pathname, {}, location.pathname)
+        navigate(home, {}, location.pathname)
         window.addEventListener('popstate', (event) => {
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
