@@ -1,6 +1,6 @@
 import { Base } from '../base'
 
-export const Button = (text: string, options = {}) => {
+export const Button = (text: string = '', options = {}) => {
 
     const base = Base('button')
     
@@ -11,7 +11,7 @@ export const Button = (text: string, options = {}) => {
         borderRadius: '5px'
     })
 
-    return Object.assign(
+    const out = Object.assign(
         base,
         {
             focus() {
@@ -22,10 +22,14 @@ export const Button = (text: string, options = {}) => {
             },
             disable() {
                 base.el.setAttribute('disabled', 'true')
+                return out
             },
             enable() {
                 base.el.removeAttribute('disabled')
+                return out
             }
         }
     )
+
+    return out
 }

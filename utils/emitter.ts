@@ -7,7 +7,7 @@ export const emitter = <T>() => {
     }
 
     function once(event: T, handler: Function) {
-        const onceFunction = (...args: any) => {
+        const onceFunction = (...args: any) => { // Todo: not working
             handler(...args)
             off(event, onceFunction)
         }

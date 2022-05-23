@@ -16,7 +16,7 @@ export default (() => {
             path,
             handler,
             params: {},
-            reg: new RegExp(_root + path.replace(paramMatch, '[^/]+') + '$'),
+            reg: new RegExp('^' +_root + path.replace(paramMatch, '[^/]+') + '$'),
             page: undefined
         }
 
@@ -45,8 +45,10 @@ export default (() => {
     }
 
     async function goto(to: string = '', data = {}) {
-        if (_isBusy) return
-
+        if(data.ignoreBusy) _isBusy = false
+        console.log(to, _isBusy)
+        if (_isBusy) return // Todo: find a better way later
+        // Todo: trim to?
         const from = location.pathname
         window.history.pushState({ data, to, from }, '', _root + to)
         navigate(_root + to, data, from)
@@ -54,7 +56,11 @@ export default (() => {
 
     async function navigate(to: string = '', data = {}, from: string) {
         if (to.includes('tel:')) return
+        console.log('in navigate', to, to.split('?')[0]);
+        
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
+        console.log({found});
+        
         if (found) {
             // Todo: 404calling transit through handler
             // Todo: fix 
@@ -99,7 +105,10 @@ export default (() => {
             next.page = P()
             _container.append(next.page)
         }
+        console.log('before enter');
+        
         await next.page.enter({ from: location.pathname, to: route, ...routeParams })
+        console.log('after enter');
         next.page.emit('enter', { from: location.pathname, to: route, ...routeParams })
         _current = _root + route
         _isBusy = false
@@ -186,6 +195,7 @@ export interface IRoutes {
     [index: string]: IRoute
 }
 export interface IRouteParams<T = any> {
+    params?: T
     route?: IRoute
     from?: string
     to?: string | undefined

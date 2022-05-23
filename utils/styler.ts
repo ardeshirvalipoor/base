@@ -4,22 +4,22 @@ const STYLE_EL = document.createElement('style')
 document.head.appendChild(STYLE_EL)
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
-    style(style: CS, options: IStyleOptions | number): void {
+    style(style: CS, options: IStyleOptions | number) {
         const delay = typeof options === 'number' ? options : options?.delay
         typeof delay === 'number' ? setTimeout(applyStyle, delay) : applyStyle()
-
+        return base
         function applyStyle() {
             Object.keys(style).forEach((s: any) => {
                 base.el.style[s] = typeof style[s] == 'function' ? style[s]() : style[s]
             })
         }
     },
-    cssClass(style: CS, options: IStyleOptions | number): void {
+    cssClass(style: CS, options: IStyleOptions | number) {
         // Todo: urgent fix
         // TODO: check multiple classes
         const delay = typeof options === 'number' ? options : options?.delay
         typeof delay === 'number' ? setTimeout(applyCssClass, delay) : applyCssClass()
-
+        return base
         function applyCssClass() {
             var { name, styleString } = generateStyleString()
             const nameReg = new RegExp(name, 'g')
@@ -54,7 +54,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         function generateStyle(obj: any) {
             return Object.keys(obj).reduce((body, o) => body + getBody(o, obj), '')
         }
-        
+
         function getBody(o: string, obj: any) {
             let snake = o.replace(/[A-Z]/g, (w: string) => `-${w.toLowerCase()}`)
             let value = typeof obj[o] == 'function' ? obj[o]() : obj[o]
@@ -73,6 +73,6 @@ export interface IStyleOptions {
     delay?: number
 }
 export interface IStyler {
-    cssClass: (style: CS, options?: IStyleOptions | number) => void
-    style: (style: CS, options?: IStyleOptions | number) => void,
+    cssClass: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any>
+    style: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any>,
 }

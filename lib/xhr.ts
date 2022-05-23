@@ -33,29 +33,26 @@ const get = (url: string, options: IXHROptoins = {}) => {
 
 const post = (url: string, body?: any, _headers: any = {}) => {
     const headers = { 'Content-Type': 'application/json', cache: 0, ..._headers }
-    
+
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open('POST', url, true)
-
+        // xhr.responseType = 'text';
         Object.keys(headers).map(key => {
             xhr.setRequestHeader(key, headers[key])
         }) // Todo: fix it
+        // xhr.setRequestHeader("Accept", "application/json");
+        // xhr.setRequestHeader("Content-Type", "application/json");
         if (headers.auth) xhr.setRequestHeader('Authorization', 'Bearer ' + headers.auth)
-        // xhr.send(headers['Content-Type'] === 'application/json' ? JSON.stringify(body) : body)
-        xhr.send(body ? JSON.stringify(body) : null)
+        xhr.send(headers['Content-Type'] === 'application/json' ? JSON.stringify(body) : body)
+        // xhr.send(body) // ? JSON.stringify(body) : null)
         xhr.onreadystatechange = () => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 try {
-                    return resolve(
-                        headers.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response
-                    )
+                    return resolve(JSON.parse(xhr.responseText))
                 } catch (error) {
-                    // console.warn(error)
-                    return resolve({
-                        status: xhr.status,
-                        data: xhr.response
-                    })
+                    console.error(error)
+                    return reject(xhr.response)
                 }
             }
         }
@@ -80,7 +77,6 @@ const put = (url: string, body?: any, _headers: any = {}) => {
                 try {
                     return resolve({
                         status: xhr.status, //others
-                        // data: opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response */
                         ...JSON.parse(xhr.response)
                     })
                 } catch (error) {

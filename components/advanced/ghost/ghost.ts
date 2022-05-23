@@ -35,12 +35,15 @@ export const Ghost = (options = <IGhostOptions>{}) => {
                     top: y - opts.size / 2 + 'px',
                 })
                 base.style({
-                    ...EASE(.12),
+                    ...EASE(.06),
                     ...S(2),
                     opacity: '.2'
                 }, 5)
             },
             deactivate() {
+                base.style({
+                    ...S(2),
+                })
                 base.style({
                     ...EASE(.36),
                     ...HIDE,

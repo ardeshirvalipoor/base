@@ -11,3 +11,5 @@ EMAIL_REGEX.test('aaa+aaa@aaa.com')
 // export const NUMBERS_DELIMITER_REGEX = /\d{1,3}(?=(\d{3})+(?!\d))/g
 export const NUMBERS_DELIMITER_REGEX = /\B(?=(\d{3})+(?!\d))/g
 
+// https://regexr.com/3bfsi
+export const PASSWORD_REGEX = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm
