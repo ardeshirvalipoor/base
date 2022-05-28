@@ -48,6 +48,9 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             },
             setValue(val: T) {
                 base.el.value = <string>val
+            },
+            clear() {
+                base.el.value = ''
             }
         }
     )

@@ -5,7 +5,7 @@ import _emitter from '../utils/emitter'
 import appender, { IAppender } from '../utils/appender'
 import styler, { IStyler } from '../utils/styler'
 
-export function Base<K extends keyof HTMLElementTagNameMap>(name = 'div'): IBaseComponent<K> {
+export function Base<K extends keyof HTMLElementTagNameMap>(name: K = 'div'): IBaseComponent<K> {
     const id = nextId()
     const el = document.createElement(<K>name); el.setAttribute('data-base-id', id)
     const base = <IBaseComponent<K>>{ id, el }
