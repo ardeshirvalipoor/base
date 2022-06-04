@@ -22,7 +22,8 @@ const get = (url: string, options: IXHROptoins = {}) => {
                     // console.warn(error)
                     return resolve({
                         status: xhr.status,
-                        data: xhr.response
+                        data: xhr.response?.data,
+                        error: xhr.response?.error
                     })
                 }
             }
