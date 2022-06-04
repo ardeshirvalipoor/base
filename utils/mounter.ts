@@ -1,7 +1,7 @@
-import { emitter } from "./emitter"
+import { _emitter } from './emitter'
 
 export function observe(el: HTMLElement)/* : Promise<HTMLElement[]> */ {
-    const em = emitter()
+    const em = _emitter()
     let observer = new MutationObserver((mutations) => {
         for (let mutation of mutations) {
             mutation.addedNodes.forEach((node: HTMLElement) => {

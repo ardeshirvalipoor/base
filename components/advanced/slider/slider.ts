@@ -1,5 +1,4 @@
 import { HIDE, SHOW, X } from '../../../helpers/style'
-import emitter from '../../../utils/emitter'
 import { Base } from '../../base'
 import { Div } from '../../native/div'
 import { Handle } from './handle'

@@ -36,7 +36,6 @@ export default (() => {
     }
 
     function forward(data?: any) {
-        if (_isBusy) return
         window.history.forward()
     }
 
@@ -45,9 +44,6 @@ export default (() => {
     }
 
     async function goto(to: string = '', data = {}) {
-        if(data.ignoreBusy) _isBusy = false
-        console.log(to, _isBusy)
-        if (_isBusy) return // Todo: find a better way later
         // Todo: trim to?
         const from = location.pathname
         window.history.pushState({ data, to, from }, '', _root + to)
@@ -56,10 +52,8 @@ export default (() => {
 
     async function navigate(to: string = '', data = {}, from: string) {
         if (to.includes('tel:')) return
-        console.log('in navigate', to, to.split('?')[0]);
         
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
-        console.log({found});
         
         if (found) {
             // Todo: 404calling transit through handler
@@ -72,13 +66,7 @@ export default (() => {
 
     async function transit(route: string, P: () => IPage, routeParams: IRouteParams) {
         const current = _routes.find(_route => _route.reg.test(_current || routeParams.from || ''))
-        if (_isBusy) return
-        _isBusy = true
-        setTimeout(() => {
-            _isBusy = false
-        }, 240);
         if (!current) {
-            _isBusy = false
             // Todo: 404
             return
         }
@@ -114,16 +102,15 @@ export default (() => {
         console.log('after enter');
         next.page.emit('enter', { from: location.pathname, to: route, ...routeParams })
         _current = _root + route
-        _isBusy = false
     }
 
     function handleClickOnLinks(e: MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
         const possibleLink = findPossibleLink(e)
         if (!possibleLink)
             return
         if (possibleLink === '/' || possibleLink.href.indexOf(location.origin) == 0 || /(\/|^)\w+\.\w+/.test(possibleLink.href) == false) {
-            e.preventDefault()
-            e.stopPropagation()
             let route = possibleLink.href.replace(location.origin, '')
             // if (route.charAt(0) != '/') route = '/' + route
             goto(route)
@@ -142,8 +129,7 @@ export default (() => {
         window.addEventListener('popstate', (event) => {
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
-
-        window.addEventListener('click', handleClickOnLinks, PASSIVE)
+        window.addEventListener('click', handleClickOnLinks)
     }
 
     return {

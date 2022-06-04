@@ -1,4 +1,6 @@
-export const emitter = <T>() => {
+import { EVENTS } from '../helpers/events'
+
+export const _emitter = <T>() => {
     let _listeners: any = {}
 
     function on(event: T, handler: Function) {
@@ -36,7 +38,7 @@ export const emitter = <T>() => {
     }
 }
 
-export default emitter()
+export default _emitter<EVENTS>()
 
 export interface IEmitter {
     on: (e: string, handler: Function) => void
