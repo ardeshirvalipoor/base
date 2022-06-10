@@ -8,7 +8,7 @@ export default (() => {
     let _root = ''
     let _current: string
     let _container: IBaseComponent<keyof HTMLElementTagNameMap>
-
+    let _currentPages: IPage[] = []
     function when(path: string, handler: TRouteHandler): void {
         // parse params: Example: replace /:id with /([^/]+) per placeholder
         const paramMatch = new RegExp(':([^/]+)', 'g')
@@ -65,11 +65,11 @@ export default (() => {
     }
 
     async function transit(route: string, P: () => IPage, routeParams: IRouteParams) {
-        const current = _routes.find(_route => _route.reg.test(_current || routeParams.from || ''))
-        if (!current) {
-            // Todo: 404
-            return
-        }
+        // const current = _routes.find(_route => _route.reg.test(_current || routeParams.from || ''))
+        // if (!current) {
+        //     // Todo: 404
+        //     return
+        // }
         // if (!current.page) {
         //     current.page = Page()
         //     console.log('created page', current.page);
@@ -82,13 +82,19 @@ export default (() => {
         //     return
         // }
 
-        current?.page?.exit({ from: location.pathname, to: route, ...routeParams })
+        // current?.page?.exit({ from: location.pathname, to: route, ...routeParams })
+        console.log(_currentPages.length);
+        while (_currentPages.length) {
+            const p = <IPage>_currentPages.pop()
+            p.exit({ from: location.pathname, to: route, ...routeParams })
+        }
+        // Todo: fix later
+        
         const next = _routes.find(_route => {
             return _route.reg.test(_root + route)
         })
         if (!next) {
             console.log('404', { next, _root, route })
-
             // Todo: 404
             return
         }
@@ -96,10 +102,8 @@ export default (() => {
             next.page = P()
             _container.append(next.page)
         }
-        console.log('before enter');
-        
         await next.page.enter({ from: location.pathname, to: route, ...routeParams })
-        console.log('after enter');
+        _currentPages.unshift(next.page)
         next.page.emit('enter', { from: location.pathname, to: route, ...routeParams })
         _current = _root + route
     }
