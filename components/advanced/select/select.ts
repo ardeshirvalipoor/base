@@ -3,7 +3,7 @@ import { Input, IInput } from "../../native/input"
 import { SelectItem } from "./select-item"
 import { SelectList } from "./select-list"
 
-export const Select = (options: any) => {
+export const Select = (options: any = {}) => {
     const base = Div()
     const search = Input()
     const list = SelectList()
@@ -30,7 +30,7 @@ export const Select = (options: any) => {
             list.style({ display: 'none' })
         }, 200)
     })
-    search.on('input', (i: IInput<string>) => {list.filter(i.value, options.fields); list.style({ display: 'block' })})
+    search.on('input', (i: IInput<string>) => { list.filter(i.value, options.fields); list.style({ display: 'block' }) })
     list.on('item-selected', (value: any) => {
         base.emit('item-selected', value)
         search.setValue('')
@@ -41,11 +41,13 @@ export const Select = (options: any) => {
     base.append(search, list)
 
     base.cssClass({
-        width: '150px',
         position: 'relative',
     })
 
     return Object.assign(base, {
+        fill(items: any[]) {
+            list.fill(items)
+        },
         exclude(item: string): void {
             list.exclude(item)
         },

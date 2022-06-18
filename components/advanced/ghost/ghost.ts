@@ -54,9 +54,9 @@ export const Ghost = (options = <IGhostOptions>{}) => {
     )
 }
 
-export const ghostify = (c: IBaseComponent<'div'>, options: IGhostOptions = {}) => {
+export const ghostify = (c: IBaseComponent<any>, options: IGhostOptions = {}) => {
     const ghost = Ghost(options)
-    c.el.addEventListener('touchstart', (e) => {
+    c.el.addEventListener('touchstart', (e:TouchEvent) => {
         const { x, y } = c.el.getBoundingClientRect()
         const { pageX, pageY } = e.touches[0]
         ghost.activate(pageX - x, pageY - y)
