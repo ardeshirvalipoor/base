@@ -36,29 +36,29 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         function generateStyleString() {
             let styleString = ''
             var name = 'style-' + base.id + '-' + Math.floor(Math.random() * 100000)
-            Object.keys(style).forEach((s: any) => {
-                if (s.includes('&')) {
-                    const key = s.slice(1)
-                    let body = generateStyle(style[s])
+            Object.keys(style).forEach((prop: any) => {
+                if (prop.includes('&')) {
+                    const key = prop.slice(1)
+                    let body = generateStyle(style[prop])
                     styleString += '}.' + name + key + '{' + body
-                } else if (s.includes('@')) {
-                    let body = generateStyle(style[s])
-                    styleString += '}' + s + '{.' + name + '{' + body + '}'
+                } else if (prop.includes('@')) {
+                    let body = generateStyle(style[prop])
+                    styleString += '}' + prop + '{.' + name + '{' + body + '}'
                 } else {
-                    styleString += getBody(s, style)
+                    styleString += getPropValueLine(prop, style)
                 }
             })
             return { name, styleString }
         }
 
         function generateStyle(obj: any) {
-            return Object.keys(obj).reduce((body, o) => body + getBody(o, obj), '')
+            return Object.keys(obj).reduce((body, o) => body + getPropValueLine(o, obj), '')
         }
 
-        function getBody(o: string, obj: any) {
-            let snake = o.replace(/[A-Z]/g, (w: string) => `-${w.toLowerCase()}`)
-            let value = typeof obj[o] == 'function' ? obj[o]() : obj[o]
-            return snake + ':' + value + ';'
+        function getPropValueLine(prop: string, obj: any) {
+            let snake = prop.replace(/[A-Z]/g, (w: string) => `-${w.toLowerCase()}`)
+            let value = typeof obj[prop] == 'function' ? obj[prop]() : obj[prop]
+            return value.split(',').map((v: string) => `${snake}:${v};`).join('')
         }
     }
 })
