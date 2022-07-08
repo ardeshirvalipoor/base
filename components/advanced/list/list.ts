@@ -1,4 +1,5 @@
 import emitter from '../../../utils/emitter'
+import { PASSIVE } from '../../../utils/passive-support'
 import { Base } from '../../base'
 
 export function List<U>() {
@@ -16,7 +17,7 @@ export function List<U>() {
         if (base.el.scrollTop == 0) {
             base.emit('scrolled-to-top')
         }
-    })
+    }, PASSIVE)
 
     base.style({
         margin: '0',

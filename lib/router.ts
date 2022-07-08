@@ -83,7 +83,6 @@ export default (() => {
         // }
 
         // current?.page?.exit({ from: location.pathname, to: route, ...routeParams })
-        console.log(_currentPages.length);
         while (_currentPages.length) {
             const p = <IPage>_currentPages.pop()
             p.exit({ from: location.pathname, to: route, ...routeParams })

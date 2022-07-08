@@ -1,4 +1,5 @@
 import { HIDE, SHOW, X } from '../../../helpers/style'
+import { PASSIVE } from '../../../utils/passive-support'
 import { Base } from '../../base'
 import { Div } from '../../native/div'
 import { Handle } from './handle'
@@ -59,7 +60,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     base.el.addEventListener('touchstart', (e: TouchEvent) => {
         tx = 0
         ox = e.touches[0].pageX
-    })
+    }, PASSIVE)
     base.el.addEventListener('touchmove', (e: TouchEvent) => {
         if (!options.touchable) return
         tx = e.touches[0].pageX - ox

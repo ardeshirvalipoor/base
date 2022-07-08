@@ -19,7 +19,7 @@ export const SHOW = <CS>{
 }
 
 export const CENTER = <CS>{
-    display: 'flex',
+    display: 'flex;-webkit-flex',
     alignItems: 'center',
     justifyContent: 'center'
 }

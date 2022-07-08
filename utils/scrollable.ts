@@ -1,5 +1,6 @@
 import { IBaseComponent } from '../components/base'
 import emitter from './emitter'
+import { PASSIVE } from './passive-support'
 
 export function Scrollable(base: IBaseComponent<any>) {
     let height = 0
@@ -17,7 +18,7 @@ export function Scrollable(base: IBaseComponent<any>) {
         if (base.el.scrollTop == 0) {
             base.emit('scrolled-to-top')
         }
-    })
+    }, PASSIVE)
 
     return Object.assign(base, {
         scrollToBottom() {

@@ -75,7 +75,6 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         base.emit('blur')
     })
     function addCommas() {
-        console.log('in add comma');
         
         comma.empty()
         const dummy = Div()

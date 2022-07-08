@@ -58,7 +58,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         function getPropValueLine(prop: string, obj: any) {
             let snake = prop.replace(/[A-Z]/g, (w: string) => `-${w.toLowerCase()}`)
             let value = typeof obj[prop] == 'function' ? obj[prop]() : obj[prop]
-            return value.split(',').map((v: string) => `${snake}:${v};`).join('')
+            return value.split(';').map((v: string) => `${snake}:${v};`).join('')
         }
     }
 })
