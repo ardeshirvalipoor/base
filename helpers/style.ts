@@ -19,7 +19,7 @@ export const SHOW = <CS>{
 }
 
 export const CENTER = <CS>{
-    display: 'flex;-webkit-flex',
+    display: 'flex', // Todo: ; not working here
     alignItems: 'center',
     justifyContent: 'center'
 }
@@ -30,7 +30,8 @@ export const ROUND = <CS>{
 
 export const SCROLLY = <CS> {
     // overflowX: 'hidden',
-    overflowY: 'scroll'
+    overflowY: 'scroll',
+    webkitOverflowScrolling: 'touch'
 }
 
 export const Y = (y: number) => <CS>({
