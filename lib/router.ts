@@ -4,7 +4,7 @@ import { PASSIVE } from '../utils/passive-support'
 
 export default (() => {
     let _routes: IRoute[] = []
-    let _isBusy = false
+    // let _isBusy = false
     let _root = ''
     let _current: string
     let _container: IBaseComponent<keyof HTMLElementTagNameMap>
@@ -31,7 +31,7 @@ export default (() => {
     }
 
     function back(data?: any) {
-        if (_isBusy) return
+        // if (_isBusy) return
         window.history.back()
     }
 
@@ -58,34 +58,18 @@ export default (() => {
         if (found) {
             // Todo: 404calling transit through handler
             // Todo: fix 
-            found.handler({ params: parseParams(found), query: parseQuery(), from, to, data })
+            found.handler({ params: parseParams(found), query: parseQuery(), from, to: to.replace(_root, ''), data })
             // return
         }
         emitter.emit('route-changed', to.replace(_root, ''), { to, from, data })
     }
 
     async function transit(route: string, P: () => IPage, routeParams: IRouteParams) {
-        // const current = _routes.find(_route => _route.reg.test(_current || routeParams.from || ''))
-        // if (!current) {
-        //     // Todo: 404
-        //     return
-        // }
-        // if (!current.page) {
-        //     current.page = Page()
-        //     console.log('created page', current.page);
 
-        //     _container.append(current.page)
-        //     await current.page.enter(routeParams)
-        //     current.page.emit('enter', routeParams)
-        //     _isBusy = false
-
-        //     return
-        // }
-
-        // current?.page?.exit({ from: location.pathname, to: route, ...routeParams })
         while (_currentPages.length) {
             const p = <IPage>_currentPages.pop()
-            p.exit({ from: location.pathname, to: route, ...routeParams })
+            
+            p.exit({ from: location.pathname, to: route.replace('/' + _root, ''), ...routeParams })
         }
         // Todo: fix later
         
@@ -101,6 +85,7 @@ export default (() => {
             next.page = P()
             _container.append(next.page)
         }
+        
         await next.page.enter({ from: location.pathname, to: route, ...routeParams })
         _currentPages.unshift(next.page)
         next.page.emit('enter', { from: location.pathname, to: route, ...routeParams })
