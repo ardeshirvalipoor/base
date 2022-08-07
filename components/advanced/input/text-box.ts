@@ -16,16 +16,19 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     const base = Base('div')
     const input = Input('', type)
     const p = Span(placeholder)
-    const comma = Div()
     base.append(input, p)
-    if (type === 'number') base.append(comma)
     // Todo: implement direciton
     base.cssClass({
         position: 'relative',
         // height: '100%',
         // width: '100%'
     })
-
+    p.cssClass({
+        fontWeight: options.fontWeight || '300',
+        pointerEvents: 'none',
+        fontSize: opts.fontSize + 'px',
+        marginLeft: '2px'
+    })
     const inputStyle = <CS>{
         position: 'absolute',
         boxShadow: 'none',
@@ -37,7 +40,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         textAlign: opts.textAlign || 'left',
         width: '100%',
         height: '100%',
-        direction: opts.direction,
+        direction: opts.direction || 'unset',
         letterSpacing: opts.letterSpacing + 'px',
         color: opts.color,
         fontSize: opts.fontSize + 'px',
@@ -45,7 +48,6 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         fontWeight: opts.fontWeight
     }
     input.cssClass(inputStyle)
-    comma.cssClass({ ...inputStyle, pointerEvents: 'none', width: '', top: '10px' })
     // i.el.value = options.value || ''
     let t = 0
     input.el.addEventListener('input', () => {
@@ -59,7 +61,6 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         t = setTimeout(async () => {
             base.emit('input', input.el.value)
         }, options.timeout || 0)
-        if (type == 'number') addCommas()
     })
     input.el.addEventListener('keydown', (e: KeyboardEvent) => {
         switch (e.key) {
@@ -74,29 +75,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     input.el.addEventListener('blur', (e: KeyboardEvent) => {
         base.emit('blur')
     })
-    function addCommas() {
-        
-        comma.empty()
-        const dummy = Div()
-        dummy.style({
-            inputStyle,
-            display: 'inline-block',
-            ...HIDE
-        })
-        comma.append(dummy/* , slash */)
-        for (let i = 3; i < String(input.el.value).length; i += 3) {
-            dummy.text(input.el.value.slice(-i))
-            setTimeout(() => {
 
-                const { width } = dummy.el.getBoundingClientRect()
-
-                // dummy.text('')
-                const slash = Div(',')
-                slash.style({ right: width - 3 + 'px', top: '8px', position: 'absolute' })
-                // comma.append(slash)
-            }, i)
-        }
-    }
 
     // Todo: move this to editable
     return Object.assign(
