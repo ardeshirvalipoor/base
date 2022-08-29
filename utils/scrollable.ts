@@ -3,22 +3,19 @@ import emitter from './emitter'
 import { PASSIVE } from './passive-support'
 
 export function Scrollable(base: IBaseComponent<any>) {
-    let height = 0
-    base.on('mounted', (id: string) => {
-        if (id === base.id) {
-            height = base.el.getBoundingClientRect().height
-        }
-    })
 
-    base.el.addEventListener('scroll', () => {
-        base.emit('scroll', base.el.scrollTop)
-        if (base.el.scrollHeight <= base.el.scrollTop + height) {
+    base.el.addEventListener('scroll', onScroll, PASSIVE)
+    // base.el.addEventListener('touchmove', onScroll, PASSIVE)
+
+    function onScroll() {
+        base.emit('scroll', Math.ceil(base.el.scrollTop) , base.el.offsetHeight,  base.el.scrollHeight )
+        if (base.el.scrollHeight <= Math.ceil(base.el.scrollTop) + base.el.offsetHeight) {
             base.emit('scrolled-to-end')
         }
         if (base.el.scrollTop == 0) {
             base.emit('scrolled-to-top')
         }
-    }, PASSIVE)
+    }
 
     return Object.assign(base, {
         scrollToBottom() {
