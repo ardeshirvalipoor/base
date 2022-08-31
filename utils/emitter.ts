@@ -1,28 +1,26 @@
 import { EVENTS } from '../helpers/events'
 
-// Todo: add custom event strings
-
-export const _emitter = <T>() => {
+export const _emitter = () => {
     let _listeners: any = {}
 
-    function on(event: string /* T */, handler: Function) {
+    function on(event: string, handler: Function) {
         if (!_listeners[event]) _listeners[event] = []
         _listeners[event].push(handler)
     }
 
-    function once(event: string/* T */, handler: Function) {
-        const onceFunction = (...args: any) => { // Todo: not working
+    function once(event: string, handler: Function) {
+        const onceFunction = (...args: any) => { // anyodo: not working
             handler(...args)
             off(event, onceFunction)
         }
         on(event, onceFunction)
     }
 
-    function off(event:string /* T */, handler: Function) {
+    function off(event: string, handler: Function) {
         _listeners[event] = (_listeners[event] || []).filter((e: any) => e !== handler)
     }
 
-    function emit(event:string /* T */, ...params: any) {
+    function emit(event: string, ...params: any) {
         (_listeners[event] || []).map((e: any) => e(...params))
     }
 
@@ -40,7 +38,7 @@ export const _emitter = <T>() => {
     }
 }
 
-export default _emitter<EVENTS>()
+export default _emitter()
 
 export interface IEmitter {
     on: (e: string, handler: Function) => void
