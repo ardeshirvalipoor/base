@@ -113,7 +113,9 @@ export default (() => {
         Object.entries(routes).map(([route, Page]: any) => {
             when(route, async (routeParams: IRouteParams) => await transit(route, Page, routeParams)) //66
         })
-        navigate(home, {}, location.pathname)
+        setTimeout(() => {
+            goto(home.replace(root, '') || '/')
+        }, 300); // Todo use default page transition
         window.addEventListener('popstate', (event) => {
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
@@ -157,7 +159,6 @@ function findPossibleLink(e: MouseEvent) {
         //TODO return target
     }
 }
-
 
 
 export interface IRoute {
