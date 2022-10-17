@@ -134,7 +134,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             },
             clear() {
                 slides = [slides[0]] // Todo: fix
-                container.children.map((child, i) => i > 0 ? child.destroy() : null)
+                container.children.map((child, i) => i > 0 ? child.remove() : null)
                 reset()
             },
             enter() {

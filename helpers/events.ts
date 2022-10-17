@@ -20,7 +20,7 @@ export type EVENTS =
     | 'mounted' 
     | 'scroll' 
     | 'scrollend' 
-    | 'destroyed' 
+    | 'removed' 
     | 'tap' 
     | 'touchstart' 
     | 'touchend' 

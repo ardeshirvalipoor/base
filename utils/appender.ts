@@ -40,7 +40,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
             }
             return base
         },
-        remove () { // redundant
+        remove() {
             children.forEach(child => child.remove())
             base.removeAllListeners()
             base.el.remove()
