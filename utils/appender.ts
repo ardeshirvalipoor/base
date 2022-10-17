@@ -40,13 +40,13 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
             }
             return base
         },
-        destroy() {
-            children.forEach(child => child.destroy())
+        remove () { // redundant
+            children.forEach(child => child.remove())
             base.removeAllListeners()
             base.el.remove()
         },
         empty() {
-            children.forEach(child => child.destroy())
+            children.forEach(child => child.remove())
             children = []
         },
     }
@@ -58,5 +58,5 @@ export interface IAppender {
     prepend: (...args: IBaseComponent<any>[]) => void,
     appendBefore: (component: IBaseComponent<any>, ...args: IBaseComponent<any>[]) => void,
     empty: () => void,
-    destroy: () => void,
+    remove: () => void,
 }
