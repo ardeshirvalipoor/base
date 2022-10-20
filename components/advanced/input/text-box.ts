@@ -49,7 +49,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     }
     input.cssClass(inputStyle)
     // i.el.value = options.value || ''
-    let t = 0
+    let t: NodeJS.Timeout
     input.el.addEventListener('input', () => {
         clearTimeout(t)
         if (opts.textAlign == 'center') {

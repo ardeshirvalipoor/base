@@ -33,7 +33,7 @@ export default (dbName: string) => ({
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onupgradeneeded = (event) => {
-                const db = event?.target?.result
+                const db = request.result
                 const { objectStoreNames } = db
                 if (!Object.values(objectStoreNames).includes(name)) {
                     const { keyPath, autoIncrement } = opts
@@ -54,8 +54,8 @@ export default (dbName: string) => ({
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onupgradeneeded = (event) => {
-                const db = event?.target?.result
-                const upgradeTransaction = event?.target?.transaction
+                const db = request.result 
+                const upgradeTransaction = db.transaction(_store, 'readwrite')
                 const os = upgradeTransaction.objectStore(_store)
 
                 if (!os.indexNames.contains(index)) {
@@ -76,9 +76,9 @@ export default (dbName: string) => ({
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
                 const transaction = request.result.transaction(store, 'readwrite').objectStore(store).add(object)
-                transaction.onsuccess = (successEvent: Event) => {
+                transaction.onsuccess = (successEvent) => {
                     request.result.close()
-                    return resolve(successEvent?.target?.result)
+                    return resolve(true)
                 }
                 transaction.onerror = (err) => {
                     return reject(err)

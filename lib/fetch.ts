@@ -29,7 +29,7 @@ export const fetch = <T>(key: string, url: string = key, options: IXHROptoins = 
             queuer(key, url, options, (r: T) => resolve(r))
         } catch (error) {
             console.log(key, url, error)
-            return resolve([])
+            return resolve([] as T)
         }
     })
 }

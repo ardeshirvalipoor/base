@@ -1,6 +1,6 @@
 const userAgent = window.navigator?.userAgent?.toLowerCase() || window.navigator?.vendor?.toLowerCase()
 
-export const isIOS = /iphone|ipad|ipod/.test(userAgent) && !window.MSStream
+export const isIOS = /iphone|ipad|ipod/.test(userAgent) && !('MSStream' in window)
 export const isAndroid = /android/i.test(userAgent)
 export const otherOS = !isIOS && !isAndroid
 export const isInStandaloneMode = () => 'standalone' in window.navigator

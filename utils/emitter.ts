@@ -44,6 +44,6 @@ export interface IEmitter {
     on: (e: string, handler: Function) => void
     once: (e: string, handler: Function) => void
     off: (e: string, handler: Function) => void
-    emit: (e: string, value?: any) => void
+    emit: (e: string, ...args: any) => void
     removeAllListeners: () => void
 }

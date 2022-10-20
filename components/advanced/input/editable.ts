@@ -2,7 +2,7 @@ import { editable } from '../../../utils/editable'
 import { Base } from '../../base'
 
 export const Editable = (options: any = {}) => {
-    let t = 0
+    let t : NodeJS.Timeout
 
     const base = Base('div')
     base.el.contentEditable = 'true'
