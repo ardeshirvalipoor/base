@@ -20,14 +20,17 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
     // Todo: implement direciton
     base.cssClass({
         position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
         // height: '100%',
         // width: '100%'
     })
     p.cssClass({
-        fontWeight: options.fontWeight || '300',
+        fontWeight: options.fontWeight || '100',
         pointerEvents: 'none',
         fontSize: opts.fontSize + 'px',
-        marginLeft: '2px'
+        marginLeft: '2px',
+        opacity: '0.5',
     })
     const inputStyle = <CS>{
         position: 'absolute',
@@ -62,17 +65,17 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
             base.emit('input', input.el.value)
         }, options.timeout || 0)
     })
-    input.el.addEventListener('keydown', (e: KeyboardEvent) => {
+    input.el.addEventListener('keydown', (e) => {
         switch (e.key) {
             case 'Enter': return base.emit('submit', input.el.value)
             case 'Escape': return base.emit('escape')
             // case 'ArrowRight': return base.emit('ArrowRight')
         }
     })
-    input.el.addEventListener('focus', (e: KeyboardEvent) => {
+    input.el.addEventListener('focus', () => {
         base.emit('focus')
     })
-    input.el.addEventListener('blur', (e: KeyboardEvent) => {
+    input.el.addEventListener('blur', () => {
         base.emit('blur')
     })
 

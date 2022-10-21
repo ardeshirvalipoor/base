@@ -11,6 +11,10 @@ export const Button = (text: string = '', options = {}) => {
         borderRadius: '5px'
     })
 
+    base.el.onclick = () => {
+        base.emit('click')
+    }
+
     const out = Object.assign(
         base,
         {
