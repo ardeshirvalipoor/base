@@ -31,6 +31,10 @@ export const Button = (text: string = '', options = {}) => {
             enable() {
                 base.el.removeAttribute('disabled')
                 return out
+            },
+            text(text: string) {
+                base.el.innerHTML = text
+                return out
             }
         }
     )
