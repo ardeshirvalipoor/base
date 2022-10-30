@@ -107,7 +107,7 @@ export default (() => {
         }
     }
 
-    function init({ routes, view, root, home = location.pathname }: any) {
+    function init({ routes, view, root = '', home = location.pathname }: any) {
         _root = root
         _container = view
         Object.entries(routes).map(([route, Page]: any) => {

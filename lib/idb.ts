@@ -243,13 +243,14 @@ export default (dbName: string) => ({
             }
         })
     },
-    update(store: any, payload: any, version = 1) {
+    update(store: any, id: string, payload: any, version = 1) {
+        // or later by query like mongodb
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e) => {
                 const transaction = request.result.transaction([store], 'readwrite')
                 const objectStore = transaction.objectStore(store)
-                const reader = objectStore.get(payload.id)
+                const reader = objectStore.get(id)
                 reader.onerror = (err) => {
                     return reject(err)
                 }
