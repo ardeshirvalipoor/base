@@ -3,14 +3,18 @@ import { Input, IInput } from "../../native/input"
 import { SelectItem } from "./select-item"
 import { SelectList } from "./select-list"
 
-export const Select = (options: any = {}) => {
+export const SelectX = (options: any = {}) => {
     const base = Div()
     const search = Input()
     const list = SelectList()
 
     search.on('key-enter', ({ value }: any) => {
         const existingValue = list.getValue()
-        base.emit('item-selected', existingValue || value)
+        if (existingValue) {
+            base.emit('item-selected', existingValue)
+        } else {
+            base.emit('new-item', value)
+        }
         list.style({ display: 'none' })
         search.setValue('')
     })
@@ -44,8 +48,16 @@ export const Select = (options: any = {}) => {
     })
 
     return Object.assign(base, {
+        search,
+        list,
         fill(items: any[]) {
             list.fill(items)
+        },
+        add(item: any) {
+            list.addItem(item)
+        },
+        remove(item: any) {
+            list.removeItem(item)
         },
         // exclude(item: string): void {
         //     list.exclude(item)

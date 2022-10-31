@@ -78,7 +78,7 @@ export default (dbName: string) => ({
                 const transaction = request.result.transaction(store, 'readwrite').objectStore(store).add(object)
                 transaction.onsuccess = (successEvent) => {
                     request.result.close()
-                    return resolve(true)
+                    return resolve(successEvent?.target?.result)
                 }
                 transaction.onerror = (err) => {
                     return reject(err)
@@ -248,7 +248,7 @@ export default (dbName: string) => ({
             }
         })
     },
-    update(store: any, id: string, payload: any, version = 1) {
+    update(store: any, id: string | number, payload: any, version = 1) {
         // or later by query like mongodb
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
