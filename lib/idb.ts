@@ -54,7 +54,7 @@ export default (dbName: string) => ({
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onupgradeneeded = (event) => {
-                const db = request.result 
+                const db = request.result
                 const upgradeTransaction = db.transaction(_store, 'readwrite')
                 const os = upgradeTransaction.objectStore(_store)
 
@@ -192,7 +192,12 @@ export default (dbName: string) => ({
                     // cr.onsuccess = (f) => console.log(store, options, cr.result)
                     let keyRng = null
                     if (options?.value) {
-                        keyRng = options.upperBound ? IDBKeyRange.upperBound(options.value) : IDBKeyRange.only(options.value)
+                        keyRng =
+                            options.upperBound ?
+                                IDBKeyRange.upperBound(options.value) :
+                                options.lowerBound ?
+                                    IDBKeyRange.lowerBound(options.value) :
+                                    IDBKeyRange.only(options.value)
                     }
                     cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
                 } else {
@@ -238,7 +243,7 @@ export default (dbName: string) => ({
                 return resolve(true)
             }
             request.onerror = (err) => {
-                console.log('idb delete', err);
+                console.log('idb delete', err)
                 return reject(err)
             }
         })
