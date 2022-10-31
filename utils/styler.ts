@@ -36,7 +36,11 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         function generateStyleString() {
             let styleString = ''
             var name = 'style-' + base.id + '-' + Math.floor(Math.random() * 100000)
-            Object.keys(style).forEach((prop: any) => {
+            Object.keys(style).sort((a,b)=>{
+                if (a.match(/\&.*|\@/) && !b.match(/\&.*|\@/)) return 1
+                if (!a.match(/\&.*|\@/) && b.match(/\&.*|\@/)) return -1
+                return 0
+Í            }).forEach((prop: any) => {
                 if (prop.includes('&')) {
                     const key = prop.slice(1)
                     let body = generateStyle(style[prop])
