@@ -31,6 +31,8 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         fontSize: opts.fontSize + 'px',
         marginLeft: '2px',
         opacity: '0.5',
+        textAlign: opts.textAlign,
+        width: '100%',
     })
     const inputStyle = <CS>{
         position: 'absolute',
