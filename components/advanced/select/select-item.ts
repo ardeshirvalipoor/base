@@ -5,7 +5,6 @@ export const SelectItem = (item: ISelectListItem<string>) => {
     
     const base = <ISelectListItemComponent<string>>Base('li')
 
-
     return Object.assign(
         base,
         {

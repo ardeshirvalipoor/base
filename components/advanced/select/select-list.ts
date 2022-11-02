@@ -18,7 +18,7 @@ export const SelectList = <T>() => {
             // Todo: implement pagination
             base.empty()
             index = 0
-            items = _items
+            items = [..._items]
             items.map((item, i) => {
                 item.el.addEventListener('click', (data: any) => {
                     index = i
@@ -90,7 +90,7 @@ export const SelectList = <T>() => {
         if (current) current.deselect()
         current = items[index]
         current.select()
-        // if (outOfView(base, current)) current.el.scrollIntoView({ behavior: 'smooth' }) // Todo: check intersection API
+        if (outOfView(base, current)) current.el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }) 
     }
 }
 

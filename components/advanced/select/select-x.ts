@@ -25,21 +25,24 @@ export const SelectX = (options: any = {}) => {
     // search.on('key-end', () = list.end())
     // search.on('key-page-up', () = list.pageUp())
     // search.on('key-page-down', () = list.pageDown())
-
+    let t = 0
     search.on('key-arrow-up', list.up)
     search.on('key-arrow-down', list.down)
-    search.on('focus', () => list.style({ display: 'block' }))
+    search.on('focus', () => {
+        clearTimeout(t)
+        list.style({ display: 'block' })
+    })
     search.on('blur', (e: InputEvent) => {
-        setTimeout(() => {
-            list.style({ display: 'none' })
-        }, 200)
+        
+        t = setTimeout(() => {
+            list.style({ display: 'none' }) // Todo: This is not working always
+        }, 300)
     })
     search.on('input', (i: IInput<string>) => { list.filter(i.value, options.fields); list.style({ display: 'block' }) })
     list.on('item-selected', (value: any) => {
         base.emit('item-selected', value)
         search.setValue('')
-        search.focus()
-        list.style({ display: 'none' }, 100)
+        // list.style({ display: 'none' }, 100)
     })
     base.append(search, list)
 
