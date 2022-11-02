@@ -96,8 +96,21 @@ export default (() => {
         e.preventDefault()
         e.stopPropagation()
         const possibleLink = findPossibleLink(e)
-        if (!possibleLink)
+        
+        if (!possibleLink) {
             return
+        }
+        if (possibleLink.href.includes('tel:')) {
+            window.location.href = possibleLink.href
+            return
+        }
+        if (possibleLink.href.includes('mailto:')) {
+            window.location.href = possibleLink.href
+            return
+        }
+        if (possibleLink.target !== '_self') {
+            window.open(possibleLink.href, possibleLink.target)
+        }
         if (possibleLink === '/' || possibleLink.href.indexOf(location.origin) == 0 || /(\/|^)\w+\.\w+/.test(possibleLink.href) == false) {
             let route = possibleLink.href.replace(location.origin, '')
             // if (route.charAt(0) != '/') route = '/' + route
