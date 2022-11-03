@@ -31,14 +31,18 @@ export const SelectX = (options: any = {}) => {
     search.on('focus', () => {
         clearTimeout(t)
         list.style({ display: 'block' })
+        base.emit('focus')
     })
     search.on('blur', (e: InputEvent) => {
-        
+
         t = setTimeout(() => {
             list.style({ display: 'none' }) // Todo: This is not working always
         }, 300)
     })
-    search.on('input', (i: IInput<string>) => { list.filter(i.value, options.fields); list.style({ display: 'block' }) })
+    search.on('input', (i: IInput<string>) => {
+        list.filter(i.value, options.fields)
+        list.style({ display: 'block' })
+    })
     list.on('item-selected', (value: any) => {
         base.emit('item-selected', value)
         search.setValue('')
