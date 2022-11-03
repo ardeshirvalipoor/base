@@ -46,6 +46,13 @@ export const S = (s: number) => <CS>({
     transform: `scale(${s})`,
 })
 
+export const SX = (s: number) => <CS>({
+    transform: `scaleX(${s})`,
+})
+export const SY = (s: number) => <CS>({
+    transform: `scaleY(${s})`,
+})
+
 export const R = (r: number) => <CS>({
     transform: `rotate(${r}deg)`,
 })
