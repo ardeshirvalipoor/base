@@ -18,7 +18,7 @@ export const SelectX = (options: any = {}) => {
         list.style({ display: 'none' })
         search.setValue('')
     })
-    // search.on('key-escape', () = list.hide())
+    search.on('key-escape', () => list.style({display: 'none'}))
     // search.on('key-tab', () = list.hide())
     // search.on('key-backspace', () = list.hide())
     // search.on('key-home', () = list.home())
