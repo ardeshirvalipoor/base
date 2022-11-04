@@ -5,7 +5,9 @@ interface IGetAllOptions {
     value?: any // comma separated
     reverse?: boolean,
     upperBound?: any,
-    lowerBound?: any
+    lowerBound?: any,
+    openUpperBound?: boolean,
+    openLowerBound?: boolean,
 }
 
 export default (dbName: string) => ({
@@ -194,9 +196,9 @@ export default (dbName: string) => ({
                     if (options?.value) {
                         keyRng =
                             options.upperBound ?
-                                IDBKeyRange.upperBound(options.value) :
+                                IDBKeyRange.upperBound(options.value, options.openUpperBound) :
                                 options.lowerBound ?
-                                    IDBKeyRange.lowerBound(options.value) :
+                                    IDBKeyRange.lowerBound(options.value, options.openLowerBound) :
                                     IDBKeyRange.only(options.value)
                     }
                     cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
