@@ -32,10 +32,16 @@ export default (() => {
 
     function back(data?: any) {
         // if (_isBusy) return
-        window.history.back()
+        window.history.back( )
+        setTimeout(() => {
+            history.replaceState(data, '', ''); // Todo: fix
+        }, 10);
+        console.log('back', history.state);
+        
     }
 
     function forward(data?: any) {
+        history.replaceState(data, '', '');
         window.history.forward()
     }
 
