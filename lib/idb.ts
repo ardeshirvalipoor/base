@@ -164,11 +164,7 @@ export default (dbName: string) => ({
                     return reject(err)
                 }
                 reader.onsuccess = (e: any) => {
-                    if (request.result) {
-                        return resolve(e.target.result)
-                    } else {
-                        return resolve(null)
-                    }
+                    return resolve(e?.target?.result)
                 }
             }
             request.onerror = (err) => {
