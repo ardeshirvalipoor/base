@@ -1,4 +1,5 @@
-import { IBaseComponent, IBaseSVGComponent } from "../components/base"
+import { IBaseComponent, IBaseSVGComponent } from '../interfaces/base'
+import { CS, IStyleOptions } from '../interfaces/style'
 let STYLE_DB: any = {}
 const STYLE_EL = document.createElement('style')
 document.head.appendChild(STYLE_EL)
@@ -66,17 +67,3 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         }
     }
 })
-
-export type Style = {
-    [P in keyof CSSStyleDeclaration]?: any
-}
-
-export type CS = Style & { [index: string]: Style }
-
-export interface IStyleOptions {
-    delay?: number
-}
-export interface IStyler {
-    cssClass: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any>
-    style: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any>,
-}

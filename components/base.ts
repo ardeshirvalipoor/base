@@ -1,9 +1,9 @@
 import { nextId } from '../utils/id-generator'
-
-import appender, { IAppender } from '../utils/appender'
-import styler, { IStyler } from '../utils/styler'
-import emitter, { IEmitter, _emitter } from '../utils/emitter'
+import appender from '../utils/appender'
+import styler  from '../utils/styler'
+import emitter, { _emitter } from '../utils/emitter'
 import ldb from '../lib/ldb'
+import { IBaseComponent, IBaseSVGComponent } from '../interfaces/base'
 
 const THEME = ldb.get('BASE_APP_THEME')
 
@@ -25,11 +25,3 @@ export function BaseSVG<K extends keyof SVGElementTagNameMap = 'svg'>(name: K): 
     return Object.assign(base, _emitter(), appender(base), styler(base))
 }
 
-export interface IBaseComponent<K extends keyof HTMLElementTagNameMap> extends IEmitter, IAppender, IStyler {
-    el: HTMLElementTagNameMap[K]
-    id: string
-}
-
-export interface IBaseSVGComponent<K extends keyof SVGElementTagNameMap> extends IBaseComponent<any> {
-    el: SVGElementTagNameMap[K]
-}
