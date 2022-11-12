@@ -12,6 +12,10 @@ export const Editable = (options: any = {}) => {
         clearTimeout(t)
         t = setTimeout(() => base.emit('input'), options.timeout ?? 500) // Todo: use debounce
     })
+    base.el.addEventListener('paste', (e) => {
+        e.preventDefault()
+        base.emit('paste', e)
+    })
     // Input debounce
     // https://medium.com/@joshua_e_steele/debouncing-and-throttling-in-javascript-b01cad5d6dcf
     //
