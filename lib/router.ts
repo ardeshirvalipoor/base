@@ -32,7 +32,7 @@ export default (() => {
 
     function back(data?: any) {
         // if (_isBusy) return
-        window.history.back( )
+        window.history.back()
         setTimeout(() => {
             history.replaceState(data, '', ''); // Todo: fix
         }, 10);
@@ -136,6 +136,8 @@ export default (() => {
             goto(home.replace(root, '') || '/')
         }, 300); // Todo use default page transition
         window.addEventListener('popstate', (event) => {
+            console.log('--> popstate', event, history.state);
+            
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
         window.addEventListener('click', handleClickOnLinks)
