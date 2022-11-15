@@ -26,9 +26,6 @@ const get = (url: string, options: IXHROptoins = {}) => {
                         )
                     }
                 } catch (error) {
-                    // console.warn(error)
-                    console.log(xhr.response, error)
-
                     return reject({
                         status: xhr.status,
                         data: xhr.response?.data,

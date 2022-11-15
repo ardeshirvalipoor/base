@@ -189,7 +189,7 @@ export default (dbName: string) => ({
                     // const cr = index.count(options?.value)
                     // cr.onsuccess = (f) => console.log(store, options, cr.result)
                     let keyRng = null
-                    if (options?.value) {
+                    if (options?.value !== undefined) {
                         keyRng =
                             options.upperBound ?
                                 IDBKeyRange.upperBound(options.value, options.openUpperBound) :
