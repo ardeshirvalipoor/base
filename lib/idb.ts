@@ -56,11 +56,14 @@ export default (dbName: string) => ({
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onupgradeneeded = (event) => {
-                const db = request.result
-                const upgradeTransaction = db.transaction(_store, 'readwrite')
+                const target = event.target as any // Todo: take a look at this
+                const db = target.result /* request.result */
+                const upgradeTransaction =  target.transaction; // db.transaction(_store, 'readwrite')
                 const os = upgradeTransaction.objectStore(_store)
-
+                
                 if (!os.indexNames.contains(index)) {
+                    console.log('createindex', index);
+                    
                     os.createIndex(index, index, { unique: options?.unique || false, multiEntry: options?.multiEntry || false })
                 }
                 db.close()
