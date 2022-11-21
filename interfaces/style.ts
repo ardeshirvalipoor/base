@@ -7,7 +7,8 @@ export type Style = {
 export type CS = Style & { [index: string]: Style }
 
 export interface IStyleOptions {
-    delay?: number
+    delay?: number,
+    name?: string,
 }
 export interface IStyler {
     cssClass: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any>

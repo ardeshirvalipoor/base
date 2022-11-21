@@ -36,7 +36,8 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
 
         function generateStyleString() {
             let styleString = ''
-            var name = 'style-' + base.id + '-' + Math.floor(Math.random() * 100000)
+            let name = 'style-' + base.id + '-' + Math.floor(Math.random() * 100000)
+            if (typeof options === 'object' && options.name) name = options.name
             Object.keys(style).sort((a, b) => {
                 if (a.match(/\&.*|\@/) && !b.match(/\&.*|\@/)) return 1
                 if (!a.match(/\&.*|\@/) && b.match(/\&.*|\@/)) return -1
