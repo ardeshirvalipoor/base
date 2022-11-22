@@ -11,24 +11,15 @@ const get = (url: string, options: IXHROptoins = {}) => {
         xhr.onreadystatechange = () => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 try {
-                    if (xhr.status !== 200) {
-                        return reject({ status: xhr.status, message: 'Unauthorized' })
-                        // alert('401')
-                        // router.go('/login')
-                    } else {
-
-                        return resolve(
-                            // status: xhr.status, //others
-                            // // data: 
-                            // ...
-                            opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response
-                            // JSON.parse(xhr.response)
-                        )
-                    }
+                    return resolve({
+                        status: xhr.status,
+                        data: xhr.response,
+                        error: xhr.response?.error
+                    })
                 } catch (error) {
                     return reject({
                         status: xhr.status,
-                        data: xhr.response?.data,
+                        data: xhr.response,
                         error: xhr.response?.error
                     })
                 }

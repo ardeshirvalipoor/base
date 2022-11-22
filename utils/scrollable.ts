@@ -1,4 +1,4 @@
-import { IBaseComponent } from '../components/base'
+import { IBaseComponent } from '../interfaces/base'
 import emitter from './emitter'
 import { PASSIVE } from './passive-support'
 
