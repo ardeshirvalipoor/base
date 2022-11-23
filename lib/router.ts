@@ -106,6 +106,14 @@ export default (() => {
         if (!possibleLink) {
             return
         }
+        if (possibleLink.href.includes('whatsapp:')) {
+            window.location.href = possibleLink.href
+            return
+        }
+        if (possibleLink.href.includes('t.me/')) {
+            window.location.href = possibleLink.href
+            return
+        }
         if (possibleLink.href.includes('tel:')) {
             window.location.href = possibleLink.href
             return
