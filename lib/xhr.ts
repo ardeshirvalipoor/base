@@ -1,7 +1,12 @@
 const _XHRCache: any = {}
+interface IResponse {
+    data: any,
+    status: number,
+    error: any
+}
 const get = (url: string, options: IXHROptoins = {}) => {
     const opts = { method: 'GET', type: 'application/json', cache: 0, ...options }
-    return new Promise<any>((resolve, reject) => {
+    return new Promise<IResponse>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open(opts.method, url, true)
         xhr.setRequestHeader('Content-Type', opts.type)
