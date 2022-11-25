@@ -1,9 +1,8 @@
 import { Input } from '../../native/input'
 import { Base } from '../../base'
 import { Span } from '../../native/span'
-import { Div } from '../../native/div'
-import { CS } from '../../../utils/styler'
 import { HIDE, SHOW, X, Y } from '../../../helpers/style'
+import { CS } from '../../../interfaces/style'
 
 
 // Needs huge refactoring
@@ -67,7 +66,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
             base.emit('input', input.el.value)
         }, options.timeout || 0)
     })
-    input.el.addEventListener('keydown', (e) => {
+    input.el.addEventListener('keydown', (e: KeyboardEvent) => {
         switch (e.key) {
             case 'Enter': return base.emit('submit', input.el.value)
             case 'Escape': return base.emit('escape')

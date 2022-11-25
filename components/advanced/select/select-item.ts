@@ -1,4 +1,5 @@
-import { Base, IBaseComponent } from "../../base";
+import { IBaseComponent } from '../../../interfaces/base'
+import { Base } from "../../base";
 import { Span } from "../../native/span";
 // Todo: remove this component
 export const SelectItem = (item: ISelectListItem<string>) => {

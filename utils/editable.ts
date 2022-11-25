@@ -1,4 +1,4 @@
-import { IBaseComponent } from '../components/base'
+import { IBaseComponent } from '../interfaces/base'
 
 export function editable(base: IBaseComponent<any>) {
     return {

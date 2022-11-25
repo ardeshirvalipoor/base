@@ -25,7 +25,7 @@ export const SelectX = (options: any = {}) => {
     // search.on('key-end', () = list.end())
     // search.on('key-page-up', () = list.pageUp())
     // search.on('key-page-down', () = list.pageDown())
-    let t = 0
+    let t : NodeJS.Timeout
     search.on('key-arrow-up', list.up)
     search.on('key-arrow-down', list.down)
     search.on('focus', () => {

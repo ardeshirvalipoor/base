@@ -1,4 +1,4 @@
-import { CS } from '../utils/styler'
+import { CS } from '../interfaces/style'
 
 export const ABSOLUTE = <CS>{
     position: 'absolute',

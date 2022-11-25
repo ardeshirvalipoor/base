@@ -1,4 +1,4 @@
-import { IBaseComponent, IBaseSVGComponent } from "../components/base";
+import { IBaseComponent, IBaseSVGComponent } from '../interfaces/base'
 import { observe } from "./mounter";
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender => {

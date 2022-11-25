@@ -83,7 +83,7 @@ export default (dbName: string) => ({
                 const transaction = request.result.transaction(store, 'readwrite').objectStore(store).add(object)
                 transaction.onsuccess = (successEvent) => {
                     request.result.close()
-                    return resolve(successEvent?.target?.result)
+                    return resolve((successEvent?.target as IDBOpenDBRequest)?.result)
                 }
                 transaction.onerror = (err) => {
                     return reject(err)

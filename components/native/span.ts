@@ -1,5 +1,5 @@
 import { texter } from '../../utils/texter'
-import { Base, IBaseComponent } from '../base'
+import { Base } from '../base'
 
 export const Span = (content: string = '') => {
 
