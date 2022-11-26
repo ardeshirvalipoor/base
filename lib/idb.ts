@@ -11,8 +11,6 @@ interface IGetAllOptions {
 }
 
 export default (dbName: string) => ({
-    // static db: IDBDatabase // Todo: multiple dbs
-
     info(version?: number) {
         return new Promise<{ objectStoreNames: DOMStringList, version: number }>((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
@@ -106,57 +104,6 @@ export default (dbName: string) => ({
             }
         })
     },
-    // request.onsuccess = () => {
-    //     const db = request.result;
-    //     const transaction = db.transaction(['invoices'], 'readwrite');
-    //     const invStore = transaction.objectStore('invoices');
-    //     const vendorIndex = invStore.index('VendorIndex');
-    //     const keyRng = IDBKeyRange.only('GE');
-    //     const cursorRequest = vendorIndex.openCursor(keyRng);
-    //     cursorRequest.onsuccess = e => {
-    //         const cursor = e.target.result;
-    //         if (cursor) {
-    //             const invoice = cursor.value;
-    //             invoice.vendor = 'P&GE';
-    //             const updateRequest = cursor.update(invoice);
-
-    //             cursor.continue();
-    //         }
-    //     }
-    // };
-
-    // request.onsuccess = () => {
-    //     const db = request.result;
-    //     const transaction = db.transaction(
-    //         ['invoices', 'invoice-items'],
-    //         'readwrite'
-    //     );
-    //     const invStore = transaction.objectStore('invoices');
-    //     const invItemStore = transaction.objectStore('invoice-items');
-    //     // Get invoice cursor
-    //     const invoiceCursorRequest = invStore.index('VendorIndex')
-    //         .openCursor(IDBKeyRange.only('Frigidaire'));
-    //     invoiceCursorRequest.onsuccess = e => {
-    //         const invCursor = e.target.result;
-    //         if (invCursor) {
-    //             // Get invoice item cursor
-    //             const invItemCursorRequest = invItemStore
-    //                 .index('InvoiceIndex')
-    //                 .openCursor(
-    //                     IDBKeyRange.only(invCursor.value.invoiceId)
-    //                 );
-    //             invItemCursorRequest.onsuccess = e => {
-    //                 const invItemCursor = e.target.result;
-    //                 if (invItemCursor) {
-    //                     invItemCursor.delete();
-    //                     invItemCursor.continue();
-    //                 }
-    //             }
-    //             invCursor.delete();
-    //             invCursor.continue();
-    //         }
-    //     }
-    // };
     async byId(store: string, id: any, version?: number) {
         return new Promise((resolve, reject) => {
             if (id === undefined) { return resolve(null) }
@@ -212,6 +159,7 @@ export default (dbName: string) => ({
                         return
                     }
                     if (cursor) {
+                        // Regex or other conditions here
                         results.push(cursor.value)
                         if (results.length < limit) {
                             cursor.continue()

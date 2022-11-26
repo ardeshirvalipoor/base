@@ -18,14 +18,14 @@ export const SelectX = (options: any = {}) => {
         list.style({ display: 'none' })
         search.setValue('')
     })
-    search.on('key-escape', () => list.style({display: 'none'}))
+    search.on('key-escape', () => list.style({ display: 'none' }))
     // search.on('key-tab', () = list.hide())
     // search.on('key-backspace', () = list.hide())
     // search.on('key-home', () = list.home())
     // search.on('key-end', () = list.end())
     // search.on('key-page-up', () = list.pageUp())
     // search.on('key-page-down', () = list.pageDown())
-    let t : NodeJS.Timeout
+    let t: NodeJS.Timeout
     search.on('key-arrow-up', list.up)
     search.on('key-arrow-down', list.down)
     search.on('focus', () => {
@@ -34,7 +34,6 @@ export const SelectX = (options: any = {}) => {
         base.emit('focus')
     })
     search.on('blur', (e: InputEvent) => {
-
         t = setTimeout(() => {
             list.style({ display: 'none' }) // Todo: This is not working always
         }, 300)
@@ -42,6 +41,7 @@ export const SelectX = (options: any = {}) => {
     search.on('input', (i: IInput<string>) => {
         list.filter(i.value, options.fields)
         list.style({ display: 'block' })
+        base.emit('input', i.value)
     })
     list.on('item-selected', (value: any) => {
         base.emit('item-selected', value)
