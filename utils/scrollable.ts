@@ -10,10 +10,10 @@ export function Scrollable(base: IBaseComponent<any>) {
     function onScroll() {
         base.emit('scroll', Math.ceil(base.el.scrollTop) , base.el.offsetHeight,  base.el.scrollHeight )
         if (base.el.scrollHeight <= Math.ceil(base.el.scrollTop) + base.el.offsetHeight) {
-            base.emit('scrolled-to-end')
+            base.emit('scrolled-end')
         }
         if (base.el.scrollTop == 0) {
-            base.emit('scrolled-to-top')
+            base.emit('scrolled-top')
         }
     }
 
