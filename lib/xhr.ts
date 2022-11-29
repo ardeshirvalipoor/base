@@ -1,3 +1,5 @@
+import emitter from '../utils/emitter'
+
 const _XHRCache: any = {}
 interface IResponse {
     data: any,
@@ -31,6 +33,11 @@ const get = (url: string, options: IXHROptoins = {}) => {
             }
         }
         xhr.send()
+        emitter.on('cancel-xhr', (_url: string) => {
+            if (_url === '*' || url === _url) {
+                xhr.abort()
+            }
+        })
     })
 }
 
