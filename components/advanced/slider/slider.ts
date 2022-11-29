@@ -52,7 +52,6 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             slide.requestPrev = () => prev()
             slide.requestReset = () => reset()
         })
-        slides[0].onEnter()
     })
     let ox = 0
     let x = 0
@@ -138,6 +137,8 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
                 reset()
             },
             enter() {
+                console.log('enteriing flashcard wizard');
+                
                 slides[0].onEnter()
             },
             getValue() {

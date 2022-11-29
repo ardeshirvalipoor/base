@@ -36,8 +36,6 @@ export default (() => {
         setTimeout(() => {
             history.replaceState(data, '', ''); // Todo: fix
         }, 10);
-        console.log('back', history.state);
-        
     }
 
     function forward(data?: any) {
@@ -144,8 +142,6 @@ export default (() => {
             goto(home.replace(root, '') || '/')
         }, 300); // Todo use default page transition
         window.addEventListener('popstate', (event) => {
-            console.log('--> popstate', event, history.state);
-            
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
         window.addEventListener('click', handleClickOnLinks)
