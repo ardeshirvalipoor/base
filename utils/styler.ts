@@ -27,11 +27,13 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         const THEME = ldb.get('BASE_APP_THEME')
         if (THEME === 'dark') base.el.classList.add('dark')
         emitter.on('theme-changed', (theme: string) => {
-            if (theme === 'dark') {
-                base.el.classList.add('dark')
-            } else {
-                base.el.classList.remove('dark')
-            }
+            setTimeout(() => {
+                if (theme === 'dark') {
+                    base.el.classList.add('dark')
+                } else {
+                    base.el.classList.remove('dark')
+                }
+            }, 0);
         })
 
         return base
