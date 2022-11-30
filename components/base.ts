@@ -5,23 +5,13 @@ import emitter, { _emitter } from '../utils/emitter'
 import ldb from '../lib/ldb'
 import { IBaseComponent, IBaseSVGComponent } from '../interfaces/base'
 
-const THEME = ldb.get('BASE_APP_THEME') || 'light'
 
 export function Base<K extends keyof HTMLElementTagNameMap>(name = <K>'div'): IBaseComponent<K> {
 
     const id = nextId()
     const el = document.createElement(<K>name); el.setAttribute('data-base-id', id)
     const base = <IBaseComponent<K>>{ id, el }
-    if (THEME === 'dark') el.classList.add('dark')
-    // if (THEME) base.el.classList.toggle(THEME)
-    emitter.on('theme-changed', (theme: string) => {
-        if (theme === 'dark') {
-            base.el.classList.add('dark')
-        } else {
-            base.el.classList.remove('dark')
-        }
-        // base.el.classList.toggle(theme)
-    })
+
     return Object.assign(base, _emitter(), appender(base), styler(base))
 }
 

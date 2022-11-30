@@ -1,5 +1,7 @@
 import { IBaseComponent, IBaseSVGComponent } from '../interfaces/base'
 import { CS, IStyleOptions } from '../interfaces/style'
+import ldb from '../lib/ldb'
+import emitter from './emitter'
 let STYLE_DB: any = {}
 const STYLE_EL = document.createElement('style')
 document.head.appendChild(STYLE_EL)
@@ -20,7 +22,20 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         // TODO: check multiple classes
         const delay = typeof options === 'number' ? options : options?.delay
         typeof delay === 'number' ? setTimeout(applyCssClass, delay) : applyCssClass()
+        
+        if (!style['&.dark']) return base
+        const THEME = ldb.get('BASE_APP_THEME')
+        if (THEME === 'dark') base.el.classList.add('dark')
+        emitter.on('theme-changed', (theme: string) => {
+            if (theme === 'dark') {
+                base.el.classList.add('dark')
+            } else {
+                base.el.classList.remove('dark')
+            }
+        })
+
         return base
+
         function applyCssClass() {
             var { name, styleString } = generateStyleString()
             const nameReg = new RegExp(name, 'g')
