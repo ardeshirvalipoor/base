@@ -12,14 +12,5 @@ export const Slide = () => {
     })
 
 
-    return Object.assign(
-        base,
-        {
-            requestNext(v: any) { console.log('slide.ts', v) },
-            requestPrev() { },
-            requestReset() { console.log('in req next') },
-            onEnter() { },
-            reset() { /* console.log('in reset slide', base); base.emit('reset') */ }
-        }
-    )
+    return base
 }

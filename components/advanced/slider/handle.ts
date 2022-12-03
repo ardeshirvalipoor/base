@@ -11,7 +11,8 @@ export const Handle = (direction = 'r') => {
         opacity: '.5',
         position: 'absolute',
         border: '1px solid gray',
-        top: 'calc(50% - 13px)'
+        top: 'calc(50% - 13px)',
+        display: 'none',
     })
 
     ghostify(base, {bg: '#00000055'})

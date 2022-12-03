@@ -1,58 +1,39 @@
 import { HIDE, SHOW, X } from '../../../helpers/style'
+import { IBaseComponent } from '../../../interfaces/base'
 import { PASSIVE } from '../../../utils/passive-support'
 import { Base } from '../../base'
 import { Div } from '../../native/div'
 import { Handle } from './handle'
 import { SliderContents } from './slider-contents'
 
-export const Slider = (items: any[], options: ISlideOptions = {}) => {
+export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {}) => {
+
     let W = 0
     let index = 0
-    let acc = {}
-    let slides: any[] = []
     const base = Base()
-    const view = Div()
+    const container = SliderContents()
     const handleR = Handle('r')
     const handleL = Handle('l')
-
     handleR.el.onclick = next
     handleL.el.onclick = prev
-    const container = SliderContents()
-    view.append(container)
-    base.append(view, handleR, handleL)
-    handleR.style({ display: 'none' })
-    base.cssClass({
-        position: 'relative',
-        width: '100%',
-        height: '100%'
-    })
-    view.cssClass({
-        position: 'relative',
-        overflow: 'hidden',
-        width: '100%',
-        height: '100%'
-    })
+    base.append(container, handleR, handleL)
 
-    base.on('mounted', (id: string) => {
-        if (id !== base.id) return
+    base.on('mounted', () => {
         W = options.width || base.el.getBoundingClientRect().width
-        items.forEach((slide, i) => {
-            slides.push(slide)
+        slides.forEach((slide, i) => {
             container.append(slide)
             slide.style(X((options.direction == 'rtl' ? W : -W) * i))
-            slide.getAcc = () => acc
-            slide.requestNext = (v: any) => {
-                acc = { ...acc, ...v }
-                if (index == items.length - 1) {
-                    base.emit('done', acc)
+            slide.on('next', () => {
+                if (index == slides.length - 1) {
+                    base.emit('done')
                 } else {
                     next()
                 }
-            }
-            slide.requestPrev = () => prev()
-            slide.requestReset = () => reset()
+            })
+            slide.on('prev', prev)
         })
     })
+
     let ox = 0
     let x = 0
     let tx = 0
@@ -63,7 +44,7 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
     base.el.addEventListener('touchmove', (e: TouchEvent) => {
         if (!options.touchable) return
         tx = e.touches[0].pageX - ox
-        container.slide(tx + x)
+        container.move(tx + x)
     })
     base.el.addEventListener('touchend', () => {
         if (!options.touchable) return
@@ -84,19 +65,16 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             if (x == 0) dx = 0
             else dx = (options.direction == 'rtl' ? W : -W)
         }
-        container.slide(x += dx, { smooth: true })
+        container.move(x += dx, { smooth: true })
         index = Math.abs(Math.round(x / W))
-        slides[index].onEnter()
         handleL.style({ display: 'block' })
         handleR.style({ display: 'block' })
-        if (index == items.length - 1) {
+        if (index == slides.length - 1) {
             handleL.style({ display: 'none' })
         }
         if (index == 0) {
             handleR.style({ display: 'none' })
         }
-
-        base.emit('next-slide', slides[index].getValue()) // Todo: fix it later
     }
 
     function next() {
@@ -112,9 +90,20 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             index = 0
             x = 0
             container.reset(delay)
-            slides.map(slide => slide.reset())
         }, delay)
     }
+
+    base.cssClass({
+        position: 'relative',
+        width: '100%',
+        height: '100%'
+    })
+    container.style({
+        position: 'relative',
+        overflow: 'hidden',
+        width: '100%',
+        height: '100%'
+    })
 
 
     return Object.assign(
@@ -123,30 +112,6 @@ export const Slider = (items: any[], options: ISlideOptions = {}) => {
             reset,
             next,
             prev,
-            add(slide: any) {
-                slides.push(slide)
-                container.append(slide)
-                slide.style(X(-W * (slides.length - 1)))
-                slide.requestNext = (value: any) => { slide.resolve(value); next() }
-                slide.requestPrev = () => prev()
-                slide.requestReset = () => reset()
-            },
-            clear() {
-                slides = [slides[0]] // Todo: fix
-                container.children.map((child, i) => i > 0 ? child.remove() : null)
-                reset()
-            },
-            enter() {
-                console.log('enteriing flashcard wizard');
-                
-                slides[0].onEnter()
-            },
-            getValue() {
-                return slides[index].getValue()
-            },
-            setAcc(v: any) {
-                acc = v
-            }
         }
     )
 }
