@@ -1,4 +1,4 @@
-function save(key: string): { value : string, as: (value: any) => void }
+function save(value: any): { as: (key: any) => void }
 function save(...args: any[]): void
 function save(...args: any[]) {
     if (args.length > 1) {
@@ -11,7 +11,6 @@ function save(...args: any[]) {
     if (typeof value === 'object') value = JSON.stringify(value)
 
     return {
-        value,
         as(key: string) {
             localStorage.setItem(key, value)
         }

@@ -131,9 +131,7 @@ export default (dbName: string) => ({
                 let hasSkipped = false
                 const transaction = request.result.transaction([store], 'readonly')
                 const os = transaction.objectStore(store)
-
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
-
                 if (options?.index) {
                     const index = os.index(options.index)
                     // const cr = index.count(options?.value)
