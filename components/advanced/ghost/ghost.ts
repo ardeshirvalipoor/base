@@ -32,21 +32,17 @@ export const Ghost = (options = <IGhostOptions>{}) => {
                 base.style({
                     ...EASE(0),
                     ...S(0),
+                    // animation: 'ghost 2s',
                     opacity: '1',
                     left: x - opts.size / 2 + 'px',
                     top: y - opts.size / 2 + 'px',
                 })
-                base.style({
-                    ...EASE(.06),
-                    ...S(2),
-                    opacity: '.2'
-                }, 5)
-                base.style({
-                    ...EASE(.66),
-                    ...S(4),
-                    opacity: '0'
-                }, 100)
 
+                base.style({
+                    transition:'all 2s cubic-bezier(0, 1, 0, 1)',
+                    ...S(2),
+                    opacity: '0'
+                }, 5)
             },
             deactivate() {
                 base.style({
