@@ -19,7 +19,7 @@ export const Ghost = (options = <IGhostOptions>{}) => {
         transformOrigin: 'center',
         pointerEvents: 'none',
         '&.dark': {
-            backgroundColor: opts.bgDark ,
+            backgroundColor: opts.bgDark || opts.bg ,
         }
     })
     let touchStartTime = 0
@@ -40,9 +40,9 @@ export const Ghost = (options = <IGhostOptions>{}) => {
 
                 base.style({
                     transition:'all 2s cubic-bezier(0, 1, 0, 1)',
-                    ...S(2),
+                    ...S(3),
                     opacity: '0'
-                }, 5)
+                }, 10)
             },
             deactivate() {
                 base.style({
