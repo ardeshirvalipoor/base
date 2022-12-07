@@ -8,7 +8,7 @@ export const SelectX = (options: any = {}) => {
     const search = Input()
     const list = SelectList()
 
-    search.on('key-enter', ({ value }: any) => {
+    search.on(['key-enter', 'key-tab'], ({ value }: any) => {
         const existingValue = list.getValue()
         if (existingValue) {
             base.emit('item-selected', existingValue)

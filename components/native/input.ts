@@ -17,7 +17,7 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
         switch (v.key) {
             case 'Enter': base.emit('key-enter', { event: v, value: base.el.value }); break
             case 'Escape': base.emit('key-escape', v); break
-            case 'Tab': base.emit('key-tab', v); break
+            case 'Tab': base.emit('key-tab', { event: v, value: base.el.value }); break
             case 'Backspace': base.emit('key-backspace', v); break
             case 'Home': base.emit('key-home', v); break
             case 'End': base.emit('key-end', v); break
