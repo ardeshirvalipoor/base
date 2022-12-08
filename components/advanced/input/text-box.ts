@@ -45,7 +45,7 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
         width: '100%',
         height: '100%',
         direction: opts.direction || 'unset',
-        letterSpacing: opts.letterSpacing + 'px',
+        letterSpacing: (opts.letterSpacing ?? 0) + 'px',
         color: opts.color,
         fontSize: opts.fontSize + 'px',
         // padding: type == 'textarea' ? '10px 0 20px 0' : '3px 0 0 0',
