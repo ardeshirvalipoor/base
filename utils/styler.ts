@@ -80,6 +80,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
 
         function getPropValueLine(prop: string, obj: any) {
             let snake = prop.replace(/[A-Z]/g, (w: string) => `-${w.toLowerCase()}`)
+            if (snake.startsWith('webkit')) snake = '-' + snake
             let value = typeof obj[prop] == 'function' ? obj[prop]() : obj[prop]
             return (value?.toString() || 'unset').split(';').map((v: string) => `${snake}:${v};`).join('')
         }

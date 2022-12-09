@@ -28,18 +28,18 @@ export const ROUND = <CS>{
     borderRadius: '50%'
 }
 
-export const SCROLLY = <CS> {
+export const SCROLLY = <CS>{
     // overflowX: 'hidden',
     overflowY: 'scroll',
     webkitOverflowScrolling: 'touch'
 }
 
-export const Y = (y: number) => <CS>({
-    transform: `translateY(${y}px)`,
+export const Y = (y: number | string) => <CS>({
+    transform: `translateY(${y}${typeof y === 'number' ? 'px' : ''})`,
 })
 
-export const X = (x: number) => <CS>({
-    transform: `translateX(${x}px)`,
+export const X = (x: number | string) => <CS>({
+    transform: `translateX(${x}${typeof x === 'number' ? 'px' : ''})`,
 })
 
 export const S = (s: number) => <CS>({
@@ -49,6 +49,7 @@ export const S = (s: number) => <CS>({
 export const SX = (s: number) => <CS>({
     transform: `scaleX(${s})`,
 })
+
 export const SY = (s: number) => <CS>({
     transform: `scaleY(${s})`,
 })
