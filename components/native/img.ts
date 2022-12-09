@@ -9,7 +9,7 @@ export const Img = (path: string = '', options: IImage = {}) => {
         width: opts.width + 'px',
         height: opts.height? (opts.height + 'px') : 'auto'
     })
-    base.el.src = path
+    base.el.src = path || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mPs6OuoBwAFYwIfBAd8EQAAAABJRU5ErkJggg=='
 
     return base
 }
