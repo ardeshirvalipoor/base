@@ -100,7 +100,7 @@ export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {
     })
     container.style({
         position: 'relative',
-        overflow: 'hidden',
+        // overflow: 'hidden',
         width: '100%',
         height: '100%'
     })
@@ -115,7 +115,6 @@ export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {
         }
     )
 }
-
 
 interface ISlideOptions {
     infinite?: boolean,

@@ -9,7 +9,7 @@ export const SliderContents = () => {
         position: 'relative',
         height: '100%',
         width: '100%',
-        overflow: 'hidden',
+        // overflow: 'hidden',
     })
 
     return Object.assign(
