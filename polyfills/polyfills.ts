@@ -8,6 +8,12 @@ if (!String.prototype.includes) {
     }
 }
 
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function (search: any, pos) {
+        return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search
+    }
+}
+
 // https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill
 if (typeof Object.assign != 'function') {
     Object.assign = function (target: any, ...args: any[]) { // .length of function is 2
