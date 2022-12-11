@@ -20,7 +20,9 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
     // })
 
     return {
-        children,
+        getChildren() {
+            return children
+        },
         append(...args) {
             for (const c of args) {
                 base.el.appendChild(c.el)
@@ -55,7 +57,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
 }
 
 export interface IAppender {
-    children: IBaseComponent<any>[]
+    getChildren: () => IBaseComponent<any>[]
     append: (...args: IBaseComponent<any>[]) => IBaseComponent<any>,
     prepend: (...args: IBaseComponent<any>[]) => void,
     appendBefore: (component: IBaseComponent<any>, ...args: IBaseComponent<any>[]) => void,
