@@ -56,12 +56,9 @@ export default (dbName: string) => ({
             request.onupgradeneeded = (event) => {
                 const target = event.target as any // Todo: take a look at this
                 const db = target.result /* request.result */
-                const upgradeTransaction =  target.transaction; // db.transaction(_store, 'readwrite')
+                const upgradeTransaction = target.transaction // db.transaction(_store, 'readwrite')
                 const os = upgradeTransaction.objectStore(_store)
-                
                 if (!os.indexNames.contains(index)) {
-                    console.log('createindex', index);
-                    
                     os.createIndex(index, index, { unique: options?.unique || false, multiEntry: options?.multiEntry || false })
                 }
                 db.close()
@@ -98,8 +95,10 @@ export default (dbName: string) => ({
             request.onsuccess = () => {
                 const otransaction = request.result.transaction(store, 'readwrite').objectStore(store)
                 otransaction.clear()
+                return resolve(true)
             }
             request.onerror = (err) => {
+                console.log('clear', err)
                 return reject(err)
             }
         })
