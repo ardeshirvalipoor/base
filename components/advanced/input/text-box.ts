@@ -14,6 +14,8 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
 
     const base = Base('div')
     const input = Input('', type)
+    input.el.setAttribute('enterkeyhint', 'done')
+
     const p = Span(placeholder)
     base.append(input, p)
     // Todo: implement direciton
