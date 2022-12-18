@@ -1,6 +1,6 @@
 let __state: any = {}
 
-function get(key: string, defaultValue = {}): any[] {
+function get(key: string, defaultValue = {}) {
     return __state[key] || defaultValue
 }
 

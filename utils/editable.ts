@@ -16,6 +16,7 @@ export function editable(base: IBaseComponent<any>) {
         },
         blur() {
             base.el.blur()
+            base.style({pointerEvents: 'none'})
         },
         getValue() {
             return base.el.innerHTML

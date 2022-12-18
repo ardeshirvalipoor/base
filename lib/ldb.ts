@@ -30,9 +30,14 @@ function remove(key: string) {
     localStorage.removeItem(key)
 }
 
+function clear() {
+    localStorage.clear()
+}
+
 export default {
     get,
     save,
-    remove
+    remove,
+    clear
 }
 
