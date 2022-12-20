@@ -1,40 +1,28 @@
+import { IResponse, IXHROptoins } from '../interfaces/xhr'
 import emitter from '../utils/emitter'
 
 const _XHRCache: any = {}
-interface IResponse {
-    data: any,
-    status: number,
-    error: any
-}
+
 const get = (url: string, options: IXHROptoins = {}) => {
     const opts = { method: 'GET', type: 'application/json', cache: 0, ...options }
     return new Promise<IResponse>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open(opts.method, url, true)
         xhr.setRequestHeader('Content-Type', opts.type)
-        if (opts.auth) xhr.setRequestHeader('Authorization', 'Bearer ' + opts.auth)
-        // xhr.onerror = (err) => alert(JSON.stringify({ err, m: 'x' }))
-
+        xhr.setRequestHeader('Authorization', 'Bearer ' + opts.auth)
         xhr.onreadystatechange = () => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
-                try {
-                    return resolve({
-                        status: xhr.status,
-                        data: xhr.response,
-                        error: xhr.response?.error
-                    })
-                } catch (error) {
-                    return reject({
-                        status: xhr.status,
-                        data: xhr.response,
-                        error: xhr.response?.error
-                    })
-                }
+                resolve({
+                    status: xhr.status,
+                    data: xhr.response,
+                    error: xhr.response?.error
+                })
             }
         }
+        xhr.onerror = reject
         xhr.send()
-        emitter.on('cancel-xhr', (_url: string) => {
-            if (_url === '*' || url === _url) {
+        emitter.once('cancel-xhr', (_url: string) => {
+            if (['*', url].includes(_url)) {
                 xhr.abort()
             }
         })
@@ -43,7 +31,6 @@ const get = (url: string, options: IXHROptoins = {}) => {
 
 const post = (url: string, body?: any, _headers: any = {}) => {
     const headers = { 'Content-Type': 'application/json', cache: 0, ..._headers }
-
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open('POST', url, true)
@@ -155,7 +142,6 @@ const uploader = (file: File | string, url: string) => {
         done(response: any) { },
         failed(response: any) { }
     }
-
 }
 
 export const XHR = {
@@ -168,12 +154,7 @@ export const XHR = {
 
 
 
-export interface IXHROptoins {
-    method?: string,
-    type?: string,
-    cache?: number,
-    auth?: string
-}
+
 
 //  xhr.readyState
 //  0	UNSENT	           Client has been created.open() not called yet.
