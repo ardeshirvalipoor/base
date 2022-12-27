@@ -12,12 +12,12 @@ function merge(key: string, value: any) {
     __state[key] = { ...__state[key], ...value }
 }
 
-function use(key: string, defaultValue = {}): IUseState {
+function use<T>(key: string, defaultValue: any): IUseState<T> {
     if (!__state[key]) __state[key] = defaultValue
     return [
-        () => __state[key], // get
-        (value: any) => __state[key] = value, // set
-        (value: any) => __state[key] = { ...__state[key], ...value } // merge
+        () => __state[key],
+        (value) => __state[key] = value,
+        (value) => __state[key] = { ...__state[key], ...value }
         // Todo: handle nested merge (deep merge), example: { 'a.b.c.d': value }
     ]
 }
@@ -29,4 +29,4 @@ export default {
     use,
 }
 
-type IUseState = [() => any, (value: any) => void, (value: any) => void]
+type IUseState<T> = [() => T, (value: T) => void, (value: T) => void]
