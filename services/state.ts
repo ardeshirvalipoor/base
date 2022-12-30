@@ -13,7 +13,7 @@ function merge(key: string, value: any) {
 }
 
 function use<T>(key: string, defaultValue?: any): IUseState<T> {
-    if (!__state[key]) __state[key] = defaultValue
+    if (__state[key] === undefined) __state[key] = defaultValue
     return [
         () => __state[key],
         (value) => __state[key] = value,

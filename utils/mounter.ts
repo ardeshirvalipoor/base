@@ -11,12 +11,9 @@ export function observe(el: HTMLElement)/* : Promise<HTMLElement[]> */ {
                 }
             })
         }
-        // observer.disconnect()
+        observer.disconnect()
     })
     observer.observe(el, { childList: true })
-
-    // Todo: Check why this is not working
-    function send(id: string | null) { console.log('w', id); }
 
     return em
 }
