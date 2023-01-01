@@ -16,7 +16,7 @@ export default (() => {
             path,
             handler,
             params: {},
-            reg: new RegExp('^' +_root + path.replace(paramMatch, '[^/]+') + '$'),
+            reg: new RegExp('^' + _root + path.replace(paramMatch, '[^/]+') + '$'),
             page: undefined
         }
 
@@ -34,12 +34,12 @@ export default (() => {
         // if (_isBusy) return
         window.history.back()
         setTimeout(() => {
-            history.replaceState(data, '', ''); // Todo: fix
-        }, 10);
+            history.replaceState(data, '', '') // Todo: fix
+        }, 10)
     }
 
     function forward(data?: any) {
-        history.replaceState(data, '', '');
+        history.replaceState(data, '', '')
         window.history.forward()
     }
 
@@ -56,9 +56,9 @@ export default (() => {
 
     async function navigate(to: string = '', data = {}, from: string) {
         if (to.includes('tel:')) return
-        
+
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
-        
+
         if (found) {
             // Todo: 404calling transit through handler
             // Todo: fix 
@@ -72,11 +72,11 @@ export default (() => {
 
         while (_currentPages.length) {
             const p = <IPage>_currentPages.pop()
-            
+
             p.exit({ from: location.pathname, to: route.replace('/' + _root, ''), ...routeParams })
         }
         // Todo: fix later
-        
+
         const next = _routes.find(_route => {
             return _route.reg.test(_root + route)
         })
@@ -89,7 +89,7 @@ export default (() => {
             next.page = P()
             _container.append(next.page)
         }
-        
+
         await next.page.enter({ from: location.pathname, to: route, ...routeParams })
         _currentPages.unshift(next.page)
         next.page.emit('enter', { from: location.pathname, to: route, ...routeParams })
@@ -100,7 +100,7 @@ export default (() => {
         e.preventDefault()
         e.stopPropagation()
         const possibleLink = findPossibleLink(e)
-        
+
         if (!possibleLink) {
             return
         }
@@ -138,9 +138,21 @@ export default (() => {
         Object.entries(routes).map(([route, Page]: any) => {
             when(route, async (routeParams: IRouteParams) => await transit(route, Page, routeParams)) //66
         })
+        const main = home.replace(root, '').replace(/\/$/, '')
+        const steps = main.split('/').map((step: string, i: number, arr: string[]) => {
+            return arr.slice(0, i + 1).join('/') || '/'
+        })
+        steps.slice(0, -1).forEach((step: string, i: number) => {
+            history.pushState({}, '', step)
+        })
         setTimeout(() => {
-            goto(home.replace(root, '') || '/')
-        }, 300); // Todo use default page transition
+            goto(steps[steps.length - 1])
+        }, 10);
+
+
+        // setTimeout(() => {
+        // goto(home.replace(root, '').replace(/\/$/,'') || '/')
+        // }, 300); // Todo use default page transition
         window.addEventListener('popstate', (event) => {
             navigate(location.pathname, history?.state?.data, _current)
         }, PASSIVE)
