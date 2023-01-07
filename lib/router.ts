@@ -145,11 +145,7 @@ export default (() => {
         steps.slice(0, -1).forEach((step: string, i: number) => {
             history.pushState({}, '', step)
         })
-        setTimeout(() => {
-            goto(steps[steps.length - 1])
-        }, 10);
-
-
+        goto(steps[steps.length - 1])
         // setTimeout(() => {
         // goto(home.replace(root, '').replace(/\/$/,'') || '/')
         // }, 300); // Todo use default page transition
