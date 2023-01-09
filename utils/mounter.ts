@@ -11,7 +11,7 @@ export function observe(el: HTMLElement)/* : Promise<HTMLElement[]> */ {
                 }
             })
         }
-        observer.disconnect()
+        // observer.disconnect()
     })
     observer.observe(el, { childList: true })
 
