@@ -75,17 +75,22 @@ export default (dbName: string) => ({
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
-                const transaction = request.result.transaction(store, 'readwrite').objectStore(store).add(object)
-                transaction.onsuccess = (successEvent) => {
+                const transaction = request.result.transaction(store, 'readwrite')
+                const objectStore = transaction.objectStore(store)
+                if (!Array.isArray(object)) object = [object]
+                object.forEach((o: any) => {
+                    objectStore.add(o)
+                })
+                transaction.oncomplete = (successEvent) => {
                     request.result.close()
-                    return resolve((successEvent?.target as IDBOpenDBRequest)?.result)
+                    resolve((successEvent?.target as IDBOpenDBRequest)?.result)
                 }
                 transaction.onerror = (err) => {
-                    return reject(err)
+                    reject(err)
                 }
             }
             request.onerror = (err) => {
-                return reject(err)
+                reject(err)
             }
         })
     },
@@ -178,7 +183,25 @@ export default (dbName: string) => ({
             }
         })
     },
-    count() { },
+    count(store: any) { 
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName)
+            request.onsuccess = (e) => {
+                const transaction = request.result.transaction([store], 'readonly')
+                const objectStore = transaction.objectStore(store)
+                const countRequest = objectStore.count()
+                countRequest.onsuccess = () => {
+                    resolve(countRequest.result)
+                }
+                countRequest.onerror = (err) => {
+                    reject(err)
+                }
+            }
+            request.onerror = (err) => {
+                reject(err)
+            }
+        })
+    },
     delete(store: any, id: any, version = 1) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
@@ -186,11 +209,11 @@ export default (dbName: string) => ({
                 const transaction = request.result.transaction([store], 'readwrite')
                 const objectStore = transaction.objectStore(store)
                 objectStore.delete(id)
-                return resolve(true)
+                resolve(true)
             }
             request.onerror = (err) => {
                 console.log('idb delete', err)
-                return reject(err)
+                reject(err)
             }
         })
     },
@@ -203,18 +226,18 @@ export default (dbName: string) => ({
                 const objectStore = transaction.objectStore(store)
                 const reader = objectStore.get(id)
                 reader.onerror = (err) => {
-                    return reject(err)
+                    reject(err)
                 }
                 reader.onsuccess = () => {
                     var updateTitleRequest = objectStore.put(payload)
                     updateTitleRequest.onsuccess = () => {
                         request.result.close()
-                        return resolve(true)
+                        resolve(true)
                     }
                 }
             }
             request.onerror = (err) => {
-                return reject(err)
+                reject(err)
             }
         })
     }
