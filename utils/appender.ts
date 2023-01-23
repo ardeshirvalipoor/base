@@ -25,15 +25,28 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
         },
         append(...args) {
             for (const c of args) {
+                if (c === false) continue
                 base.el.appendChild(c.el)
                 children.push(c)
+                c.parent = base
             }
             return base
         },
         appendBefore(component: IBaseComponent<any>, ...args) {
             for (const c of args) {
                 base.el.insertBefore(c.el, component.el)
-                children.unshift(c) // Todo: check if this is correct
+                const index = children.indexOf(component)
+                children.splice(index, 0, c)
+                c.parent = base
+            }
+            return base
+        },
+        appendAfter(component: IBaseComponent<any>, ...args) {
+            for (const c of args) {
+                base.el.insertBefore(c.el, component.el.nextSibling)
+                const index = children.indexOf(component)
+                children.splice(index + 1, 0, c)
+                c.parent = base
             }
             return base
         },
@@ -41,6 +54,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
             for (const c of args) {
                 base.el.insertBefore(c.el, base.el.childNodes[0])
                 children.unshift(c)
+                c.parent = base
             }
             return base
         },
@@ -58,9 +72,10 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
 
 export interface IAppender {
     getChildren: () => IBaseComponent<any>[]
-    append: (...args: IBaseComponent<any>[]) => IBaseComponent<any>,
+    append: (...args: (IBaseComponent<any> | false)[]) => IBaseComponent<any>,
     prepend: (...args: IBaseComponent<any>[]) => void,
     appendBefore: (component: IBaseComponent<any>, ...args: IBaseComponent<any>[]) => void,
+    appendAfter: (component: IBaseComponent<any>, ...args: IBaseComponent<any>[]) => void,
     empty: () => void,
     remove: () => void,
 }

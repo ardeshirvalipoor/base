@@ -5,6 +5,7 @@ import { IStyler } from './style'
 export interface IBaseComponent<K extends keyof HTMLElementTagNameMap> extends IEmitter, IAppender, IStyler {
     el: HTMLElementTagNameMap[K]
     id: string
+    parent: IBaseComponent<any>
 }
 
 export interface IBaseSVGComponent<K extends keyof SVGElementTagNameMap> extends IBaseComponent<any> {
