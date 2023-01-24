@@ -20,8 +20,12 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
     // })
 
     return {
+        children,
         getChildren() {
             return children
+        },
+        setChildren(c: IBaseComponent<any>[]) {
+            children = c
         },
         append(...args) {
             for (const c of args) {
@@ -60,8 +64,10 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
         },
         remove() {
             children.forEach(child => child.remove())
+            base.parent.setChildren(base.parent.getChildren().filter(c => c !== base))
             base.removeAllListeners()
             base.el.remove()
+            
         },
         empty() {
             children.forEach(child => child.remove())
@@ -71,7 +77,9 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
 }
 
 export interface IAppender {
+    children: IBaseComponent<any>[],
     getChildren: () => IBaseComponent<any>[]
+    setChildren: (children: IBaseComponent<any>[]) => void,
     append: (...args: (IBaseComponent<any> | false)[]) => IBaseComponent<any>,
     prepend: (...args: IBaseComponent<any>[]) => void,
     appendBefore: (component: IBaseComponent<any>, ...args: IBaseComponent<any>[]) => void,
