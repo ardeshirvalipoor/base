@@ -139,13 +139,14 @@ export default (() => {
             when(route, async (routeParams: IRouteParams) => await transit(route, Page, routeParams)) //66
         })
         const main = home.replace(root, '').replace(/\/$/, '')
+        const queryString = location.search//.replace('?', '')
         const steps = main.split('/').map((step: string, i: number, arr: string[]) => {
             return arr.slice(0, i + 1).join('/') || '/'
         })
         steps.slice(0, -1).forEach((step: string, i: number) => {
             history.pushState({}, '', step)
         })
-        goto(steps[steps.length - 1])
+        goto(steps[steps.length - 1] + queryString)
         // setTimeout(() => {
         // goto(home.replace(root, '').replace(/\/$/,'') || '/')
         // }, 300); // Todo use default page transition
@@ -196,7 +197,7 @@ function findPossibleLink(e: MouseEvent) {
 
 export interface IRoute {
     path: string
-    params: { [key: string]: RegExp }
+    params: { [key: string]: string }
     reg: RegExp
     handler: TRouteHandler
     page?: IPage
