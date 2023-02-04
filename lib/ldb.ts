@@ -36,6 +36,7 @@ function clear() {
 
 export default {
     get,
+    set: save,
     save,
     remove,
     clear
