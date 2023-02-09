@@ -3,11 +3,11 @@ import { EVENTS } from '../helpers/events'
 export const _emitter = () => {
     let _listeners: any = {}
 
-    function on(event: string | string[], handler: Function) {
+    function on(event: string | string[], ...handlers: Function[]) {
         if (!Array.isArray(event)) event = [event]
         event.map(e => {
             if (!_listeners[e]) _listeners[e] = []
-            _listeners[e].push(handler)
+            _listeners[e].push(...handlers)
         })
     }
 
@@ -44,7 +44,7 @@ export const _emitter = () => {
 export default _emitter()
 
 export interface IEmitter {
-    on: (e: string | string[], handler: Function) => void
+    on: (e: string | string[], ...handlers: Function[]) => void
     once: (e: string, handler: Function) => void
     off: (e: string, handler: Function) => void
     emit: (e: string, ...args: any) => void
