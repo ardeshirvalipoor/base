@@ -78,12 +78,14 @@ export default (dbName: string) => ({
                 const transaction = request.result.transaction(store, 'readwrite')
                 const objectStore = transaction.objectStore(store)
                 if (!Array.isArray(object)) object = [object]
-                object.forEach((o: any) => {
-                    objectStore.add(o)
-                })
+                const addedObjects: IDBRequest[] = object.map((o: any) => {
+                    return objectStore.add(o);
+                });
                 transaction.oncomplete = (successEvent) => {
                     request.result.close()
-                    resolve((successEvent?.target as IDBOpenDBRequest)?.result)
+                    console.log('save', successEvent);
+                    const insertedIds = addedObjects.map(r => r.result);
+                    resolve(insertedIds.length === 1 ? insertedIds[0] : insertedIds);
                 }
                 transaction.onerror = (err) => {
                     reject(err)
