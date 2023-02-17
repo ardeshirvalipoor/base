@@ -83,7 +83,6 @@ export default (dbName: string) => ({
                 });
                 transaction.oncomplete = (successEvent) => {
                     request.result.close()
-                    console.log('save', successEvent);
                     const insertedIds = addedObjects.map(r => r.result);
                     resolve(insertedIds.length === 1 ? insertedIds[0] : insertedIds);
                 }
