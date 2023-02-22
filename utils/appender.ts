@@ -64,7 +64,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
         },
         remove() {
             children.forEach(child => child.remove())
-            base.parent.setChildren(base.parent.getChildren().filter(c => c !== base))
+            base.parent?.setChildren(base.parent.getChildren().filter(c => c !== base))
             base.removeAllListeners()
             base.el.remove()
             
