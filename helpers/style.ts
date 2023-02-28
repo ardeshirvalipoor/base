@@ -62,12 +62,12 @@ export const EASE = (time: number, props = 'all', type = '') => <CS>({
     transition: `${props} ${time}s ${type}`,
 })
 
-export const WH = (d1: number | string, d2?: number | string): CS => {
-    if (typeof d1 == 'number') d1 = d1.toString() + 'px'
-    if (typeof d2 == 'number') d2 = d2.toString() + 'px'
+export const WH = (wh: number | string, h?: number | string): CS => {
+    if (typeof wh == 'number') wh = wh.toString() + 'px'
+    if (typeof h == 'number') h = h.toString() + 'px'
     return {
-        width: d1,
-        height: d2 || d1
+        width: wh,
+        height: h || wh
     }
     // transition: `${props} ${time}s ${type}`,
 }
