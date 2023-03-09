@@ -32,7 +32,7 @@ export const Button = (text: string = '', options = {}) => {
                 base.el.removeAttribute('disabled')
                 return out
             },
-            text(text: string) {
+            text(text: string = 'Button') {
                 base.el.innerHTML = text
                 return out
             }
