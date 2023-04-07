@@ -26,7 +26,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         if (!style['&.dark']) return base
         const THEME = ldb.get('BASE_APP_THEME')
         if (THEME === 'dark') base.el.classList.add('dark')
-        emitter.on('theme-changed', (theme: string) => {
+        emitter.once('theme-changed', (theme: string) => {
             setTimeout(() => {
                 if (theme === 'dark') {
                     base.el.classList.add('dark')
