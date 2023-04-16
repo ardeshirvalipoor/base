@@ -9,5 +9,10 @@ export const Select = (options: { value: string, text: string }[] = []) => {
         base.append(option)
     })
 
-    return base
+    return Object.assign(base, {
+        add: (value: any, text: string) => {
+            base.append(Option(value, text))
+        }
+    })
+
 }
