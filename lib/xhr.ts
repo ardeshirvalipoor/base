@@ -88,6 +88,35 @@ const put = (url: string, body?: any, _headers: any = {}) => {
     })
 }
 
+const patch = (url: string, body?: any, _headers: any = {}) => {
+    const headers = { type: 'application/json', cache: 0, ..._headers }
+    return new Promise<any>((resolve, reject) => {
+        const xhr = new XMLHttpRequest()
+        xhr.open('PATCH', url, true)
+        Object.keys(headers).map((key) => {
+            xhr.setRequestHeader(key, headers[key])
+        })
+        xhr.setRequestHeader('Content-Type', headers.type)
+        xhr.setRequestHeader('Authorization', 'Bearer ' + headers.auth)
+        xhr.send(JSON.stringify(body))
+        xhr.onreadystatechange = () => {
+            if (xhr.readyState == XMLHttpRequest.DONE) {
+                try {
+                    return resolve({
+                        status: xhr.status,
+                        ...JSON.parse(xhr.response),
+                    })
+                } catch (error) {
+                    return resolve({
+                        status: xhr.status,
+                        data: xhr.response,
+                    })
+                }
+            }
+        }
+    })
+}
+
 const remove = (url: string, _headers: any = {}) => {
     const headers = { type: 'application/json', cache: 0, ..._headers }
     return new Promise<any>((resolve, reject) => {
@@ -149,7 +178,8 @@ export const XHR = {
     post,
     delete: remove,
     put, // Todo make merge
-    uploader
+    uploader,
+    patch
 }
 
 
