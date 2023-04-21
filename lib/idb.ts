@@ -2,6 +2,7 @@ interface IGetAllOptions {
     skip?: number
     limit?: number
     index?: string // comma separated
+    filter?: string // comma separated
     value?: any // comma separated
     reverse?: boolean,
     upperBound?: any,
@@ -79,12 +80,12 @@ export default (dbName: string) => ({
                 const objectStore = transaction.objectStore(store)
                 if (!Array.isArray(object)) object = [object]
                 const addedObjects: IDBRequest[] = object.map((o: any) => {
-                    return objectStore.add(o);
-                });
+                    return objectStore.add(o)
+                })
                 transaction.oncomplete = (successEvent) => {
                     request.result.close()
-                    const insertedIds = addedObjects.map(r => r.result);
-                    resolve(insertedIds.length === 1 ? insertedIds[0] : insertedIds);
+                    const insertedIds = addedObjects.map(r => r.result)
+                    resolve(insertedIds.length === 1 ? insertedIds[0] : insertedIds)
                 }
                 transaction.onerror = (err) => {
                     reject(err)
@@ -129,6 +130,13 @@ export default (dbName: string) => ({
     },
     find(store: string, options?: IGetAllOptions) {
         const { skip = 0, limit = 1000 } = options || {}
+        const filter = (record: any) => {
+            if (options?.filter !== undefined) {
+                return record._id.includes(options.filter)
+            }
+            return true
+        }
+
         return new Promise<any[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e: Event | any) => {
@@ -162,15 +170,15 @@ export default (dbName: string) => ({
                         return
                     }
                     if (cursor) {
-                        // Regex or other conditions here
-                        results.push(cursor.value)
+                        if (filter(cursor.value)) {
+                            results.push(cursor.value)
+                        }
                         if (results.length < limit) {
                             cursor.continue()
                         } else {
                             return resolve(results)
                         }
-                    }
-                    else {
+                    } else {
                         request.result.close()
                         return resolve(results)
                     }
@@ -184,7 +192,7 @@ export default (dbName: string) => ({
             }
         })
     },
-    count(store: any) { 
+    count(store: any) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e) => {
