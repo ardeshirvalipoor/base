@@ -12,7 +12,8 @@ A lightweight, high-performance component-based library, built with vanilla Java
 Creating components with Base is simple and straightforward:
 
 ### Creating a Component
-```// Component child.js
+```
+// Component child.js
 const base = Base('div');
 // or
 const base = Div('Hi');
@@ -21,7 +22,8 @@ return base;
 ```
 
 ### Importing and Using Components
-```// Component parent.js
+```
+// Component parent.js
 import { Child } from './child';
 
 const base = Base('div');
@@ -34,7 +36,8 @@ return base;
 
 ### Differences from Standard HTML/JS
 Example with regular HTML/JS code:
-```<div>
+```
+<div>
     <p>Hello</p>
     <span>Test</span>
 </div>
@@ -51,10 +54,13 @@ base.append(title, test)
 Easily apply CSS styles to components using style objects:
 
 ### HTML with CSS class
-```<div class="some-style-class">```
+```
+<div class="some-style-class">
+```
 
 ### Base with style object
-```base.cssClass({
+```
+base.cssClass({
   color: 'red',
   height: '20px'
 });
