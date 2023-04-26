@@ -40,7 +40,7 @@ Example with regular HTML/JS code:
 </div>
 ````
 Equivalent example with Base:
-````
+```
 const base = Div();
 const title = P('Hello');
 const test = Span('Test');
@@ -57,7 +57,8 @@ Easily apply CSS styles to components using style objects:
 ```base.cssClass({
   color: 'red',
   height: '20px'
-});```
+});
+```
 
 ## Documentation
 For a comprehensive guide on how to use Base and its components, please refer to the [official documentation](https://github.com/ardeshirvalipoor/base/wiki).
