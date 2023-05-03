@@ -9,9 +9,10 @@ export default (() => {
     let _current: string
     let _container: IBaseComponent<keyof HTMLElementTagNameMap>
     let _currentPages: IPage[] = []
+
     function when(path: string, handler: TRouteHandler): void {
         // parse params: Example: replace /:id with /([^/]+) per placeholder
-        const paramMatch = new RegExp(':([^/]+)', 'g')
+        const paramMatch = /:([^/]+)/g
         const route: IRoute = {
             path,
             handler,
@@ -29,6 +30,7 @@ export default (() => {
         }
         _routes.push(route)
     }
+
 
     function back(data?: any) {
         // if (_isBusy) return
@@ -72,7 +74,6 @@ export default (() => {
 
         while (_currentPages.length) {
             const p = <IPage>_currentPages.pop()
-
             p.exit({ from: location.pathname, to: route.replace('/' + _root, ''), ...routeParams })
         }
         // Todo: fix later
@@ -104,19 +105,7 @@ export default (() => {
         if (!possibleLink) {
             return
         }
-        if (possibleLink.href.includes('whatsapp:')) {
-            window.location.href = possibleLink.href
-            return
-        }
-        if (possibleLink.href.includes('t.me/')) {
-            window.location.href = possibleLink.href
-            return
-        }
-        if (possibleLink.href.includes('tel:')) {
-            window.location.href = possibleLink.href
-            return
-        }
-        if (possibleLink.href.includes('mailto:')) {
+        if (['whatsapp:', 't.me/', 'tel:', 'mailto:'].some((protocol) => possibleLink.href.includes(protocol))) {
             window.location.href = possibleLink.href
             return
         }
@@ -197,7 +186,7 @@ function findPossibleLink(e: MouseEvent) {
 
 export interface IRoute {
     path: string
-    params: { [key: string]: string }
+    params: { [key: string]: any }
     reg: RegExp
     handler: TRouteHandler
     page?: IPage

@@ -1,19 +1,24 @@
-import { _emitter } from './emitter'
+import emitter, { _emitter } from './emitter'
 
-export function observe(el: HTMLElement)/* : Promise<HTMLElement[]> */ {
-    const em = _emitter()
+let isInitialized = false
+
+export function observe() {
+    if (isInitialized) return
     let observer = new MutationObserver((mutations) => {
         for (let mutation of mutations) {
-            mutation.addedNodes.forEach((node: HTMLElement) => {
-                if (node instanceof HTMLElement) {
-                    const id = node?.getAttribute('data-base-id')
-                    em.emit('mutate', id)
-                }
-            })
+            if (mutation.type === 'childList') {
+                Array.from(mutation.addedNodes).forEach((node: HTMLElement) => {
+                    if (node instanceof HTMLElement) {
+                        emitter.emit('mutate', node)
+                    }
+                })
+            }
         }
-        // observer.disconnect()
     })
-    observer.observe(el, { childList: true })
+    observer.observe(document, { childList: true, subtree: true })
+    isInitialized = true
+}
 
-    return em
+export default {
+    observe
 }

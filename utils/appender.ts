@@ -5,10 +5,12 @@ import { observe } from "./mounter"
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender => {
     let children: IBaseComponent<any>[] = []
-    const o = observe(base.el)
-    o.on('mutate', (id: string) => {
-        const found = children.find(c => c.id === id)
-        found?.emit('mounted', id)
+    emitter.on('mutate', (node: Node) => {
+        if (node.contains(base.el)) {
+            base.emit('mounted')
+        }
+        // const found = children.find(c => c.id === id)
+        // found?.emit('mounted', id)
     })
 
     // .then(nodes => {
