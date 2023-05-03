@@ -1,4 +1,3 @@
-import emitter from '../../../utils/emitter'
 import { PASSIVE } from '../../../utils/passive-support'
 import { Base } from '../../base'
 
