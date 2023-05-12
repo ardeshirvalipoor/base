@@ -195,6 +195,34 @@ export default (dbName: string) => ({
             }
         })
     },
+    all(store: string, page: number = 0, pageSize: number = 10) {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(dbName)
+            request.onsuccess = (e: Event) => {
+                const db = (e.target as IDBOpenDBRequest).result
+                const transaction = db.transaction(store, "readonly")
+                const objectStore = transaction.objectStore(store)
+
+                const getAllRequest = objectStore.getAll(IDBKeyRange.bound(page * pageSize, (page + 1) * pageSize - 1));
+
+
+                getAllRequest.onsuccess = () => {
+                    const results = getAllRequest.result
+                    db.close()
+                    resolve(results)
+                }
+
+                transaction.onerror = (err) => {
+                    reject(err)
+                }
+            }
+
+            request.onerror = (err) => {
+                reject(err)
+            }
+        })
+
+    },
     count(store: any) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
