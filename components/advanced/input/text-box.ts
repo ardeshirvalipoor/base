@@ -3,17 +3,17 @@ import { Base } from '../../base'
 import { Span } from '../../native/span'
 import { HIDE, SHOW, X, Y } from '../../../helpers/style'
 import { CS } from '../../../interfaces/style'
-
+type ValueType = string | number
 
 // Needs huge refactoring
-export function TextBox(placeholder = '', type = 'text', options: ITextbox = {}) {
+export function TextBox<T extends ValueType>(placeholder = '', type = 'text', options: ITextbox = {}) {
 
     // Todo: should be extendable
     const opts = { ...options }
     if (!opts.textAlign) opts.textAlign = opts.direction == 'rtl' ? 'right' : 'left'
 
     const base = Base('div')
-    const input = Input('', type)
+    const input = Input<T>('', type)
     input.el.setAttribute('enterkeyhint', 'done')
 
     const p = Span(placeholder)
@@ -101,8 +101,8 @@ export function TextBox(placeholder = '', type = 'text', options: ITextbox = {})
             getValue() {
                 return input.el.value
             },
-            setValue(val: string) {
-                input.el.value = val
+            setValue(val: T) {
+                input.el.value = val as string
             },
             clear() {
                 input.el.value = ''

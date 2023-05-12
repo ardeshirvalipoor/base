@@ -142,6 +142,9 @@ export default (dbName: string) => ({
             request.onsuccess = (e: Event | any) => {
                 let results: any[] = []
                 let hasSkipped = false
+                if (!request.result.objectStoreNames.contains(store)) {
+                    return resolve([])
+                }
                 const transaction = request.result.transaction([store], 'readonly')
                 const os = transaction.objectStore(store)
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
