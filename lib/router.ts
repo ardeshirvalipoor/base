@@ -57,6 +57,7 @@ export default (() => {
     }
 
     async function navigate(to: string = '', data = {}, from: string) {
+        
         if (to.includes('tel:')) return
 
         const found = _routes.find(route => route.reg.exec(to.split('?')[0]))
@@ -140,7 +141,7 @@ export default (() => {
         // goto(home.replace(root, '').replace(/\/$/,'') || '/')
         // }, 300); // Todo use default page transition
         window.addEventListener('popstate', (event) => {
-            navigate(location.pathname, history?.state?.data, _current)
+            navigate(location.pathname, history?.state, _current)
         }, PASSIVE)
         window.addEventListener('click', handleClickOnLinks)
     }
