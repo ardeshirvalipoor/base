@@ -7,7 +7,7 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
     base.el.setAttribute('placeholder', placeholder)
     if (options['accept']) base.el.setAttribute('accept', options['accept']) // For now
     if ('value' in options) base.el.value = options['value']
-    
+
     base.el.onblur = (e: Event) => base.emit('blur', e)
     base.el.onfocus = (e: Event) => base.emit('focus', e)
     base.el.oninput = (e: Event) => base.emit('input', { e, value: base.el.value })
@@ -26,7 +26,7 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             case 'ArrowUp': base.emit('key-arrow-up', v); break
             case 'ArrowDown': base.emit('key-arrow-down', v); break
             default:
-                break;
+                break
         }
     }
 
@@ -47,6 +47,8 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             },
             setValue(val: T) {
                 base.el.value = <string>val
+                var event = new Event('input')
+                base.el.dispatchEvent(event)
             },
             clear() {
                 base.el.value = ''

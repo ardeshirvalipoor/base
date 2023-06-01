@@ -4,7 +4,6 @@ export function editable(base: IBaseComponent<any>) {
     return {
         focus() {
             base.el.focus()
-            base.style({pointerEvents: 'all'})
             var range = document.createRange()
             range.selectNodeContents(base.el)
             range.collapse(false)
@@ -16,7 +15,7 @@ export function editable(base: IBaseComponent<any>) {
         },
         blur() {
             base.el.blur()
-            base.style({pointerEvents: 'none'})
+            // base.style({pointerEvents: 'none'})
         },
         getValue() {
             return base.el.innerHTML

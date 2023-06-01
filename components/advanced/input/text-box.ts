@@ -34,6 +34,7 @@ export function TextBox<T extends ValueType>(placeholder = '', type = 'text', op
         opacity: '0.5',
         textAlign: opts.textAlign,
         width: '100%',
+        
     })
     const inputStyle = <CS>{
         position: 'absolute',
@@ -63,7 +64,7 @@ export function TextBox<T extends ValueType>(placeholder = '', type = 'text', op
         } else {
             p.style(X(input.el.value ? opts.direction == 'rtl' ? -20 : 20 : 0))
         }
-        p.el.style.opacity = input.el.value ? '0' : '1'
+        p.el.style.opacity = input.el.value ? '0' : '.5'
         t = setTimeout(async () => {
             base.emit('input', input.el.value)
         }, options.timeout || 0)
@@ -107,7 +108,7 @@ export function TextBox<T extends ValueType>(placeholder = '', type = 'text', op
             clear() {
                 input.el.value = ''
                 p.el.style.transform = `translateX(0px)`
-                p.el.style.opacity = '1'
+                p.el.style.opacity = '.5'
                 base.emit('input', input.el.value)
             }
         }

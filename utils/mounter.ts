@@ -1,4 +1,4 @@
-import emitter, { _emitter } from './emitter'
+import emitter, { createEmitter } from './emitter'
 
 let isInitialized = false
 

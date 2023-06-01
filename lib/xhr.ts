@@ -1,4 +1,3 @@
-import { IResponse, IXHROptoins } from '../interfaces/xhr'
 import emitter from '../utils/emitter'
 
 const _XHRCache: any = {}
@@ -192,3 +191,16 @@ export const XHR = {
 //  2	HEADERS_RECEIVED   send() has been called, and headers and status are available.
 //  3	LOADING	           Downloading; responseText holds partial data.
 //  4	DONE	           The operation is complete.
+
+export interface IResponse {
+    data: any,
+    status: number,
+    error: any
+}
+
+export interface IXHROptoins {
+    method?: string,
+    type?: string,
+    cache?: number,
+    auth?: string
+}

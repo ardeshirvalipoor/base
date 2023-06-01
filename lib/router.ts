@@ -34,10 +34,10 @@ export default (() => {
 
     function back(data?: any) {
         // if (_isBusy) return
+        history.replaceState(data, '', '') // Todo: fix
         window.history.back()
-        setTimeout(() => {
-            history.replaceState(data, '', '') // Todo: fix
-        }, 10)
+        // setTimeout(() => {
+        // }, 10)
     }
 
     function forward(data?: any) {

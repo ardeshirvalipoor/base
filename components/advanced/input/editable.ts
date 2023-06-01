@@ -39,7 +39,7 @@ export const Editable = (options: any = {}) => {
     // base.el.addEventListener('input', debounced)
 
     base.cssClass({
-        pointerEvents: 'inherit',
+        // pointerEvents: 'inherit',
         userSelect: 'text', // IOS
         overflow: 'auto',
         overflowX: 'hidden',

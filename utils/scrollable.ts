@@ -1,14 +1,12 @@
-import { IBaseComponent } from '../interfaces/base'
-import emitter from './emitter'
+import { IBaseComponent } from '../components/base'
 import { PASSIVE } from './passive-support'
 
 export function Scrollable(base: IBaseComponent<any>) {
 
     base.el.addEventListener('scroll', onScroll, PASSIVE)
     // base.el.addEventListener('touchmove', onScroll, PASSIVE)
-
     function onScroll() {
-        base.emit('scroll', Math.ceil(base.el.scrollTop) , base.el.offsetHeight,  base.el.scrollHeight )
+        base.emit('scroll', Math.ceil(base.el.scrollTop), base.el.offsetHeight, base.el.scrollHeight)
         if (base.el.scrollHeight <= Math.ceil(base.el.scrollTop) + base.el.offsetHeight) {
             base.emit('scrolled-end')
         }

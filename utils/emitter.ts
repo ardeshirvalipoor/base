@@ -1,7 +1,7 @@
 import { EVENTS } from '../helpers/events'
 
-export const _emitter = () => {
-    let _listeners: any = {}
+export const createEmitter = () => {
+    let _listeners: { [key: string]: Function[] } = {}
 
     function on(event: string | string[], ...handlers: Function[]) {
         if (!Array.isArray(event)) event = [event]
@@ -9,6 +9,7 @@ export const _emitter = () => {
             if (!_listeners[e]) _listeners[e] = []
             _listeners[e].push(...handlers)
         })
+        return this
     }
 
     function once(event: string, handler: Function) {
@@ -17,14 +18,25 @@ export const _emitter = () => {
             off(event, onceFunction)
         }
         on(event, onceFunction)
+        return this
     }
 
     function off(event: string, handler: Function) {
         _listeners[event] = (_listeners[event] || []).filter((e: any) => e !== handler)
+        return this
     }
 
     function emit(event: string, ...params: any) {
-        (_listeners[event] || []).map((e: any) => e(...params))
+        if (_listeners[event]) {
+            (_listeners[event] || []).forEach((e: any) => e(...params))
+        }
+        
+        // Wildcard events
+        if (_listeners['*']) {
+            _listeners['*'].forEach((e: any) => e(event, ...params))
+        }
+        
+        return this
     }
 
     function removeAllListeners() {
@@ -41,12 +53,13 @@ export const _emitter = () => {
     }
 }
 
-export default _emitter()
+// Singleton global emitter
+export default createEmitter()
 
 export interface IEmitter {
-    on: (e: string | string[], ...handlers: Function[]) => void
-    once: (e: string, handler: Function) => void
-    off: (e: string, handler: Function) => void
-    emit: (e: string, ...args: any) => void
+    on: (e: string | string[], ...handlers: Function[]) => IEmitter
+    once: (e: string, handler: Function) => IEmitter
+    off: (e: string, handler: Function) => IEmitter
+    emit: (e: string, ...args: any) => IEmitter
     removeAllListeners: () => void
 }
