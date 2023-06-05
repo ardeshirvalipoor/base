@@ -30,7 +30,7 @@ export function TextBox<T extends ValueType>(placeholder = '', type = 'text', op
         fontWeight: options.fontWeight || '100',
         pointerEvents: 'none',
         fontSize: opts.fontSize + 'px',
-        marginLeft: '2px',
+        // marginLeft: '2px',
         opacity: '0.5',
         textAlign: opts.textAlign,
         width: '100%',
