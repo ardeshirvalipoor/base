@@ -2,7 +2,7 @@ import { Input } from '../../native/input'
 import { Base } from '../../base'
 import { Span } from '../../native/span'
 import { HIDE, SHOW, X, Y } from '../../../helpers/style'
-import { CS } from '../../../interfaces/style'
+import { CS } from '../../../utils/styler'
 type ValueType = string | number
 
 // Needs huge refactoring
