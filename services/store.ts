@@ -16,9 +16,14 @@ function merge(key: string, value: any) {
     __store.emit(key, __store[key])
 }
 
+function keys() {
+    return Object.keys(__store)
+}
+
 __store.get = get
 __store.set = set
 __store.merge = merge
+__store.keys = keys
 
 const store: IStore<any> = __store
 
@@ -28,4 +33,5 @@ interface IStore<T> extends IEmitter {
     get<T = any>(key: string): T;
     set: (key: string, value: T) => void
     merge: (key: string, value: Partial<T>) => void
+    keys: () => string[]
 }
