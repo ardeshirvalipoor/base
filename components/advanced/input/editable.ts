@@ -8,6 +8,7 @@ export const Editable = (options: any = {}) => {
     base.el.contentEditable = 'true'
     base.el.dir = 'auto'
     base.el.addEventListener('input', () => {
+        base.emit('typing')
         if (options.timeout === undefined) return base.emit('input')
         clearTimeout(t)
         t = setTimeout(() => base.emit('input'), options.timeout ?? 500) // Todo: use debounce
