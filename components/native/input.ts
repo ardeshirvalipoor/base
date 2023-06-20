@@ -47,7 +47,7 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             },
             setValue(val: T) {
                 base.el.value = <string>val
-                var event = new Event('input')
+                var event = new Event('set-value')
                 base.el.dispatchEvent(event)
             },
             clear() {
