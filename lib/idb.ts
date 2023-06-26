@@ -30,7 +30,6 @@ export default (dbName: string) => ({
     },
     createStore(name: string, version: number, options?: { keyPath: string, autoIncrement?: boolean, indices?: string[] }) {
         const opts = { keyPath: 'id', autoIncrement: true, indices: [], ...options }
-        // keyPath = 'id', autoIncrement = true
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onupgradeneeded = (event) => {
@@ -136,7 +135,6 @@ export default (dbName: string) => ({
             }
             return true
         }
-
         return new Promise<any[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e: Event | any) => {
@@ -170,9 +168,7 @@ export default (dbName: string) => ({
                     if (cursor && !hasSkipped && skip > 0) {
                         hasSkipped = true
                         cursor.advance(skip)
-                        return
-                    }
-                    if (cursor) {
+                    } else if (cursor) {
                         if (filter(cursor.value)) {
                             results.push(cursor.value)
                         }
