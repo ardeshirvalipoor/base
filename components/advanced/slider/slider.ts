@@ -1,7 +1,6 @@
 import { HIDE, SHOW, X } from '../../../helpers/style'
-import { IBaseComponent } from '../../../interfaces/base'
 import { PASSIVE } from '../../../utils/passive-support'
-import { Base } from '../../base'
+import { Base, IBaseComponent } from '../../base'
 import { Div } from '../../native/div'
 import { Handle } from './handle'
 import { SliderContents } from './slider-contents'
@@ -22,7 +21,7 @@ export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {
         W = options.width || base.el.getBoundingClientRect().width
         slides.forEach((slide, i) => {
             container.append(slide)
-            slide.style(X((options.direction == 'rtl' ? W : -W) * i))
+            slide.style(X((options.direction == 'r' ? -W : W) * i))
             slide.on('next', () => {
                 if (index == slides.length - 1) {
                     base.emit('done')
@@ -58,12 +57,12 @@ export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {
     function move(dt = tx) {
         let dx = 0
         if (dt > 60) {
-            if (x == (slides.length - 1) * W) dx = 0
-            else dx = -(options.direction == 'rtl' ? W : -W)
+            if (index === 0 && options.direction === 'l' || index === slides.length - 1 && options.direction === 'r') dx = 0
+            else dx = W
         }
         if (dt < -60) {
-            if (x == 0) dx = 0
-            else dx = (options.direction == 'rtl' ? W : -W)
+            if (index === slides.length - 1 && options.direction === 'l' || index === 0 && options.direction === 'r') dx = 0
+            else dx = -W
         }
         container.move(x += dx, { smooth: true })
         index = Math.abs(Math.round(x / W))
@@ -78,11 +77,11 @@ export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {
     }
 
     function next() {
-        move(options.direction == 'rtl' ? W : -W)
+        move(options.direction == 'r' ? W : -W)
     }
 
     function prev() {
-        move(options.direction == 'rtl' ? -W : W)
+        move(options.direction == 'r' ? -W : W)
     }
 
     function reset(delay = 0) {
