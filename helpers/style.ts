@@ -8,6 +8,14 @@ export const ABSOLUTE = <CS>{
     bottom: '0',
 }
 
+export const NONE = <CS>{
+    display: 'none'
+}
+
+export const BLOCK = <CS>{
+    display: 'block'
+}
+
 export const HIDE = <CS>{
     opacity: '0',
     pointerEvents: 'none'
