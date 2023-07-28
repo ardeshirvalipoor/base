@@ -32,24 +32,37 @@ export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {
             slide.on('prev', prev)
         })
     })
-
+    let mode = ''
     let ox = 0
+    let oy = 0
     let x = 0
     let tx = 0
     base.el.addEventListener('touchstart', (e: TouchEvent) => {
         tx = 0
         ox = e.touches[0].pageX
+        oy = e.touches[0].pageY
     }, PASSIVE)
     base.el.addEventListener('touchmove', (e: TouchEvent) => {
+        // check user is touching horizontally
+        if (Math.abs(e.touches[0].pageX - ox) < 10) return
+        // once it's vertical return and set to vertical scroll
+        if (mode === '' && Math.abs(e.touches[0].pageY - oy) > 10) {
+            mode = 'v'
+        } else {
+            mode = 'h'
+        }
+        if (mode === 'v') return
         if (!options.touchable) return
         tx = e.touches[0].pageX - ox
         container.move(tx + x)
     })
     base.el.addEventListener('touchend', () => {
+        mode = ''
         if (!options.touchable) return
         move()
     })
     base.el.addEventListener('touchcancel', () => {
+        mode = ''
         if (!options.touchable) return
         move()
     })
@@ -74,6 +87,9 @@ export const Slider = (slides: IBaseComponent<any>[], options: ISlideOptions = {
         if (index == 0) {
             handleR.style({ display: 'none' })
         }
+        setTimeout(() => {
+            base.emit('slide', index)
+        }, 160);
     }
 
     function next() {
