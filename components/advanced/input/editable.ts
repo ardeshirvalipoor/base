@@ -2,9 +2,10 @@ import { editable } from '../../../utils/editable'
 import { Base } from '../../base'
 
 export const Editable = (options: any = {}) => {
-    let t : NodeJS.Timeout
+    let t: NodeJS.Timeout
 
     const base = Base('div')
+    if (options.text) base.el.innerHTML = options.text
     base.el.contentEditable = 'true'
     base.el.dir = 'auto'
     base.el.addEventListener('input', () => {
@@ -14,9 +15,32 @@ export const Editable = (options: any = {}) => {
         t = setTimeout(() => base.emit('input'), options.timeout ?? 500) // Todo: use debounce
     })
     base.el.addEventListener('paste', (e) => {
-        e.preventDefault()
+        if (options.removeFormattingOnPaste) {
+            const text = e.clipboardData?.getData('text/plain')
+            // use selection api to get the selected text
+            const selection = window.getSelection()
+            const range = selection?.getRangeAt(0)
+            if (!range) return
+            range.deleteContents()
+            range.insertNode(document.createTextNode(text || ''))
+            range.setStartAfter(range.endContainer)
+            e.preventDefault()
+        } 
         base.emit('paste', e)
     })
+
+    base.el.addEventListener('blur', () => {
+        base.emit('blur', base.el.innerHTML)
+    })
+    if (options.selectOnClick) {
+        base.el.onclick = () => {
+            const range = document.createRange()
+            range.selectNodeContents(base.el)
+            const selection = window.getSelection()
+            selection?.removeAllRanges()
+            selection?.addRange(range)
+        }
+    }
     // Input debounce
     // https://medium.com/@joshua_e_steele/debouncing-and-throttling-in-javascript-b01cad5d6dcf
     //
