@@ -20,7 +20,9 @@ export interface IStyler {
 import { IBaseComponent, IBaseSVGComponent } from '../components/base'
 import ldb from '../lib/ldb'
 import emitter from './emitter'
-let STYLE_DB: any = {}
+import { nextId } from './id-generator'
+
+const STYLE_DB: any = {}
 const STYLE_EL = document.createElement('style')
 document.head.appendChild(STYLE_EL)
 
@@ -36,8 +38,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         }
     },
     cssClass(style: CS, options: IStyleOptions | number) {
-        // Todo: urgent fix
-        // TODO: check multiple classes
+
         const delay = typeof options === 'number' ? options : options?.delay
         typeof delay === 'number' ? setTimeout(applyCssClass, delay) : applyCssClass()
 
@@ -55,48 +56,60 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         })
 
         return base
-        
         function applyCssClass() {
-            const { name, styleString } = generateStyleString();
-            const key = styleString;  // Removed the RegExp replacement. If there's a specific reason you had it, let's address that separately.
-            if (STYLE_DB[key]) {
-                base.el.classList.add(STYLE_DB[key]);
-                return;
-            }
-            STYLE_DB[key] = name;
-            const stylesheet = STYLE_EL.sheet as CSSStyleSheet;
-            try {
-                const styles = `.${name} { ${styleString} }`.match(/\.style[^}]+\}/g) || []
-                styles.forEach((s: string) => {
-                    stylesheet.insertRule(s, stylesheet.cssRules.length);
-                })
-            } catch (error) {
-                console.error('Failed to insert CSS rule:', error);
-            }
-            base.el.classList.add(name);
+            const styles = generateStyleString()
+            styles.forEach(({ name, body }) => {
+                if (STYLE_DB[body]) { // check if body is the sameو todo: advanced check
+                    base.el.classList.add(STYLE_DB[body])
+                    return
+                }
+                const stylesheet = STYLE_EL.sheet as CSSStyleSheet
+                const rule = `${name[0] === '@' ? '' : '.'}${name} { ${body} }`
+                stylesheet.insertRule(rule, stylesheet.cssRules.length)
+                if (!name.includes('&') && !name.includes('@') && !name.includes(':')) {
+                    // if (/\W/.test(name)) {
+                    base.el.classList.add(name)
+                    STYLE_DB[body] = name
+                }
+            })
         }
 
         function generateStyleString() {
-            let styleString = ''
-            let name = 'style-' + base.id + '-' + Math.floor(Math.random() * 100000)
-            if (typeof options === 'object' && options.name) name = options.name
-            Object.keys(style).sort((a, b) => {
-                if (a.match(/\&.*|\@/) && !b.match(/\&.*|\@/)) return 1
-                if (!a.match(/\&.*|\@/) && b.match(/\&.*|\@/)) return -1
-                return 0
-            }).forEach((prop: any) => {
-                if (prop.includes('&')) {
-                    const key = prop.slice(1)
-                    let body = generateStyle(style[prop])
-                    styleString += '}.' + name + key + '{' + body
-                } else if (prop.includes('@')) {
-                    let body = generateStyle(style[prop])
-                    styleString += '}' + prop + '{.' + name + '{' + body + '}'
-                } else {
-                    styleString += getPropValueLine(prop, style)
-                }
+
+            const name = makeStyleName()
+            let styleKeys: string[] = []
+            let otherKeys: string[] = []
+            let mediaKeys: string[] = []
+
+            Object.keys(style).forEach((key) => {
+                if (/^\&/.test(key)) otherKeys.push(key)
+                if (/^\@/.test(key)) mediaKeys.push(key)
+                if (/^\w/.test(key)) styleKeys.push(key)
             })
-            return { name, styleString }
+
+            const normalStyle = styleKeys.reduce((styleString: any, prop: any) => { // 'color: red; font-size: 12px;'
+                styleString += getPropValueLine(prop, style)
+                return styleString
+            }, '')
+
+            const specialStyle = otherKeys.reduce((styles: any, prop: any) => { // '&.dark': { color: 'red' }
+                const key = prop.slice(1)
+                const body = generateStyle(style[prop])
+                styles.push({ name: name + key, body })
+                return styles
+            }, [])
+
+            const mediaStyle = mediaKeys.reduce((styles: any, prop: any) => { // '@media (max-width: 600px)': { color: 'red' }
+                const body = generateStyle(style[prop])
+                styles.push({ name: prop, body: `.${name} { ${body} }` })
+                return styles
+            }, [])
+
+            return [
+                { name, body: normalStyle },
+                ...specialStyle,
+                ...mediaStyle
+            ]
         }
 
         function generateStyle(obj: any) {
@@ -110,6 +123,11 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
             return (value?.toString() || 'unset').split(';').map((v: string) => `${snake}:${v};`).join('')
         }
 
+        function makeStyleName() {
+            let name = 's-' + nextId()
+            if (typeof options === 'object' && options.name) name = options.name
+            return name
+        }
     }
 })
 
