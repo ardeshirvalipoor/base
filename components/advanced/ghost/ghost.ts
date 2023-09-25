@@ -1,7 +1,7 @@
 import { EASE, HIDE, ROUND, S, WH } from '../../../helpers/style'
-import { IBaseComponent } from '../../../interfaces/base'
-import { CS } from '../../../interfaces/style'
 import { PASSIVE } from '../../../utils/passive-support'
+import { CS } from '../../../utils/styler'
+import { IBaseComponent } from '../../base'
 import { Div } from '../../native/div'
 
 export const Ghost = (options = <IGhostOptions>{}) => {

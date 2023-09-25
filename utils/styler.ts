@@ -56,6 +56,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         })
 
         return base
+        
         function applyCssClass() {
             const styles = generateStyleString()
             styles.forEach(({ name, body }) => {

@@ -20,8 +20,13 @@ export function editable(base: IBaseComponent<any>) {
         getValue() {
             return base.el.innerHTML
         },
+        getText() {
+            return base.el.innerText
+        },
         setValue(val: string) {
-            base.el.innerHTML = val
+            base.el.value = <string>val
+            var event = new Event('set-value')
+            base.el.dispatchEvent(event)
         },
         clear() {
             base.el.innerHTML = ''
