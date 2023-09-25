@@ -1,11 +1,13 @@
 import { editable } from '../../../utils/editable'
 import { Base } from '../../base'
+import { Div } from '../../native/div'
 
 export interface IEditableOptions {
     text?: string
     timeout?: number
     removeFormattingOnPaste?: boolean
-    selectOnClick?: boolean
+    selectOnClick?: boolean,
+    placeholder?: string
 }
 
 
@@ -13,28 +15,42 @@ export const Editable = (options: IEditableOptions = {}) => {
     let t: NodeJS.Timeout
 
     const base = Base('div')
-    if (options.text) base.el.innerHTML = options.text
-    base.el.contentEditable = 'true'
-    base.el.dir = 'auto'
-    base.el.addEventListener('input', () => {
-        base.emit('typing')
-        if (options.timeout === undefined) return base.emit('input')
+
+    const placeholder = Div(options.placeholder || '')
+    const editor = Div('')
+    base.append(placeholder, editor)
+
+    if (options.text) editor.el.innerHTML = options.text
+    editor.el.contentEditable = 'true'
+    editor.el.dir = 'auto'
+    editor.el.addEventListener('input', (e) => {
+        console.log('!!!!input', e)
+
+        if (editor.el.innerHTML === '') placeholder.style({ display: 'block' })
+        else placeholder.style({ display: 'none' })
+        editor.emit('typing')
+        if (options.timeout === undefined) return editor.emit('input')
         clearTimeout(t)
-        t = setTimeout(() => base.emit('input'), options.timeout ?? 500) // Todo: use debounce
+        t = setTimeout(() => editor.emit('input'), options.timeout ?? 500) // Todo: use debounce
+
     })
     // base.el.addEventListener('paste', (e) => {
+    editor.el.addEventListener('paste', (e) => {
+        placeholder.style({ display: 'none' })
+        // temp
+    })  
     //     if (options.removeFormattingOnPaste) {
     //         // Get HTML content from clipboard
     //         const htmlContent = e.clipboardData?.getData('text/html');
-    
+
     //         // Sanitize the HTML content to only keep <b>, <i>, and new lines
     //         const sanitizedContent = sanitizeHtml(htmlContent);
-    
+
     //         // Use selection API to get the selected text
     //         const selection = window.getSelection();
     //         const range = selection?.getRangeAt(0);
     //         if (!range) return;
-            
+
     //         range.deleteContents();
     //         const div = document.createElement('div');
     //         div.innerHTML = sanitizedContent;
@@ -44,56 +60,56 @@ export const Editable = (options: IEditableOptions = {}) => {
     //     } 
     //     base.emit('paste', e);
     // });
-    
+
     // function sanitizeHtml(html) {
     //     // Remove all tags except <b>, <i>, and <br>
     //     const tempDiv = document.createElement('div');
     //     tempDiv.innerHTML = html;
-    
+
     //     // Convert new lines to <br>
     //     const text = tempDiv.textContent || tempDiv.innerText || "";
     //     const formattedText = text.replace(/(\r\n|\n|\r)/gm, '<br>');
-    
+
     //     // Preserve <b> and <i> tags
     //     const brElements = [...tempDiv.getElementsByTagName('br')];
     //     const bElements = [...tempDiv.getElementsByTagName('b')];
     //     const iElements = [...tempDiv.getElementsByTagName('i')];
-    
+
     //     brElements.forEach(el => {
     //         formattedText.replace(el.textContent, '<br>');
     //     });
     //     bElements.forEach(el => {
     //         formattedText = formattedText.replace(el.textContent, `<b>${el.textContent}</b>`);
     //     });
-    
+
     //     iElements.forEach(el => {
     //         formattedText = formattedText.replace(el.textContent, `<i>${el.textContent}</i>`);
     //     });
-    
+
     //     return formattedText;
     // }
     base.el.addEventListener('paste', (e) => {
         if (options.removeFormattingOnPaste) {
             // Get plain text from clipboard
-            const text = e.clipboardData?.getData('text/plain');
-    
+            const text = e.clipboardData?.getData('text/plain')
+
             // Convert new line characters to HTML line breaks
-            const formattedText = text?.replace(/(\r\n|\n|\r)/gm, '<br>') || '';
-    
+            const formattedText = text?.replace(/(\r\n|\n|\r)/gm, '<br>') || ''
+
             // Use selection API to get the selected text
-            const selection = window.getSelection();
-            const range = selection?.getRangeAt(0);
-            if (!range) return;
-            
-            range.deleteContents();
-            const node = document.createElement('div');
-            node.innerHTML = formattedText;
-            range.insertNode(node);
-            range.setStartAfter(range.endContainer);
-            e.preventDefault();
-        } 
-        base.emit('paste', e);
-    });
+            const selection = window.getSelection()
+            const range = selection?.getRangeAt(0)
+            if (!range) return
+
+            range.deleteContents()
+            const node = document.createElement('div')
+            node.innerHTML = formattedText
+            range.insertNode(node)
+            range.setStartAfter(range.endContainer)
+            e.preventDefault()
+        }
+        base.emit('paste', e)
+    })
 
     base.el.addEventListener('blur', () => {
         base.emit('blur', base.el.innerHTML)
@@ -134,12 +150,22 @@ export const Editable = (options: IEditableOptions = {}) => {
         userSelect: 'text', // IOS
         overflow: 'auto',
         overflowX: 'hidden',
+        position: 'relative',
         // height: '100%'
+    })
+    placeholder.cssClass({
+        position: 'absolute',
+        top: '50px',
+        left: '50px',
+        color: '#aaa',
+        pointerEvents: 'none',
+        userSelect: 'none',
+        fontSize: '18px',
     })
 
 
     return Object.assign(
         base,
-        editable(base)
+        editable(editor)
     )
 }
