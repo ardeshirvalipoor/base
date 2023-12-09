@@ -47,11 +47,13 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             },
             setValue(val: T) {
                 base.el.value = <string>val
-                var event = new Event('set-value')
-                base.el.dispatchEvent(event)
+                // var event = new Event('set-value')
+                // base.el.dispatchEvent(event)
+                triggerInputEvent(base.el)
             },
             clear() {
                 base.el.value = ''
+                triggerInputEvent(base.el)
             }
         }
     )
@@ -60,4 +62,9 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
 export interface IInput<T> {
     e: InputEvent,
     value: T
+}
+
+function triggerInputEvent(inputElement: any) {
+    const event = new Event('input', { bubbles: true });
+    inputElement.dispatchEvent(event);
 }
