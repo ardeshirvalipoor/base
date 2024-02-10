@@ -8,8 +8,8 @@ export interface IEditableOptions {
     removeFormattingOnPaste?: boolean
     selectOnClick?: boolean,
     placeholder?: string
+    maxHeight?: number
 }
-
 
 export const Editable = (options: IEditableOptions = {}) => {
     let t: NodeJS.Timeout
@@ -24,8 +24,6 @@ export const Editable = (options: IEditableOptions = {}) => {
     editor.el.contentEditable = 'true'
     editor.el.dir = 'auto'
     editor.el.addEventListener('input', (e) => {
-        console.log('!!!!input', e)
-
         if (editor.el.innerHTML === '') placeholder.style({ display: 'block' })
         else placeholder.style({ display: 'none' })
         editor.emit('typing')
@@ -144,14 +142,24 @@ export const Editable = (options: IEditableOptions = {}) => {
     // }, 500)
     //
     // base.el.addEventListener('input', debounced)
+    editor.cssClass({
+        // pointerEvents: 'inherit',
+        userSelect: 'text', // IOS
+        overflow: 'auto',
+        overflowX: 'hidden',
+        position: 'relative',
+        minWidth: '100%',
+        minHeight: '20px',
+        // backgroundColor: 'yellow',
 
+    })
     base.cssClass({
         // pointerEvents: 'inherit',
         userSelect: 'text', // IOS
         overflow: 'auto',
         overflowX: 'hidden',
         position: 'relative',
-        // height: '100%'
+  
     })
     placeholder.cssClass({
         position: 'absolute',
