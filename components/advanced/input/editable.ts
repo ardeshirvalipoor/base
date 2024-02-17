@@ -30,13 +30,13 @@ export const Editable = (options: IEditableOptions = {}) => {
         if (options.timeout === undefined) return editor.emit('input')
         clearTimeout(t)
         t = setTimeout(() => editor.emit('input'), options.timeout ?? 500) // Todo: use debounce
-
     })
     // base.el.addEventListener('paste', (e) => {
     editor.el.addEventListener('paste', (e) => {
         placeholder.style({ display: 'none' })
         // temp
-    })  
+    })
+    base.el.addEventListener('click', () => editor.el.focus())
     //     if (options.removeFormattingOnPaste) {
     //         // Get HTML content from clipboard
     //         const htmlContent = e.clipboardData?.getData('text/html');

@@ -1,0 +1,215 @@
+import { IBaseComponent } from '../components/base'
+import emitter from '../utils/emitter'
+import { PASSIVE } from '../utils/passive-support'
+
+export default (() => {
+    let _routes: IRoute[] = []
+    let _root = ''
+    let _current: string
+    let _currentView: IPage
+
+    function when(path: string, handler: TRouteHandler): void {
+        const paramMatch = /:([^/]+)\??/g
+        const params: any = {}
+        // Build the regex pattern in one pass
+        const pattern = '^' + _root + path.replace(paramMatch, (match, param) => {
+            
+            const paramReg = path.replace(match, '([^/]+)').replace(/(:[^/]+)/g, '[^/]+')
+            params[param.replace('?','')] = new RegExp(paramReg)
+            if (match.endsWith('?')) {
+                return '(?:\/([^/]+))?' // Optional parameter without preceding slash
+            }
+            return '([^/]+)' // Mandatory parameter with preceding slash
+        }) + '$'
+
+        const route: IRoute = {
+            path,
+            handler,
+            params,
+            reg: new RegExp(pattern),
+            page: undefined
+        }
+        const alreadyPushed = _routes.find(_route => _route.path === path)
+        if (!alreadyPushed) _routes.push(route)
+
+    }
+
+    function back(data?: any) {
+        history.replaceState(data, '', '') // Todo: fix
+        window.history.back()
+    }
+
+    function forward(data?: any) {
+        history.replaceState(data, '', '')
+        window.history.forward()
+    }
+
+    async function replace(to: string = '', data = {}) {
+        window.history.replaceState({ data, to }, '', to)
+    }
+
+    async function goto(to: string = '', data = {}) {
+        const from = location.pathname
+        window.history.pushState({ data, to, from }, '', _root + to)
+        navigate(_root + to, data, from)
+    }
+
+    async function navigate(to: string = '', data = {}, from: string) {
+        if (to.includes('tel:')) return
+        // console.log('founds', _routes.filter(route => to.split('?')[0].match(route.reg)))
+        const founds = _routes.filter(route => route.reg.exec(to.split('?')[0]))
+        const notFound = _routes.find(route => route.path === '/404')
+
+        if (founds.length) {
+            // founds.forEach(found => {
+            //     found.handler({ params: parseParams(found), query: parseQuery(), from, to: to.replace(_root, ''), data })
+
+            // })
+            founds[0].handler({ params: parseParams(founds[0]), query: parseQuery(), from, to: to.replace(_root, ''), data })
+        } else {
+            // console.log('404', { found, _root, to })
+            if (notFound) notFound.handler({ params: parseParams(notFound), query: parseQuery(), from, to: to.replace(_root, ''), data })
+        }
+        emitter.emit('route-changed', to.replace(_root, ''), { to, from, data })
+    }
+
+    async function transit(route: string, P: () => IPage, routeParams: IRouteParams, view: IBaseComponent<keyof HTMLElementTagNameMap>) {
+        const next = _routes.find(_route => {
+            return _route.reg.test(_root + route)
+        })
+        if (!next) {
+            console.log('404', { next, _root, route })
+            return
+        }
+        if (!next.page) {
+            next.page = P()
+            view.append(next.page)
+        }
+        // console.log('next', next.page, _currentView);
+        
+        if (_currentView === next.page) {
+            // console.log('! Same')
+            return
+        }
+        if (_currentView) {
+            // console.log('exit', _currentView)
+            await _currentView.exit({ from: location.pathname, to: route.replace('/' + _root, ''), ...routeParams })
+        }
+        // console.log('enter', next.page)
+        await next.page.enter({ from: location.pathname, to: route, ...routeParams })
+        _currentView = next.page
+        next.page.emit('enter', { from: location.pathname, to: route, ...routeParams })
+        _current = _root + route
+    }
+
+    function handleClickOnLinks(e: MouseEvent) {
+        e.preventDefault()
+        e.stopPropagation()
+        const possibleLink = findPossibleLink(e)
+
+        if (!possibleLink) {
+            return
+        }
+        if (['whatsapp:', 't.me/', 'tel:', 'mailto:'].some((protocol) => possibleLink.href.includes(protocol))) {
+            window.location.href = possibleLink.href
+            return
+        }
+        if (possibleLink.target !== '_self') {
+            window.open(possibleLink.href, possibleLink.target)
+        }
+        if (possibleLink === '/' || possibleLink.href.indexOf(location.origin) == 0 || /(\/|^)\w+\.\w+/.test(possibleLink.href) == false) {
+            let route = possibleLink.href.replace(location.origin, '')
+            goto(route)
+        } else {
+            window.open(possibleLink.href, possibleLink.target)
+        }
+    }
+
+    function init({ routes, view, root = '', home = location.pathname }: any) {
+        _root = root
+
+        Object.entries(routes).map(([route, Page]: any) => {
+            when(route, async (routeParams: IRouteParams) => await transit(route, Page, routeParams, view)) //66
+        })
+        const main = home.replace(root, '').replace(/\/$/, '')
+        const queryString = location.search//.replace('?', '')
+        const steps = main.split('/').map((step: string, i: number, arr: string[]) => {
+            return arr.slice(0, i + 1).join('/') || '/'
+        })
+        steps.slice(0, -1).forEach((step: string, i: number) => {
+            history.pushState({}, '', step)
+        })
+
+        goto(steps[steps.length - 1] + queryString)
+        window.addEventListener('popstate', (event) => {
+            navigate(location.pathname + location.search, history?.state, _current)
+        }, PASSIVE)
+        window.addEventListener('click', handleClickOnLinks)
+    }
+
+    return {
+        back,
+        forward,
+        when,
+        replace,
+        goto,
+        init
+    }
+})()
+
+function parseParams(found: IRoute) {
+    return Object.entries(found.params).reduce((p: any, [key, reg]) => {
+        p[key] = location.pathname.match(reg)?.[1]
+        return p
+    }, {})
+}
+
+function parseQuery() {
+    const q = location.search
+    if (!q) return {}
+    return q.split(/&|\?/).reduce((query: any, item: string) => {
+        const [key, value] = item.split('=')
+        if (key) query[key] = value
+        return query
+    }, {})
+}
+
+function findPossibleLink(e: MouseEvent) {
+    if (!e.target) return undefined
+    return findParent(e.target)
+    // TODO: for touch handling
+    function findParent(el: HTMLElement | any): any | undefined {
+        if (!el) return undefined
+        if (el.getAttribute('href')) return { href: el.getAttribute('href'), target: el.getAttribute('target') }
+        return findParent(el.parentElement)
+        //TODO return target
+    }
+}
+
+export interface IRoute {
+    path: string
+    params: { [key: string]: any }
+    reg: RegExp
+    handler: TRouteHandler
+    page?: IPage
+}
+
+export interface IRoutes {
+    [index: string]: IRoute
+}
+
+export interface IRouteParams<T = any> {
+    params?: T
+    route?: IRoute
+    from?: string
+    to?: string | undefined
+    query: any
+    data?: T
+}
+
+export interface IPage extends IBaseComponent<any> {
+    enter: (params: IRouteParams) => Promise<any>
+    exit: (params: IRouteParams) => Promise<any>
+}
+
+export type TRouteHandler = (routeParams: IRouteParams) => Promise<void>
