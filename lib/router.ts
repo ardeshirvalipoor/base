@@ -8,7 +8,6 @@ let __emitter = createEmitter()
 let __views: IView[] = []
 
 function init({ routes, view, home, root, preventAutoStart }: IRouteInitParams) {
-    console.log('\n\n\n');
     
     let _view = {} as IView
     _view.routes = routes
@@ -18,56 +17,46 @@ function init({ routes, view, home, root, preventAutoStart }: IRouteInitParams) 
     _view.root = root || ''
     __views.push(_view)
     setupLinkClickListener()
-    console.log('INIT ROUTER', { routes, view, home, root, preventAutoStart });
     
-    // if (!preventAutoStart) {
-    //     console.log('******GOING TO HOME', home || location.pathname + location.search);
-        
-    //     goto(home || location.pathname + location.search)
-    // }
+    if (!preventAutoStart) {
+        goto(home || location.pathname + location.search)
+    }
 }
 
-function goto(path: string, data?: any, options?: any) {
-    console.log('GOTO', { path, data, options });
-    
-    for (const _view of __views) {
-        console.log('----------------')
+interface IGotoOptions {
+    replace?: boolean,
+    from?: string,
+    mode?: string,
+    data?: any
+}
 
+function goto(path: string, options: IGotoOptions = {}) {
+    for (const _view of __views) {
         const url = new URL(path, location.origin)
-        console.log({ url });
-        
         const pathname = url.pathname
         const query = extractQuery(url)
         const routeKey = extractRouteKey(pathname, _view.routes, _view.root)
-        console.log(0, { routeKey, pathname, path, _view })
-
+        const fromPath = location.pathname
+        
         if (!routeKey) {
-            console.log('Route not found:', { path, pathname })
             continue    
         }
         const regex = createRouteRegex(routeKey)
-        console.log(1, regex) // /^\/courses$/
 
         // 1. Find the matching route
         const match = pathname.match(regex)
-        console.log(2, match) //['/menu/23/test/best', '23', 'best', index: 0, input: '/menu/23/test/best', groups: undefined]
 
         const paramNames = Array.from((_view.root + routeKey).matchAll(/:([a-zA-Z0-9_]+)/g)).map(match => match[1])
-        console.log(3, paramNames, _view.root + routeKey) //  ['id', 'title']
         const params = extractParams(match, paramNames)
-        console.log(4, params) // {id: '23', title: 'best'}
 
         if (routeKey.includes('*')) {
             params.wildcard = match ? match[match.length - 1] : ''
         }
         // const currentRouteKey = extractRouteKey(_view.currentRoute)
-        // console.log(5, { currentRouteKey, routeKey }); //{currentRouteKey: undefined, routeKey: '/menu/:id/test/:title'}
-        console.log(_view.currentRouteKey, routeKey, 'CURRENT CHECK');
 
         if (_view.currentRouteKey === routeKey) {
             continue // Skip navigation if the route and params are the same
         }
-        console.log('TRY TO EXIT CURRENT ROUTE', _view.currentRoute, _view.components[_view.currentRoute])
 
         if (_view.currentComponent) {
             _view.currentComponent.exit({
@@ -75,24 +64,22 @@ function goto(path: string, data?: any, options?: any) {
                 from: _view.currentRoute,
                 params: params,
                 query,
-                data,
+                data: options.data,
             })
         }
 
         if (options?.mode !== 'popstate') {
-            history.pushState(data, '', path || '.')
+            if (options.replace) {
+                window.history.replaceState(options.data, '', path || '.')
+            } else {
+                window.history.pushState(options.data, '', path || '.')
+            }
         }
-        emitter.emit('route-changed', path) // will be deprecated
-        __emitter.emit('change', { path, params, route: routeKey, from: _view.currentRoute, to: pathname, query, data })
+        __emitter.emit('change', { path, params, route: routeKey, from: _view.currentRoute, to: pathname, query, data: options.data })
         _view.currentRoute = pathname
-        console.log(6, routeKey, _view.routes[routeKey]) // /menu/:id/test/:title, ƒ MenuPage() { return html `<div>Menu</div>` }
         let component = _view.components?.[routeKey]
         if (!component) {
-            console.log('ABOUFT TO',routeKey, _view.routes);
-            
             component = _view.routes[routeKey]()
-            console.log('no component, addding', routeKey, component)
-
             _view.components[routeKey] = component
             _view.view.append(component)
         }
@@ -100,10 +87,10 @@ function goto(path: string, data?: any, options?: any) {
         _view.currentRouteKey = routeKey
         component.enter({
             params,
-            from: _view.currentRoute,
+            from: fromPath,
             to: pathname,
             query,
-            data,
+            data: options.data,
         })
         _view.currentRoute = pathname
     }
@@ -129,8 +116,6 @@ function extractQuery(url: URL) {
 }
 
 function extractParams(match: RegExpMatchArray | null, paramNames: string[]) {
-    console.log('EXTRACT PARAMS', { match, paramNames });
-    
     return match ? paramNames.reduce((params, paramName, index) => {
         params[paramName] = match[index + 1]
         return params
@@ -158,14 +143,17 @@ function setupLinkClickListener() {
 }
 
 window.addEventListener('popstate', (e) => {
-    goto(location.pathname, null, { mode: 'popstate' })
+    goto(location.pathname, { mode: 'popstate' })
 })
 
 export default {
     init,
     goto,
     back,
-    ...__emitter
+    ...__emitter, // ...emitter<K>,
+    removePreviousPath: () => {
+        history.replaceState(null, '', location.pathname)
+    }
 }
 
 export interface IPage extends IBaseComponent<any> {

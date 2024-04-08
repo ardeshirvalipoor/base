@@ -3,6 +3,10 @@ import { EVENTS } from '../helpers/events'
 export const createEmitter = () => {
     let _listeners: { [key: string]: Function[] } = {}
 
+    // interface EMap {
+    //     "key": CustomEvent;
+    // on<K extends keyof EMap>(type: K, listener: (this: Native, ev: EMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+
     function on(event: string | string[], ...handlers: Function[]) {
         if (!Array.isArray(event)) event = [event]
         event.map(e => {
