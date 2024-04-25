@@ -26,7 +26,7 @@ export const SHOW = <CS>{
     pointerEvents: 'inherit'
 }
 
-export const CENTER = <CS>{
+export const CENTER: CS = <CS>{
     display: 'flex', // Todo: ; not working here
     alignItems: 'center',
     justifyContent: 'center'

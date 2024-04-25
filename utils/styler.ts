@@ -13,7 +13,7 @@ export interface IStyleOptions {
     name?: string,
 }
 export interface IStyler {
-    cssClass: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any>
+    cssClass: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any> // Todo: fix CS|any
     style: (style: CS, options?: IStyleOptions | number) => IBaseComponent<any> | IBaseSVGComponent<any>,
 }
 
@@ -60,13 +60,29 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         function applyCssClass() {
             const styles = generateStyleString()
             styles.forEach(({ name, body }) => {
-                if (STYLE_DB[body]) { // check if body is the sameو todo: advanced check
+                
+                if (STYLE_DB[body]) { // check if body is the same, todo: advanced check
                     base.el.classList.add(STYLE_DB[body])
                     return
                 }
                 const stylesheet = STYLE_EL.sheet as CSSStyleSheet
                 const rule = `${name[0] === '@' ? '' : '.'}${name} { ${body} }`
                 stylesheet.insertRule(rule, stylesheet.cssRules.length)
+                
+                if (name.includes(':active')) {
+                    const _name = `${name.replace(':', '-')}`
+                    const _rule = `${name[0] === '@' ? '' : '.'}${name.replace(':', '-')} { ${body} }`
+                    stylesheet.insertRule(_rule, stylesheet.cssRules.length)
+                    base.el.addEventListener('touchstart', () => {
+                        base.el.classList.add(_name)
+                    })
+                    base.el.addEventListener('touchend', () => {
+                        base.el.classList.remove(_name)
+                    })
+                    base.el.addEventListener('touchcancel', () => {
+                        base.el.classList.remove(_name)
+                    })
+                }
                 if (!name.includes('&') && !name.includes('@') && !name.includes(':')) {
                     // if (/\W/.test(name)) {
                     base.el.classList.add(name)

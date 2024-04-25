@@ -1,21 +1,18 @@
 import { Base } from '../base'
 
-export const Button = (text: string = '', options = {}) => {
+export const Button = () => {
 
     const base = Base('button')
-    
-    base.el.innerHTML = text
+
     base.cssClass({
         cursor: 'pointer',
-        padding: '10px',
-        borderRadius: '5px'
     })
 
-    base.el.onclick = () => {
+    base.el.addEventListener('click', () => {
         base.emit('click')
-    }
+    })
 
-    const out = Object.assign(
+    return Object.assign(
         base,
         {
             focus() {
@@ -26,18 +23,13 @@ export const Button = (text: string = '', options = {}) => {
             },
             disable() {
                 base.el.setAttribute('disabled', 'true')
-                return out
             },
             enable() {
                 base.el.removeAttribute('disabled')
-                return out
             },
             text(text: string = 'Button') {
                 base.el.innerHTML = text
-                return out
             }
         }
     )
-
-    return out
 }

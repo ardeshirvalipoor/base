@@ -88,13 +88,8 @@ export const Editable = (options: IEditableOptions = {}) => {
     // }
     base.el.addEventListener('paste', (e) => {
         if (options.removeFormattingOnPaste) {
-            // Get plain text from clipboard
             const text = e.clipboardData?.getData('text/plain')
-
-            // Convert new line characters to HTML line breaks
             const formattedText = text?.replace(/(\r\n|\n|\r)/gm, '<br>') || ''
-
-            // Use selection API to get the selected text
             const selection = window.getSelection()
             const range = selection?.getRangeAt(0)
             if (!range) return
@@ -109,9 +104,15 @@ export const Editable = (options: IEditableOptions = {}) => {
         base.emit('paste', e)
     })
 
-    base.el.addEventListener('blur', () => {
+    editor.el.addEventListener('blur', () => {
         base.emit('blur', base.el.innerHTML)
     })
+    editor.el.addEventListener('focus', () => {
+        console.log('focus');
+        
+        base.emit('focus')
+    })
+
     if (options.selectOnClick) {
         base.el.onclick = () => {
             const range = document.createRange()
@@ -159,7 +160,7 @@ export const Editable = (options: IEditableOptions = {}) => {
         overflow: 'auto',
         overflowX: 'hidden',
         position: 'relative',
-  
+
     })
     placeholder.cssClass({
         position: 'absolute',

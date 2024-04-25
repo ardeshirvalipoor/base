@@ -191,33 +191,42 @@ export default (dbName: string) => ({
             }
         })
     },
-    all(store: string, page: number = 0, pageSize: number = 10) {
+    all(store: string, page: number = 0, pageSize: number = 10): Promise<any[]> {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName)
-            request.onsuccess = (e: Event) => {
-                const db = (e.target as IDBOpenDBRequest).result
-                const transaction = db.transaction(store, "readonly")
-                const objectStore = transaction.objectStore(store)
+            const request = indexedDB.open(dbName);
+            request.onsuccess = (event: Event) => {
+                const db = (event.target as IDBOpenDBRequest).result;
+                const transaction = db.transaction(store, "readonly");
+                const objectStore = transaction.objectStore(store);
 
-                const getAllRequest = objectStore.getAll(IDBKeyRange.bound(page * pageSize, (page + 1) * pageSize - 1));
+                // Adjust the key range as needed to fit the key set if not strictly integer-based
+                const lowerBound = page * pageSize;
+                const upperBound = (page + 1) * pageSize - 1;
 
+                const keyRange = IDBKeyRange.lowerBound(lowerBound);
+                const getAllRequest = objectStore.getAll(keyRange);
 
                 getAllRequest.onsuccess = () => {
-                    const results = getAllRequest.result
-                    db.close()
-                    resolve(results)
-                }
+                    const results = getAllRequest.result;
+                    db.close();
+                    resolve(results);
+                };
 
-                transaction.onerror = (err) => {
-                    reject(err)
-                }
-            }
+                transaction.oncomplete = () => {
+                    console.log('transaction completed');
 
-            request.onerror = (err) => {
-                reject(err)
-            }
-        })
+                    // Transaction completed
+                };
 
+                transaction.onerror = (event) => {
+                    reject(transaction.error);
+                };
+            };
+
+            request.onerror = (event) => {
+                reject(request.error);
+            };
+        });
     },
     count(store: any) {
         return new Promise((resolve, reject) => {

@@ -26,7 +26,7 @@ export const Input = <T extends string | number>(placeholder = '', type = 'text'
             case 'ArrowUp': base.emit('key-arrow-up', v); break
             case 'ArrowDown': base.emit('key-arrow-down', v); break
             default:
-                break
+                base.emit('key', { event: v, value: base.el.value, key: v.key})
         }
     }
 
