@@ -29,26 +29,26 @@ export default (dbName: string) => ({
         })
     },
     createStore(name: string, version: number, options?: { keyPath: string, autoIncrement?: boolean, indices?: string[] }) {
-        const opts = { keyPath: 'id', autoIncrement: true, indices: [], ...options }
+        const opts = { keyPath: 'id', autoIncrement: true, indices: [], ...options };
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName, version)
+            const request = indexedDB.open(dbName, version);
+
             request.onupgradeneeded = (event) => {
-                const db = request.result
-                const { objectStoreNames } = db
-                if (!Object.values(objectStoreNames).includes(name)) {
-                    const { keyPath, autoIncrement } = opts
-                    const os = db.createObjectStore(name, { keyPath, autoIncrement })
-                    opts.indices.forEach(index => os.createIndex(index, index, { unique: false }))
-                }
-                db.close()
-                return resolve(event)
-            }
-            request.onsuccess = (event: any) => {
-                request.result.close()
-                return resolve(event)
-            }
-            request.onerror = error => reject(error)
-        })
+                const db = (event.target as any).result;
+                const { keyPath, autoIncrement } = opts;
+                const os = db.createObjectStore(name, { keyPath, autoIncrement });
+                opts.indices.forEach(index => os.createIndex(index, index, { unique: false }));
+            };
+
+            request.onsuccess = (event) => {
+                event?.target && (event.target as any).result.close();
+                resolve(event);
+            };
+
+            request.onerror = (error) => {
+                reject(error);
+            };
+        });
     },
     createindex(_store: string, version: number, index: string, options?: { unique?: boolean, multiEntry?: boolean }) {
         return new Promise((resolve, reject) => {
@@ -110,22 +110,36 @@ export default (dbName: string) => ({
         })
     },
     async byId(store: string, id: any, version?: number) {
+        console.log('byId', store, id, version);
+
+        if (id === undefined) {
+            return null;
+        }
+
         return new Promise((resolve, reject) => {
-            if (id === undefined) { return resolve(null) }
-            const request = indexedDB.open(dbName, version)
-            request.onsuccess = () => {
-                const reader = request.result.transaction([store]).objectStore(store).get(id)
-                reader.onerror = (err) => {
-                    return reject(err)
-                }
+            const request = indexedDB.open(dbName, version);
+
+            request.onsuccess = (event) => {
+                const db = event && (event.target as any).result;
+                const transaction = db.transaction([store], 'readonly');
+                const objectStore = transaction.objectStore(store);
+                const reader = objectStore.get(id);
+
                 reader.onsuccess = (e: any) => {
-                    return resolve(e?.target?.result)
-                }
-            }
+                    db.close();
+                    resolve(e.target.result);
+                };
+
+                reader.onerror = (err: any) => {
+                    db.close();
+                    reject(err);
+                };
+            };
+
             request.onerror = (err) => {
-                return reject(err)
-            }
-        })
+                reject(err);
+            };
+        });
     },
     find(store: string, options?: IGetAllOptions) {
         const { skip = 0, limit = 1000 } = options || {}
@@ -138,16 +152,24 @@ export default (dbName: string) => ({
         return new Promise<any[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e: Event | any) => {
+                console.log('on success', store)
+                
                 let results: any[] = []
                 let hasSkipped = false
                 if (!request.result.objectStoreNames.contains(store)) {
                     return resolve([])
                 }
+                console.log('2');
+                
                 const transaction = request.result.transaction([store], 'readonly')
                 const os = transaction.objectStore(store)
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
+                console.log(options);
+                
                 if (options?.index) {
                     const index = os.index(options.index)
+                    console.log('index', index);
+                    
                     // const cr = index.count(options?.value)
                     // cr.onsuccess = (f) => console.log(store, options, cr.result)
                     let keyRng = null
@@ -191,7 +213,7 @@ export default (dbName: string) => ({
             }
         })
     },
-    all(store: string, page: number = 0, pageSize: number = 10): Promise<any[]> {
+    all<T>(store: string, page: number = 0, pageSize: number = 10): Promise<T[]> {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName);
             request.onsuccess = (event: Event) => {
