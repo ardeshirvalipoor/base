@@ -25,7 +25,11 @@ export const createEmitter = () => {
         return this
     }
 
-    function off(event: string, handler: Function) {
+    function off(event: string, handler?: Function) {
+        if (!handler) {
+            delete _listeners[event]
+            return this
+        }
         _listeners[event] = (_listeners[event] || []).filter((e: any) => e !== handler)
         return this
     }
@@ -63,7 +67,7 @@ export default createEmitter()
 export interface IEmitter {
     on: (e: string | string[], ...handlers: Function[]) => IEmitter
     once: (e: string, handler: Function) => IEmitter
-    off: (e: string, handler: Function) => IEmitter
+    off: (e: string, handler?: Function) => IEmitter
     emit: (e: string, ...args: any) => IEmitter
     removeAllListeners: () => void
 }

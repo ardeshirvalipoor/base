@@ -8,9 +8,7 @@ export const Button = () => {
         cursor: 'pointer',
     })
 
-    base.el.addEventListener('click', () => {
-        base.emit('click')
-    })
+    base.el.onclick = () => base.emit('click')
 
     return Object.assign(
         base,
