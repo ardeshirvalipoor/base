@@ -110,7 +110,6 @@ export default (dbName: string) => ({
         })
     },
     async byId(store: string, id: any, version?: number) {
-        console.log('byId', store, id, version);
 
         if (id === undefined) {
             return null;
