@@ -1,4 +1,4 @@
-import emitter from '../utils/emitter'
+import {emitter} from '../utils/emitter'
 
 const _XHRCache: any = {}
 

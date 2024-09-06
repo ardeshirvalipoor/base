@@ -19,7 +19,7 @@ export const Ghost = (options = <IGhostOptions>{}) => {
         transformOrigin: 'center',
         pointerEvents: 'none',
         '&.dark': {
-            backgroundColor: opts.bgDark || opts.bg ,
+            backgroundColor: opts.bgDark || opts.bg,
         }
     })
     let touchStartTime = 0
@@ -39,10 +39,16 @@ export const Ghost = (options = <IGhostOptions>{}) => {
                 })
 
                 base.style({
-                    transition:'all 2s cubic-bezier(0, 1, 0, 1)',
-                    ...S(3),
-                    opacity: '0'
+                    transition: 'all 1s cubic-bezier(0, 1, 0, 1)',
+                    ...S(3.5),
+                    opacity: '.3'
                 }, 10)
+
+                base.style({
+                    transition: 'all 2s cubic-bezier(0, 1, 0, 1)',
+                    ...S(3.5),
+                    opacity: '0'
+                }, 500)
             },
             deactivate() {
                 base.style({
@@ -60,7 +66,7 @@ export const Ghost = (options = <IGhostOptions>{}) => {
 
 export const ghostify = (c: IBaseComponent<any>, options: IGhostOptions = {}) => {
     const ghost = Ghost(options)
-    c.el.addEventListener('touchstart', (e:TouchEvent) => {
+    c.el.addEventListener('touchstart', (e: TouchEvent) => {
         const { x, y } = c.el.getBoundingClientRect()
         const { pageX, pageY } = e.touches[0]
         ghost.activate(pageX - x, pageY - y)

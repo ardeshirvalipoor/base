@@ -108,8 +108,6 @@ export const Editable = (options: IEditableOptions = {}) => {
         base.emit('blur', base.el.innerHTML)
     })
     editor.el.addEventListener('focus', () => {
-        console.log('focus');
-        
         base.emit('focus')
     })
 

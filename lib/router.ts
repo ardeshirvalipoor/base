@@ -1,5 +1,5 @@
 import { IBaseComponent } from '../components/base'
-import emitter, { createEmitter } from '../utils/emitter'
+import { emitter, createEmitter } from '../utils/emitter'
 
 let __emitter = createEmitter()
 // let __routes: { [key: string]: any } = {}

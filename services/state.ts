@@ -1,7 +1,7 @@
 let __state: any = {}
 
 function get(key: string, defaultValue = {}) {
-    return __state[key] || defaultValue
+    return __state[key]
 }
 
 function set(key: string, value: any) {

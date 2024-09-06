@@ -18,17 +18,24 @@ export const Handle = (direction = 'r') => {
     ghostify(base, {bg: '#00000055'})
     if (direction === 'r') {
         base.style({
-            right: '-50px',
+            right: '50px',
             borderBottom: 'none',
             borderLeft: 'none',
         })
     } else {
         base.style({
-            left: '-50px',
+            left: '50px',
             borderRight: 'none',
             borderTop: 'none'
         })
     }
 
-    return base
+    return Object.assign(base, {
+        hide() {
+            base.style({display: 'none'})
+        },
+        show() {
+            base.style({display: 'block'})
+        }
+    })
 }

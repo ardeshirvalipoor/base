@@ -141,6 +141,7 @@ export default (dbName: string) => ({
         });
     },
     find(store: string, options?: IGetAllOptions) {
+        // Todo: multople index
         const { skip = 0, limit = 1000 } = options || {}
         const filter = (record: any) => {
             if (options?.filter !== undefined) {
@@ -151,35 +152,78 @@ export default (dbName: string) => ({
         return new Promise<any[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e: Event | any) => {
-                console.log('on success', store)
-                
+                // console.log('on success', store)
+
                 let results: any[] = []
                 let hasSkipped = false
                 if (!request.result.objectStoreNames.contains(store)) {
                     return resolve([])
                 }
-                console.log('2');
-                
                 const transaction = request.result.transaction([store], 'readonly')
                 const os = transaction.objectStore(store)
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
-                console.log(options);
-                
+                // console.log(options);
+
                 if (options?.index) {
                     const index = os.index(options.index)
-                    console.log('index', index);
-                    
+                    // console.log('index', index);
+
                     // const cr = index.count(options?.value)
                     // cr.onsuccess = (f) => console.log(store, options, cr.result)
-                    let keyRng = null
+                    let keyRng;
+
                     if (options?.value !== undefined) {
-                        keyRng =
-                            options.upperBound ?
-                                IDBKeyRange.upperBound(options.value, options.openUpperBound) :
-                                options.lowerBound ?
-                                    IDBKeyRange.lowerBound(options.value, options.openLowerBound) :
-                                    IDBKeyRange.only(options.value)
+                        // Check if the value is a Date object
+                        if (options.value instanceof Date) {
+                            // Normalize the date to the start of the day (midnight)
+                            const startDate = new Date(options.value);
+                            startDate.setHours(0, 0, 0, 0);
+
+                            // Set the end date to just before midnight of the next day
+                            const endDate = new Date(startDate);
+                            endDate.setHours(23, 59, 59, 999);
+
+                            if (options.upperBound && options.lowerBound) {
+                                // For a specific date range (between lowerBound and upperBound)
+                                const lowerBound = new Date(options.lowerBound);
+                                const upperBound = new Date(options.upperBound);
+
+                                lowerBound.setHours(0, 0, 0, 0);  // Normalize lower bound to start of day
+                                upperBound.setHours(23, 59, 59, 999);  // Normalize upper bound to end of day
+
+                                keyRng = IDBKeyRange.bound(lowerBound, upperBound, options.openLowerBound, options.openUpperBound);
+                            } else if (options.upperBound) {
+                                // For upper bound only (ignoring time)
+                                const upperBound = new Date(options.upperBound);
+                                upperBound.setHours(23, 59, 59, 999);
+                                keyRng = IDBKeyRange.upperBound(upperBound, options.openUpperBound);
+                            } else if (options.lowerBound) {
+                                // For lower bound only (ignoring time)
+                                const lowerBound = new Date(options.lowerBound);
+                                lowerBound.setHours(0, 0, 0, 0);
+                                keyRng = IDBKeyRange.lowerBound(lowerBound, options.openLowerBound);
+                            } else {
+                                // For a specific date (exact match, ignoring time)
+                                keyRng = IDBKeyRange.bound(startDate, endDate);
+                            }
+                        } else {
+                            // If the value is not a Date object, use the existing logic
+                            if (options.upperBound && options.lowerBound) {
+                                // For a specific range between lowerBound and upperBound
+                                keyRng = IDBKeyRange.bound(options.lowerBound, options.upperBound, options.openLowerBound, options.openUpperBound);
+                            } else if (options.upperBound) {
+                                // For upper bound only
+                                keyRng = IDBKeyRange.upperBound(options.upperBound, options.openUpperBound);
+                            } else if (options.lowerBound) {
+                                // For lower bound only
+                                keyRng = IDBKeyRange.lowerBound(options.lowerBound, options.openLowerBound);
+                            } else {
+                                // For a specific value (exact match)
+                                keyRng = IDBKeyRange.only(options.value);
+                            }
+                        }
                     }
+
                     cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
                 } else {
                     cursorRequest = os.openCursor(null, options?.reverse ? 'prev' : 'next') //nextunique
@@ -212,7 +256,7 @@ export default (dbName: string) => ({
             }
         })
     },
-    all<T>(store: string, page: number = 0, pageSize: number = 10): Promise<T[]> {
+    all<T>(store: string): Promise<T[]> {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName);
             request.onsuccess = (event: Event) => {
@@ -220,12 +264,7 @@ export default (dbName: string) => ({
                 const transaction = db.transaction(store, "readonly");
                 const objectStore = transaction.objectStore(store);
 
-                // Adjust the key range as needed to fit the key set if not strictly integer-based
-                const lowerBound = page * pageSize;
-                const upperBound = (page + 1) * pageSize - 1;
-
-                const keyRange = IDBKeyRange.lowerBound(lowerBound);
-                const getAllRequest = objectStore.getAll(keyRange);
+                const getAllRequest = objectStore.getAll();
 
                 getAllRequest.onsuccess = () => {
                     const results = getAllRequest.result;
@@ -233,10 +272,12 @@ export default (dbName: string) => ({
                     resolve(results);
                 };
 
-                transaction.oncomplete = () => {
-                    console.log('transaction completed');
+                getAllRequest.onerror = (event) => {
+                    reject(getAllRequest.error);
+                };
 
-                    // Transaction completed
+                transaction.oncomplete = () => {
+                    db.close();
                 };
 
                 transaction.onerror = (event) => {

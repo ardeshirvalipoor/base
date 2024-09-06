@@ -36,3 +36,17 @@ if (typeof Object.assign != 'function') {
         return to;
     };
 }
+
+
+// PadStart
+if (!String.prototype.padStart) {
+    String.prototype.padStart = function (targetLength, padString) {
+        padString = padString || ' ';
+        if (this.length >= targetLength) {
+            return String(this);
+        } else {
+            targetLength = targetLength - this.length;
+            return padString.repeat(Math.ceil(targetLength / padString.length)).slice(0, targetLength) + String(this);
+        }
+    };
+}

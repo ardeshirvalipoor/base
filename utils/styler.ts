@@ -19,7 +19,7 @@ export interface IStyler {
 
 import { IBaseComponent, IBaseSVGComponent } from '../components/base'
 import ldb from '../lib/ldb'
-import emitter from './emitter'
+import { emitter } from './emitter'
 import { nextId } from './id-generator'
 
 const STYLE_DB: any = {}
@@ -56,11 +56,11 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         })
 
         return base
-        
+
         function applyCssClass() {
             const styles = generateStyleString()
             styles.forEach(({ name, body }) => {
-                
+
                 if (STYLE_DB[body]) { // check if body is the same, todo: advanced check
                     base.el.classList.add(STYLE_DB[body])
                     return
@@ -68,7 +68,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
                 const stylesheet = STYLE_EL.sheet as CSSStyleSheet
                 const rule = `${name[0] === '@' ? '' : '.'}${name} { ${body} }`
                 stylesheet.insertRule(rule, stylesheet.cssRules.length)
-                
+
                 if (name.includes(':active')) {
                     const _name = `${name.replace(':', '-')}`
                     const _rule = `${name[0] === '@' ? '' : '.'}${name.replace(':', '-')} { ${body} }`

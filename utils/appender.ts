@@ -1,6 +1,6 @@
 
 import { IBaseComponent, IBaseSVGComponent } from '../components/base'
-import emitter from './emitter'
+import {emitter} from './emitter'
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender => {
     let children: IBaseComponent<any>[] = []

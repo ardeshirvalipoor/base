@@ -1,17 +1,18 @@
 import { nextId } from '../utils/id-generator'
 import appender, { IAppender } from '../utils/appender'
 import styler, { IStyler }  from '../utils/styler'
-import { IEmitter, createEmitter } from '../utils/emitter'
+import { BaseEventMap, IEmitter, createEmitter } from '../utils/emitter'
 import mounter from '../utils/mounter'
 
 
 export function Base<K extends keyof HTMLElementTagNameMap>(name = <K>'div'): IBaseComponent<K> {
     const id = nextId()
-    const el = document.createElement(<K>name); el.setAttribute('data-base-id', id)
+    const el = document.createElement(<K>name); 
+    el.setAttribute('data-base-id', id)
     const base = <IBaseComponent<K>>{ id, el }
     mounter.observe()
 
-    return Object.assign(base, createEmitter(), appender(base), styler(base))
+    return Object.assign(base, createEmitter<BaseEventMap>(), appender(base), styler(base))
 }
 
 export function BaseSVG<K extends keyof SVGElementTagNameMap = 'svg'>(name: K): IBaseSVGComponent<K> {
@@ -23,7 +24,7 @@ export function BaseSVG<K extends keyof SVGElementTagNameMap = 'svg'>(name: K): 
 }
 
 
-export interface IBaseComponent<K extends keyof HTMLElementTagNameMap> extends IEmitter, IAppender, IStyler {
+export interface IBaseComponent<K extends keyof HTMLElementTagNameMap> extends IEmitter<BaseEventMap>, IAppender, IStyler {
     el: HTMLElementTagNameMap[K]
     id: string
     parent: IBaseComponent<any>
