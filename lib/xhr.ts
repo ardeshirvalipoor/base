@@ -1,4 +1,4 @@
-import {emitter} from '../utils/emitter'
+import { emitter } from '../utils/emitter'
 
 const _XHRCache: any = {}
 
@@ -13,7 +13,7 @@ const get = (url: string, options: IXHROptoins = {}) => {
             if (xhr.readyState == XMLHttpRequest.DONE) {
                 resolve({
                     status: xhr.status,
-                    data: xhr.response,
+                    data: opts.type == 'application/json' ? JSON.parse(xhr.response) : xhr.response,
                     error: xhr.response?.error
                 })
             }
