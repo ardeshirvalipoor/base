@@ -1,140 +1,118 @@
 import { IBaseComponent } from '../components/base'
 import { emitter, createEmitter } from '../utils/emitter'
 
-let __emitter = createEmitter()
-// let __routes: { [key: string]: any } = {}
-// let __components: { [key: string]: IPage } = {}
-// let __currentRoute = ''
-let __views: IView[] = []
+const __emitter = createEmitter()
+const __views: IView[] = []
 
-function init({ routes, view, home, root, preventAutoStart }: IRouteInitParams) {
-    
-    let _view = {} as IView
-    _view.routes = routes
-    _view.components = {}
-    _view.currentRoute = ''
-    _view.view = view
-    _view.root = root || ''
+function init({ routes, view, home, root = '', preventAutoStart }: IRouteInitParams) {
+    const _view: IView = {
+        routes,
+        components: {},
+        currentRoute: '',
+        view,
+        root,
+    }
     __views.push(_view)
     setupLinkClickListener()
-    
+
     if (!preventAutoStart) {
         goto(home || location.pathname + location.search)
     }
 }
 
 interface IGotoOptions {
-    replace?: boolean,
-    from?: string,
-    mode?: string,
+    replace?: boolean
     data?: any
 }
 
 function goto(path: string, options: IGotoOptions = {}) {
-    for (const _view of __views) {
-        const url = new URL(path, location.origin)
-        const pathname = url.pathname
-        const query = extractQuery(url)
-        const routeKey = extractRouteKey(pathname, _view.routes, _view.root)
-        const fromPath = location.pathname
-        
+    const url = new URL(path, location.origin)
+    const pathname = url.pathname
+    const query = Object.fromEntries(url.searchParams.entries())
+    const fromPath = location.pathname
+
+    __views.forEach(_view => {
+        const routeKey = matchRoute(pathname, _view.routes, _view.root)
         if (!routeKey) {
-            continue    
+            __emitter.emit('error', { path, message: 'Route not found' })
+            return
         }
-        const regex = createRouteRegex(routeKey)
 
-        // 1. Find the matching route
+        const { regex, paramNames } = createRoutePattern(_view.root + routeKey)
         const match = pathname.match(regex)
+        if (!match) return
 
-        const paramNames = Array.from((_view.root + routeKey).matchAll(/:([a-zA-Z0-9_]+)/g)).map(match => match[1])
-        const params = extractParams(match, paramNames)
+        const params = paramNames.reduce((acc, name, idx) => {
+            acc[name] = match[idx + 1]
+            return acc
+        }, {} as Record<string, string>)
 
-        if (routeKey.includes('*')) {
-            params.wildcard = match ? match[match.length - 1] : ''
-        }
-        // const currentRouteKey = extractRouteKey(_view.currentRoute)
+        if (shouldSkipNavigation(_view, routeKey, params, query)) return
 
-        if (_view.currentRouteKey === routeKey) {
-            continue // Skip navigation if the route and params are the same
-        }
+        _view.currentComponent?.exit({ to: pathname, from: _view.currentRoute, params, query, data: options.data })
 
-        if (_view.currentComponent) {
-            _view.currentComponent.exit({
-                to: pathname,
-                from: _view.currentRoute,
-                params: params,
-                query,
-                data: options.data,
-            })
+        if (!options.replace) {
+            history.pushState(options.data, '', path)
+        } else {
+            history.replaceState(options.data, '', path)
         }
 
-        if (options?.mode !== 'popstate') {
-            if (options.replace) {
-                window.history.replaceState(options.data, '', path || '.')
-            } else {
-                window.history.pushState(options.data, '', path || '.')
-            }
-        }
         __emitter.emit('change', { path, params, route: routeKey, from: _view.currentRoute, to: pathname, query, data: options.data })
-        _view.currentRoute = pathname
-        let component = _view.components?.[routeKey]
+
+        let component = _view.components[routeKey]
         if (!component) {
             component = _view.routes[routeKey]()
             _view.components[routeKey] = component
             _view.view.append(component)
         }
+
         _view.currentComponent = component
         _view.currentRouteKey = routeKey
-        component.enter({
-            params,
-            from: fromPath,
-            to: pathname,
-            query,
-            data: options.data,
-        })
+        _view.currentParams = params
+        _view.currentQuery = query
         _view.currentRoute = pathname
-    }
-}
 
-function back(data?: any) {
-    window.history.back()
-}
-
-function extractRouteKey(pathname: string, routes = {}, root = '') {
-    return Object.keys(routes).find(route => {
-        const pattern = (root + route).replace(/\*/g, '?.*')
-        const regex = new RegExp(`^${pattern.replace(/:[^\s/]+/g, '([\\w-]+)')}$`)
-        return regex.test(pathname)
+        component.enter({ params, from: fromPath, to: pathname, query, data: options.data })
     })
 }
 
-function extractQuery(url: URL) {
-    return Array.from(url.searchParams.entries()).reduce((acc: { [key: string]: string }, [key, value]) => {
-        acc[key] = value
-        return acc
-    }, {})
+function back() {
+    history.back()
 }
 
-function extractParams(match: RegExpMatchArray | null, paramNames: string[]) {
-    return match ? paramNames.reduce((params, paramName, index) => {
-        params[paramName] = match[index + 1]
-        return params
-    }, {} as { [key: string]: string }) : {}
+function matchRoute(pathname: string, routes: Routes, root: string) {
+    return Object.keys(routes).find(route => {
+        const pattern = createRoutePattern(root + route).regex
+        return pattern.test(pathname)
+    })
 }
 
-function createRouteRegex(routeKey: string) {
-    return new RegExp(`^${routeKey
-        .replace(/:[^\s/]+/g, '([\\w-]+)')
-        .replace(/\*/g, '?(.*)')}$`)
+function createRoutePattern(route: string) {
+    const paramNames: string[] = []
+    const pattern = route.replace(/:[^\/]+/g, (match) => {
+        paramNames.push(match.slice(1))
+        return '([^/]+)'
+    }).replace(/\*/g, '.*')
+
+    const regex = new RegExp(`^${pattern}$`)
+    return { regex, paramNames }
+}
+
+function shouldSkipNavigation(_view: IView, routeKey: string, params: Params, query: Query) {
+    return _view.currentRouteKey === routeKey &&
+        JSON.stringify(_view.currentParams) === JSON.stringify(params) &&
+        JSON.stringify(_view.currentQuery) === JSON.stringify(query)
 }
 
 function setupLinkClickListener() {
     document.addEventListener('click', (event) => {
-        if (event.target instanceof HTMLAnchorElement) {
-            const link = event.target
-            const href = link.getAttribute('href')
-            const isInternalLink = href && !link.hostname && !link.protocol && !link.port
-            if (isInternalLink) {
+        let element = event.target as HTMLElement
+        while (element && !(element instanceof HTMLAnchorElement)) {
+            element = element.parentElement as HTMLElement
+        }
+        if (element instanceof HTMLAnchorElement) {
+            const href = element.getAttribute('href')
+            if (href && isInternalLink(element)) {
                 event.preventDefault()
                 goto(href)
             }
@@ -142,35 +120,38 @@ function setupLinkClickListener() {
     })
 }
 
-window.addEventListener('popstate', (e) => {
-    goto(location.pathname, { mode: 'popstate' })
+function isInternalLink(link: HTMLAnchorElement) {
+    return link.origin === location.origin || link.getAttribute('href')?.startsWith('/')
+}
+
+window.addEventListener('popstate', () => {
+    goto(location.pathname + location.search, { replace: true })
 })
 
 export default {
     init,
     goto,
     back,
-    ...__emitter, // ...emitter<K>,
-    removePreviousPath: () => {
-        history.replaceState(null, '', location.pathname)
-    }
+    ...__emitter,
+    removePreviousPath: () => history.replaceState(null, '', location.pathname),
 }
 
+// Interfaces and Types
 export interface IPage extends IBaseComponent<any> {
-    enter: (params: IRouteParams) => Promise<any>
-    exit: (params: IRouteParams) => Promise<any>
+    enter: (params: IRouteParams) => void | Promise<void>
+    exit: (params: IRouteParams) => void | Promise<void>
 }
 
 export interface IRouteParams<T = any> {
     from?: string
     to?: string
     params?: T
-    query: any
+    query: Query
     data?: T
 }
 
 export interface IRouteInitParams {
-    routes: any
+    routes: Routes
     view: IBaseComponent<any>
     home?: string
     root?: string
@@ -179,10 +160,16 @@ export interface IRouteInitParams {
 
 interface IView {
     currentRoute: string
-    currentRouteKey: string
-    currentComponent: IPage
-    routes: { [key: string]: any }
+    currentRouteKey?: string
+    currentParams?: Params
+    currentQuery?: Query
+    currentComponent?: IPage
+    routes: Routes
     components: { [key: string]: IPage }
     view: IBaseComponent<any>
     root: string
 }
+
+type Routes = { [key: string]: () => IPage }
+type Params = { [key: string]: string }
+type Query = { [key: string]: string }
