@@ -1,3 +1,5 @@
+import { emitter } from "../utils/emitter"
+
 interface IGetAllOptions {
     skip?: number
     limit?: number
@@ -9,6 +11,19 @@ interface IGetAllOptions {
     lowerBound?: any,
     openUpperBound?: boolean,
     openLowerBound?: boolean,
+}
+
+let dbIsReady = false
+
+let dbReadyPromise: Promise<boolean> = new Promise((resolve, reject) => {
+    emitter.on('db-ready', () => {
+        dbIsReady = true;
+        resolve(true);
+    })
+})
+
+function waitUntilDbIsReady(): Promise<boolean> {
+    return dbReadyPromise;
 }
 
 export default (dbName: string) => ({
@@ -290,7 +305,8 @@ export default (dbName: string) => ({
             };
         });
     },
-    count(store: any) {
+    async count(store: any) {
+        await waitUntilDbIsReady(dbName)
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e) => {

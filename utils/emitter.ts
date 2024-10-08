@@ -30,7 +30,7 @@ export const createEmitter = <EMap extends BaseEventMap>() => {
         return this
     }
 
-    function emit<K extends keyof EMap>(event: K, params: EMap[K]) {
+    function emit<K extends keyof EMap>(event: K, params?: EMap[K]) {
         if (_listeners[event]) {
             (_listeners[event] || []).forEach((e: any) => e(params))
         }
@@ -76,6 +76,7 @@ export interface BaseEventMap {
     'tab-selected': string
     'click': MouseEvent
     'mounted': void
+    'db-ready': void
 }
 
 export type EVENTS =
