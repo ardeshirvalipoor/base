@@ -6,6 +6,7 @@ const get = (url: string, options: IXHROptoins = {}) => {
     const opts = { method: 'GET', type: 'application/json', cache: 0, ...options }
     return new Promise<IResponse>((resolve, reject) => {
         const xhr = new XMLHttpRequest
+        xhr.withCredentials = true;
         xhr.open(opts.method, url, true)
         xhr.setRequestHeader('Content-Type', opts.type)
         xhr.setRequestHeader('Authorization', 'Bearer ' + opts.auth)
@@ -33,6 +34,7 @@ const post = (url: string, body?: any, _headers: any = {}) => {
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open('POST', url, true)
+        xhr.withCredentials = true;
         // xhr.responseType = 'text';
         Object.keys(headers).map(key => {
             xhr.setRequestHeader(key, headers[key])
@@ -61,6 +63,7 @@ const put = (url: string, body?: any, _headers: any = {}) => {
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest
         xhr.open('PUT', url, true)
+        xhr.withCredentials = true;
         Object.keys(headers).map(key => {
             xhr.setRequestHeader(key, headers[key])
         }) // Todo: fix it
@@ -91,6 +94,7 @@ const patch = (url: string, body?: any, _headers: any = {}) => {
     const headers = { type: 'application/json', cache: 0, ..._headers }
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest()
+        xhr.withCredentials = true
         xhr.open('PATCH', url, true)
         Object.keys(headers).map((key) => {
             xhr.setRequestHeader(key, headers[key])
@@ -120,6 +124,7 @@ const remove = (url: string, _headers: any = {}) => {
     const headers = { type: 'application/json', cache: 0, ..._headers }
     return new Promise<any>((resolve, reject) => {
         const xhr = new XMLHttpRequest
+        xhr.withCredentials = true
         xhr.open('DELETE', url, true)
         Object.keys(headers).map(key => {
             xhr.setRequestHeader(key, headers[key])
