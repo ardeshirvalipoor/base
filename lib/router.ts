@@ -23,6 +23,7 @@ function init({ routes, view, home, root = '', preventAutoStart }: IRouteInitPar
 interface IGotoOptions {
     replace?: boolean
     data?: any
+    from?: string // todo handle it
 }
 
 function goto(path: string, options: IGotoOptions = {}) {
@@ -138,8 +139,8 @@ export default {
 
 // Interfaces and Types
 export interface IPage extends IBaseComponent<any> {
-    enter: (params: IRouteParams) => void | Promise<void>
-    exit: (params: IRouteParams) => void | Promise<void>
+    enter: (params: IRouteParams) => any | Promise<any>
+    exit: (params: IRouteParams) => any | Promise<any>
 }
 
 export interface IRouteParams<T = any> {
