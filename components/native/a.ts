@@ -16,6 +16,7 @@ export const A = (href?: string, title?: string, target = '_self') => {
         setHref: (href: string) => base.el.href = href,
         setTarget: (target: string) => base.el.setAttribute('target', target),
         setDownload: (filename: string) => base.el.setAttribute('download', filename),
+        getHref: () => base.el.href,
     })
 
 }

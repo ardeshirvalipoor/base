@@ -8,7 +8,7 @@ export const Button = () => {
         cursor: 'pointer',
     })
 
-    base.el.onclick = () => base.emit('click')
+    base.el.onclick = () => setTimeout(() => base.emit('click'), 200)
 
     return Object.assign(
         base,

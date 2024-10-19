@@ -18,7 +18,7 @@ function save(...args: any[]) {
 }
 
 function get(key: string) {
-    const raw = String(localStorage.getItem(key))
+    const raw = String(localStorage.getItem(key) || '')
     try {
         return JSON.parse(raw)
     } catch (err) {
