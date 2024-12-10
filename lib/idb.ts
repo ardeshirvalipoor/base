@@ -3,32 +3,32 @@ import { emitter } from "../utils/emitter"
 interface IGetAllOptions {
     skip?: number
     limit?: number
-    index?: string // comma separated
-    filter?: string // comma separated
-    value?: any // comma separated
-    reverse?: boolean,
-    upperBound?: any,
-    lowerBound?: any,
-    openUpperBound?: boolean,
-    openLowerBound?: boolean,
+    index?: string; // comma separated
+    filter?: string; // comma separated
+    value?: any; // comma separated
+    reverse?: boolean
+    upperBound?: any
+    lowerBound?: any
+    openUpperBound?: boolean
+    openLowerBound?: boolean
 }
 
 let dbIsReady = false
 
 let dbReadyPromise: Promise<boolean> = new Promise((resolve, reject) => {
     emitter.on('db-ready', () => {
-        dbIsReady = true;
-        resolve(true);
+        dbIsReady = true
+        resolve(true)
     })
 })
 
 function waitUntilDbIsReady(): Promise<boolean> {
-    return dbReadyPromise;
+    return dbReadyPromise
 }
 
 export default (dbName: string) => ({
     info(version?: number) {
-        return new Promise<{ objectStoreNames: DOMStringList, version: number }>((resolve, reject) => {
+        return new Promise<{ objectStoreNames: DOMStringList; version: number }>((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
                 const { objectStoreNames, version } = request.result
@@ -37,47 +37,49 @@ export default (dbName: string) => ({
             }
             request.onupgradeneeded = () => {
                 const { objectStoreNames, version } = request.result
-                request.result.close()
+                // Do not close DB here; the upgrade transaction is ongoing.
                 return resolve({ objectStoreNames, version })
             }
             request.onerror = error => reject(error)
         })
     },
-    createStore(name: string, version: number, options?: { keyPath: string, autoIncrement?: boolean, indices?: string[] }) {
-        const opts = { keyPath: 'id', autoIncrement: true, indices: [], ...options };
+    createStore(name: string, version: number, options?: { keyPath: string; autoIncrement?: boolean; indices?: string[] }) {
+        const opts = { keyPath: 'id', autoIncrement: true, indices: [], ...options }
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName, version);
+            const request = indexedDB.open(dbName, version)
 
             request.onupgradeneeded = (event) => {
-                const db = (event.target as any).result;
-                const { keyPath, autoIncrement } = opts;
-                const os = db.createObjectStore(name, { keyPath, autoIncrement });
-                opts.indices.forEach(index => os.createIndex(index, index, { unique: false }));
-            };
+                const db = (event.target as IDBOpenDBRequest).result
+                const { keyPath, autoIncrement } = opts
+                if (!db.objectStoreNames.contains(name)) {
+                    const os = db.createObjectStore(name, { keyPath, autoIncrement })
+                    opts.indices.forEach(index => os.createIndex(index, index, { unique: false }))
+                }
+            }
 
             request.onsuccess = (event) => {
-                event?.target && (event.target as any).result.close();
-                resolve(event);
-            };
+                // The upgrade transaction is complete at this point
+                (event.target as IDBOpenDBRequest).result.close()
+                resolve(true)
+            }
 
             request.onerror = (error) => {
-                reject(error);
-            };
-        });
+                reject(error)
+            }
+        })
     },
-    createindex(_store: string, version: number, index: string, options?: { unique?: boolean, multiEntry?: boolean }) {
+    createindex(_store: string, version: number, index: string, options?: { unique?: boolean; multiEntry?: boolean }) {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onupgradeneeded = (event) => {
-                const target = event.target as any // Todo: take a look at this
-                const db = target.result /* request.result */
-                const upgradeTransaction = target.transaction // db.transaction(_store, 'readwrite')
+                const target = event.target as IDBOpenDBRequest
+                const db = target.result
+                const upgradeTransaction = (event.currentTarget as IDBOpenDBRequest).transaction
                 const os = upgradeTransaction.objectStore(_store)
                 if (!os.indexNames.contains(index)) {
                     os.createIndex(index, index, { unique: options?.unique || false, multiEntry: options?.multiEntry || false })
                 }
-                db.close()
-                return resolve(event)
+                // Don't close db here; let onsuccess handle closing if needed
             }
             request.onsuccess = (event: any) => {
                 request.result.close()
@@ -90,18 +92,19 @@ export default (dbName: string) => ({
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
-                const transaction = request.result.transaction(store, 'readwrite')
+                const db = request.result
+                const transaction = db.transaction(store, 'readwrite')
                 const objectStore = transaction.objectStore(store)
                 if (!Array.isArray(object)) object = [object]
-                const addedObjects: IDBRequest[] = object.map((o: any) => {
-                    return objectStore.add(o)
-                })
-                transaction.oncomplete = (successEvent) => {
-                    request.result.close()
+                const addedObjects: IDBRequest[] = object.map((o: any) => objectStore.add(o))
+
+                transaction.oncomplete = () => {
                     const insertedIds = addedObjects.map(r => r.result)
+                    db.close()
                     resolve(insertedIds.length === 1 ? insertedIds[0] : insertedIds)
                 }
                 transaction.onerror = (err) => {
+                    db.close()
                     reject(err)
                 }
             }
@@ -114,155 +117,149 @@ export default (dbName: string) => ({
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName, version)
             request.onsuccess = () => {
-                const otransaction = request.result.transaction(store, 'readwrite').objectStore(store)
-                otransaction.clear()
-                return resolve(true)
+                const db = request.result
+                const transaction = db.transaction(store, 'readwrite')
+                const otransaction = transaction.objectStore(store)
+                const clearRequest = otransaction.clear()
+                clearRequest.onsuccess = () => {
+                    db.close()
+                    resolve(true)
+                }
+                clearRequest.onerror = (err) => {
+                    db.close()
+                    reject(err)
+                }
             }
             request.onerror = (err) => {
-                console.log('clear', err)
                 return reject(err)
             }
         })
     },
     async byId(store: string, id: any, version?: number) {
-
         if (id === undefined) {
-            return null;
+            return null
         }
 
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName, version);
+            const request = indexedDB.open(dbName, version)
 
             request.onsuccess = (event) => {
-                const db = event && (event.target as any).result;
-                const transaction = db.transaction([store], 'readonly');
-                const objectStore = transaction.objectStore(store);
-                const reader = objectStore.get(id);
+                const db = (event.target as IDBOpenDBRequest).result
+                const transaction = db.transaction([store], 'readonly')
+                const objectStore = transaction.objectStore(store)
+                const reader = objectStore.get(id)
 
                 reader.onsuccess = (e: any) => {
-                    db.close();
-                    resolve(e.target.result);
-                };
+                    const result = e.target.result
+                    db.close()
+                    resolve(result)
+                }
 
                 reader.onerror = (err: any) => {
-                    db.close();
-                    reject(err);
-                };
-            };
+                    db.close()
+                    reject(err)
+                }
+            }
 
             request.onerror = (err) => {
-                reject(err);
-            };
-        });
+                reject(err)
+            }
+        })
     },
     find(store: string, options?: IGetAllOptions) {
-        // Todo: multople index
         const { skip = 0, limit = 1000 } = options || {}
-        const filter = (record: any) => {
+        const filterFn = (record: any) => {
+            // Adjust filtering as needed. If your records have an 'id' and not '_id', use 'id':
             if (options?.filter !== undefined) {
-                return record._id.includes(options.filter)
+                return record.id && record.id.toString().includes(options.filter)
             }
             return true
         }
+
         return new Promise<any[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
-            request.onsuccess = (e: Event | any) => {
-                // console.log('on success', store)
+            request.onsuccess = (e: Event) => {
+                const db = (e.target as IDBOpenDBRequest).result
+                if (!db.objectStoreNames.contains(store)) {
+                    db.close()
+                    return resolve([])
+                }
 
                 let results: any[] = []
                 let hasSkipped = false
-                if (!request.result.objectStoreNames.contains(store)) {
-                    return resolve([])
-                }
-                const transaction = request.result.transaction([store], 'readonly')
+                const transaction = db.transaction([store], 'readonly')
                 const os = transaction.objectStore(store)
                 let cursorRequest: IDBRequest<IDBCursorWithValue | null>
-                // console.log(options);
 
+                let keyRng: IDBKeyRange | undefined
                 if (options?.index) {
                     const index = os.index(options.index)
-                    // console.log('index', index);
-
-                    // const cr = index.count(options?.value)
-                    // cr.onsuccess = (f) => console.log(store, options, cr.result)
-                    let keyRng;
 
                     if (options?.value !== undefined) {
-                        // Check if the value is a Date object
+                        // Handle date ranges if needed
                         if (options.value instanceof Date) {
-                            // Normalize the date to the start of the day (midnight)
-                            const startDate = new Date(options.value);
-                            startDate.setHours(0, 0, 0, 0);
-
-                            // Set the end date to just before midnight of the next day
-                            const endDate = new Date(startDate);
-                            endDate.setHours(23, 59, 59, 999);
+                            const startDate = new Date(options.value)
+                            startDate.setHours(0, 0, 0, 0)
+                            const endDate = new Date(startDate)
+                            endDate.setHours(23, 59, 59, 999)
 
                             if (options.upperBound && options.lowerBound) {
-                                // For a specific date range (between lowerBound and upperBound)
-                                const lowerBound = new Date(options.lowerBound);
-                                const upperBound = new Date(options.upperBound);
-
-                                lowerBound.setHours(0, 0, 0, 0);  // Normalize lower bound to start of day
-                                upperBound.setHours(23, 59, 59, 999);  // Normalize upper bound to end of day
-
-                                keyRng = IDBKeyRange.bound(lowerBound, upperBound, options.openLowerBound, options.openUpperBound);
+                                const lowerBound = new Date(options.lowerBound)
+                                lowerBound.setHours(0, 0, 0, 0)
+                                const upperBound = new Date(options.upperBound)
+                                upperBound.setHours(23, 59, 59, 999)
+                                keyRng = IDBKeyRange.bound(lowerBound, upperBound, options.openLowerBound, options.openUpperBound)
                             } else if (options.upperBound) {
-                                // For upper bound only (ignoring time)
-                                const upperBound = new Date(options.upperBound);
-                                upperBound.setHours(23, 59, 59, 999);
-                                keyRng = IDBKeyRange.upperBound(upperBound, options.openUpperBound);
+                                const upperBound = new Date(options.upperBound)
+                                upperBound.setHours(23, 59, 59, 999)
+                                keyRng = IDBKeyRange.upperBound(upperBound, options.openUpperBound)
                             } else if (options.lowerBound) {
-                                // For lower bound only (ignoring time)
-                                const lowerBound = new Date(options.lowerBound);
-                                lowerBound.setHours(0, 0, 0, 0);
-                                keyRng = IDBKeyRange.lowerBound(lowerBound, options.openLowerBound);
+                                const lowerBound = new Date(options.lowerBound)
+                                lowerBound.setHours(0, 0, 0, 0)
+                                keyRng = IDBKeyRange.lowerBound(lowerBound, options.openLowerBound)
                             } else {
-                                // For a specific date (exact match, ignoring time)
-                                keyRng = IDBKeyRange.bound(startDate, endDate);
+                                keyRng = IDBKeyRange.bound(startDate, endDate)
                             }
                         } else {
-                            // If the value is not a Date object, use the existing logic
+                            // Non-date values
                             if (options.upperBound && options.lowerBound) {
-                                // For a specific range between lowerBound and upperBound
-                                keyRng = IDBKeyRange.bound(options.lowerBound, options.upperBound, options.openLowerBound, options.openUpperBound);
+                                keyRng = IDBKeyRange.bound(options.lowerBound, options.upperBound, options.openLowerBound, options.openUpperBound)
                             } else if (options.upperBound) {
-                                // For upper bound only
-                                keyRng = IDBKeyRange.upperBound(options.upperBound, options.openUpperBound);
+                                keyRng = IDBKeyRange.upperBound(options.upperBound, options.openUpperBound)
                             } else if (options.lowerBound) {
-                                // For lower bound only
-                                keyRng = IDBKeyRange.lowerBound(options.lowerBound, options.openLowerBound);
+                                keyRng = IDBKeyRange.lowerBound(options.lowerBound, options.openLowerBound)
                             } else {
-                                // For a specific value (exact match)
-                                keyRng = IDBKeyRange.only(options.value);
+                                keyRng = IDBKeyRange.only(options.value)
                             }
                         }
                     }
-
-                    cursorRequest = index.openCursor(keyRng, options.reverse ? 'prev' : 'next')
+                    cursorRequest = index.openCursor(keyRng, options?.reverse ? 'prev' : 'next')
                 } else {
-                    cursorRequest = os.openCursor(null, options?.reverse ? 'prev' : 'next') //nextunique
+                    cursorRequest = os.openCursor(null, options?.reverse ? 'prev' : 'next')
                 }
+
                 cursorRequest.onsuccess = (event: any) => {
                     const cursor = event.target.result
                     if (cursor && !hasSkipped && skip > 0) {
                         hasSkipped = true
                         cursor.advance(skip)
                     } else if (cursor) {
-                        if (filter(cursor.value)) {
+                        if (filterFn(cursor.value)) {
                             results.push(cursor.value)
                         }
                         if (results.length < limit) {
                             cursor.continue()
                         } else {
+                            db.close()
                             return resolve(results)
                         }
                     } else {
-                        request.result.close()
+                        db.close()
                         return resolve(results)
                     }
                 }
                 transaction.onerror = (err) => {
+                    db.close()
                     return reject(err)
                 }
             }
@@ -273,50 +270,60 @@ export default (dbName: string) => ({
     },
     all<T>(store: string): Promise<T[]> {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName);
+            const request = indexedDB.open(dbName)
             request.onsuccess = (event: Event) => {
-                const db = (event.target as IDBOpenDBRequest).result;
-                const transaction = db.transaction(store, "readonly");
-                const objectStore = transaction.objectStore(store);
+                const db = (event.target as IDBOpenDBRequest).result
+                if (!db.objectStoreNames.contains(store)) {
+                    db.close()
+                    return resolve([])
+                }
+                const transaction = db.transaction(store, "readonly")
+                const objectStore = transaction.objectStore(store)
 
-                const getAllRequest = objectStore.getAll();
+                const getAllRequest = objectStore.getAll()
 
                 getAllRequest.onsuccess = () => {
-                    const results = getAllRequest.result;
-                    db.close();
-                    resolve(results);
-                };
+                    const results = getAllRequest.result
+                    db.close()
+                    resolve(results)
+                }
 
-                getAllRequest.onerror = (event) => {
-                    reject(getAllRequest.error);
-                };
+                getAllRequest.onerror = () => {
+                    db.close()
+                    reject(getAllRequest.error)
+                }
 
-                transaction.oncomplete = () => {
-                    db.close();
-                };
+                transaction.onerror = () => {
+                    db.close()
+                    reject(transaction.error)
+                }
+            }
 
-                transaction.onerror = (event) => {
-                    reject(transaction.error);
-                };
-            };
-
-            request.onerror = (event) => {
-                reject(request.error);
-            };
-        });
+            request.onerror = () => {
+                reject(request.error)
+            }
+        })
     },
-    async count(store: any) {
-        await waitUntilDbIsReady(dbName)
+    async count(store: string) {
+        await waitUntilDbIsReady()
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e) => {
-                const transaction = request.result.transaction([store], 'readonly')
+                const db = request.result
+                if (!db.objectStoreNames.contains(store)) {
+                    db.close()
+                    return resolve(0)
+                }
+                const transaction = db.transaction([store], 'readonly')
                 const objectStore = transaction.objectStore(store)
                 const countRequest = objectStore.count()
                 countRequest.onsuccess = () => {
-                    resolve(countRequest.result)
+                    const count = countRequest.result
+                    db.close()
+                    resolve(count)
                 }
                 countRequest.onerror = (err) => {
+                    db.close()
                     reject(err)
                 }
             }
@@ -325,14 +332,26 @@ export default (dbName: string) => ({
             }
         })
     },
-    delete(store: any, id: any, version = 1) {
+    delete(store: string, id: any, version = 1) {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(dbName)
+            const request = indexedDB.open(dbName, version)
             request.onsuccess = (e) => {
-                const transaction = request.result.transaction([store], 'readwrite')
+                const db = request.result
+                if (!db.objectStoreNames.contains(store)) {
+                    db.close()
+                    return resolve(true)
+                }
+                const transaction = db.transaction([store], 'readwrite')
                 const objectStore = transaction.objectStore(store)
-                objectStore.delete(id)
-                resolve(true)
+                const deleteRequest = objectStore.delete(id)
+                deleteRequest.onsuccess = () => {
+                    db.close()
+                    resolve(true)
+                }
+                deleteRequest.onerror = (err) => {
+                    db.close()
+                    reject(err)
+                }
             }
             request.onerror = (err) => {
                 console.log('idb delete', err)
@@ -340,22 +359,40 @@ export default (dbName: string) => ({
             }
         })
     },
-    update(store: any, id: string | number, payload: any, version = 1) {
-        // or later by query like mongodb
+    update(store: string, id: string | number, payload: any) {
+        console.log('-> update', store, id, payload)
+
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
-            request.onsuccess = (e) => {
-                const transaction = request.result.transaction([store], 'readwrite')
+            request.onsuccess = () => {
+                const db = request.result
+                if (!db.objectStoreNames.contains(store)) {
+                    db.close()
+                    return reject(new Error(`Store ${store} does not exist.`))
+                }
+                const transaction = db.transaction([store], 'readwrite')
                 const objectStore = transaction.objectStore(store)
                 const reader = objectStore.get(id)
                 reader.onerror = (err) => {
+                    db.close()
                     reject(err)
                 }
                 reader.onsuccess = () => {
-                    var updateTitleRequest = objectStore.put(payload)
-                    updateTitleRequest.onsuccess = () => {
-                        request.result.close()
+                    const record = reader.result
+                    if (!record) {
+                        db.close()
+                        return reject(new Error(`Record with id ${id} not found.`))
+                    }
+                    // Merge the record with the payload
+                    const updatedRecord = { ...record, ...payload, id }
+                    const updateRequest = objectStore.put(updatedRecord)
+                    updateRequest.onsuccess = () => {
+                        db.close()
                         resolve(true)
+                    }
+                    updateRequest.onerror = (err) => {
+                        db.close()
+                        reject(err)
                     }
                 }
             }
@@ -365,5 +402,3 @@ export default (dbName: string) => ({
         })
     }
 })
-
-
