@@ -64,7 +64,7 @@ export const Ghost = (options = <IGhostOptions>{}) => {
     )
 }
 
-export const ghostify = (c: IBaseComponent<any>, options: IGhostOptions = {}) => {
+export const withRipple = (c: IBaseComponent<any>, options: IGhostOptions = {}) => {
     const ghost = Ghost(options)
     c.el.addEventListener('touchstart', (e: TouchEvent) => {
         const { x, y } = c.el.getBoundingClientRect()
@@ -84,6 +84,8 @@ export const ghostify = (c: IBaseComponent<any>, options: IGhostOptions = {}) =>
         // c.style(opts.normalStyle)
     }, PASSIVE)
     c.append(ghost)
+
+    return c
 }
 interface IGhostOptions {
     size?: number,

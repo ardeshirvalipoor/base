@@ -1,6 +1,6 @@
 
 import { IBaseComponent, IBaseSVGComponent } from '../components/base'
-import {emitter} from './emitter'
+import { emitter } from './emitter'
 
 export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender => {
     let children: IBaseComponent<any>[] = []
@@ -11,7 +11,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
         }
     }
 
-    emitter.on('mutate', (node: Node) => {
+    emitter.on('mutate', (node) => {
         if (node.contains(base.el) && !base.isMounted) {
             base.isMounted = true;
             base.emit('mounted')
@@ -28,6 +28,16 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>): IAppender =
         },
         append(...args) {
             for (const c of args) {
+                // check if c is async
+                if (c instanceof Promise) {
+                    c.then((c) => {
+                        validateComponent(c)
+                        base.el.appendChild(c.el)
+                        children.push(c)
+                        c.parent = base
+                    })
+                    continue
+                }
                 validateComponent(c)
                 if (c === false) continue
                 base.el.appendChild(c.el)

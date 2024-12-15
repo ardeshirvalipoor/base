@@ -77,6 +77,7 @@ export interface BaseEventMap {
     'click': MouseEvent
     'mounted': void
     'db-ready': void
+    'mutate': Node
 }
 
 export type EVENTS =

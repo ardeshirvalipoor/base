@@ -1,6 +1,6 @@
 import { R, WH } from "../../../helpers/style"
 import { Base } from "../../base"
-import { ghostify } from "../ghost/ghost"
+import { withRipple } from "../ghost/ghost"
 
 export const Handle = (direction = 'r') => {
     const base = Base()
@@ -15,7 +15,7 @@ export const Handle = (direction = 'r') => {
         display: 'none',
     })
 
-    ghostify(base, {bg: '#00000055'})
+    withRipple(base, { bg: '#00000055' })
     if (direction === 'r') {
         base.style({
             right: '50px',
@@ -32,10 +32,10 @@ export const Handle = (direction = 'r') => {
 
     return Object.assign(base, {
         hide() {
-            base.style({display: 'none'})
+            base.style({ display: 'none' })
         },
         show() {
-            base.style({display: 'block'})
+            base.style({ display: 'block' })
         }
     })
 }
