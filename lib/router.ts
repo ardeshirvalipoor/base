@@ -129,10 +129,16 @@ window.addEventListener('popstate', () => {
     goto(location.pathname + location.search, { replace: true })
 })
 
+function getQuery(key: string) {
+    return Object.fromEntries(new URLSearchParams(location.search).entries())[key]
+}
+
 export default {
     init,
     goto,
     back,
+    getQuery,
+    history,
     ...__emitter,
     removePreviousPath: () => history.replaceState(null, '', location.pathname),
 }
