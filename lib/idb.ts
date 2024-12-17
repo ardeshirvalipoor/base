@@ -360,8 +360,6 @@ export default (dbName: string) => ({
         })
     },
     update(store: string, id: string | number, payload: any) {
-        console.log('-> update', store, id, payload)
-
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = () => {
