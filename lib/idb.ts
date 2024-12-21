@@ -1,9 +1,9 @@
 import { emitter } from "../utils/emitter"
 
-interface IGetAllOptions {
+interface IGetAllOptions<T> {
     skip?: number
     limit?: number
-    index?: string; // comma separated
+    index?: keyof T
     filter?: string; // comma separated
     value?: any; // comma separated
     reverse?: boolean
@@ -166,7 +166,7 @@ export default (dbName: string) => ({
             }
         })
     },
-    find(store: string, options?: IGetAllOptions) {
+    find<T>(store: string, options?: IGetAllOptions<T>) {
         const { skip = 0, limit = 1000 } = options || {}
         const filterFn = (record: any) => {
             // Adjust filtering as needed. If your records have an 'id' and not '_id', use 'id':
@@ -176,7 +176,7 @@ export default (dbName: string) => ({
             return true
         }
 
-        return new Promise<any[]>((resolve, reject) => {
+        return new Promise<TextDecoderOptions[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e: Event) => {
                 const db = (e.target as IDBOpenDBRequest).result
@@ -185,7 +185,7 @@ export default (dbName: string) => ({
                     return resolve([])
                 }
 
-                let results: any[] = []
+                let results: T[] = []
                 let hasSkipped = false
                 const transaction = db.transaction([store], 'readonly')
                 const os = transaction.objectStore(store)

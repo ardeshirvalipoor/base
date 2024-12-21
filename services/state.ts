@@ -1,14 +1,14 @@
 let __state: any = {}
 
-function get(key: string, defaultValue = {}) {
+function get<T>(key: string, defaultValue = {} as T): T {
     return __state[key]
 }
 
-function set(key: string, value: any) {
+function set<T>(key: string, value: Partial<T>) {
     __state[key] = value
 }
 
-function merge(key: string, value: any) {
+function merge<T>(key: string, value: Partial<T>) {
     __state[key] = { ...__state[key], ...value }
 }
 
