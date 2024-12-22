@@ -78,6 +78,7 @@ export interface BaseEventMap {
     'mounted': void
     'db-ready': void
     'mutate': Node
+    'theme-changed': string
 }
 
 export type EVENTS =

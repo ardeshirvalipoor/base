@@ -176,7 +176,7 @@ export default (dbName: string) => ({
             return true
         }
 
-        return new Promise<TextDecoderOptions[]>((resolve, reject) => {
+        return new Promise<T[]>((resolve, reject) => {
             const request = indexedDB.open(dbName)
             request.onsuccess = (e: Event) => {
                 const db = (e.target as IDBOpenDBRequest).result
