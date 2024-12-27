@@ -135,7 +135,7 @@ export default (dbName: string) => ({
             }
         })
     },
-    async byId(store: string, id: any, version?: number) {
+    async byId<T>(store: string, id: any, version?: number): Promise<T | null> {
         if (id === undefined) {
             return null
         }
@@ -193,7 +193,7 @@ export default (dbName: string) => ({
 
                 let keyRng: IDBKeyRange | undefined
                 if (options?.index) {
-                    const index = os.index(options.index)
+                    const index = os.index(options.index as string)
 
                     if (options?.value !== undefined) {
                         // Handle date ranges if needed
