@@ -95,12 +95,16 @@ export default (dbName: string) => ({
                 const db = request.result
                 const transaction = db.transaction(store, 'readwrite')
                 const objectStore = transaction.objectStore(store)
+                console.log('in save', JSON.stringify(object, null, 2));
+
                 if (!Array.isArray(object)) object = [object]
                 const addedObjects: IDBRequest[] = object.map((o: any) => objectStore.add(o))
 
                 transaction.oncomplete = () => {
                     const insertedIds = addedObjects.map(r => r.result)
                     db.close()
+                    console.log('insertedIds', insertedIds);
+
                     resolve(insertedIds.length === 1 ? insertedIds[0] : insertedIds)
                 }
                 transaction.onerror = (err) => {
@@ -109,6 +113,7 @@ export default (dbName: string) => ({
                 }
             }
             request.onerror = (err) => {
+                console.log('idb save', err)
                 reject(err)
             }
         })
@@ -136,6 +141,8 @@ export default (dbName: string) => ({
         })
     },
     async byId<T>(store: string, id: any, version?: number): Promise<T | null> {
+        console.log('> in byId', id);
+
         if (id === undefined) {
             return null
         }
@@ -151,6 +158,8 @@ export default (dbName: string) => ({
 
                 reader.onsuccess = (e: any) => {
                     const result = e.target.result
+                    console.log('in byId', result);
+
                     db.close()
                     resolve(result)
                 }
@@ -382,8 +391,7 @@ export default (dbName: string) => ({
                         return reject(new Error(`Record with id ${id} not found.`))
                     }
                     // Merge the record with the payload
-                    const updatedRecord = { ...record, ...payload, id }
-                    const updateRequest = objectStore.put(updatedRecord)
+                    const updateRequest = objectStore.put(payload)
                     updateRequest.onsuccess = () => {
                         db.close()
                         resolve(true)
