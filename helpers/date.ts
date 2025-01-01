@@ -3,4 +3,4 @@ export const jDateFormatter = new Intl.DateTimeFormat('fa-IR', {
     month: 'long',
     day: 'numeric',
     weekday: 'long'
-});
+})

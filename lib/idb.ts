@@ -95,7 +95,6 @@ export default (dbName: string) => ({
                 const db = request.result
                 const transaction = db.transaction(store, 'readwrite')
                 const objectStore = transaction.objectStore(store)
-                console.log('in save', JSON.stringify(object, null, 2));
 
                 if (!Array.isArray(object)) object = [object]
                 const addedObjects: IDBRequest[] = object.map((o: any) => objectStore.add(o))
@@ -103,9 +102,8 @@ export default (dbName: string) => ({
                 transaction.oncomplete = () => {
                     const insertedIds = addedObjects.map(r => r.result)
                     db.close()
-                    console.log('insertedIds', insertedIds);
 
-                    resolve(insertedIds.length === 1 ? insertedIds[0] : insertedIds)
+                    resolve(object.length === 1 ? object[0] : object)
                 }
                 transaction.onerror = (err) => {
                     db.close()
@@ -141,7 +139,6 @@ export default (dbName: string) => ({
         })
     },
     async byId<T>(store: string, id: any, version?: number): Promise<T | null> {
-        console.log('> in byId', id);
 
         if (id === undefined) {
             return null
@@ -158,7 +155,6 @@ export default (dbName: string) => ({
 
                 reader.onsuccess = (e: any) => {
                     const result = e.target.result
-                    console.log('in byId', result);
 
                     db.close()
                     resolve(result)

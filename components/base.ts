@@ -1,13 +1,13 @@
 import { nextId } from '../utils/id-generator'
 import appender, { IAppender } from '../utils/appender'
-import styler, { IStyler }  from '../utils/styler'
+import styler, { IStyler } from '../utils/styler'
 import { BaseEventMap, IEmitter, createEmitter } from '../utils/emitter'
 import mounter from '../utils/mounter'
 
 
 export function Base<K extends keyof HTMLElementTagNameMap>(name = <K>'div'): IBaseComponent<K> {
     const id = nextId()
-    const el = document.createElement(<K>name); 
+    const el = document.createElement(<K>name) // Todo: consider createDocumentFragment
     el.setAttribute('data-base-id', id)
     const base = <IBaseComponent<K>>{ id, el }
     mounter.observe()
