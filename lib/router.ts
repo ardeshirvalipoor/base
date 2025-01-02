@@ -3,6 +3,7 @@ import { emitter, createEmitter } from '../utils/emitter'
 
 const __emitter = createEmitter()
 const __views: IView[] = []
+const __history: string[] = []
 
 function init({ routes, view, home, root = '', preventAutoStart }: IRouteInitParams) {
     const _view: IView = {
@@ -53,8 +54,10 @@ function goto(path: string, options: IGotoOptions = {}) {
         _view.currentComponent?.exit({ to: pathname, from: _view.currentRoute, params, query, data: options.data })
 
         if (!options.replace) {
+            __history.push(pathname)
             history.pushState(options.data, '', path)
         } else {
+            __history[__history.length - 1] = pathname
             history.replaceState(options.data, '', path)
         }
 
@@ -78,6 +81,7 @@ function goto(path: string, options: IGotoOptions = {}) {
 }
 
 function back() {
+    __history.pop()
     history.back()
 }
 
@@ -138,7 +142,7 @@ export default {
     goto,
     back,
     getQuery,
-    history,
+    history: __history,
     ...__emitter,
     removePreviousPath: () => history.replaceState(null, '', location.pathname),
 }
