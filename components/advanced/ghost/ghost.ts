@@ -18,7 +18,7 @@ export const Ghost = (options = <IGhostOptions>{}) => {
         willChange: 'transform,opacity',
         transformOrigin: 'center',
         pointerEvents: 'none',
-        '&.dark': {
+        '&:dark': {
             backgroundColor: opts.bgDark || opts.bg,
         }
     })

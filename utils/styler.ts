@@ -38,6 +38,15 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
         }
     },
     cssClass(style: CS, options: IStyleOptions | number) {
+        // if style has &:dark, replace with .dark // maybe optimize it
+        style = Object.keys(style).reduce((acc, key) => {
+            if (key === '&:dark') {
+                acc['&.dark'] = style[key]
+                return acc
+            }
+            acc[key] = style[key]
+            return acc
+        }, {} as CS)
 
         const delay = typeof options === 'number' ? options : options?.delay
         typeof delay === 'number' ? setTimeout(applyCssClass, delay) : applyCssClass()
@@ -109,7 +118,7 @@ export default (base: IBaseComponent<any> | IBaseSVGComponent<any>) => ({
                 return styleString
             }, '')
 
-            const specialStyle = otherKeys.reduce((styles: any, prop: any) => { // '&.dark': { color: 'red' }
+            const specialStyle = otherKeys.reduce((styles: any, prop: any) => { // '&:dark': { color: 'red' }
                 const key = prop.slice(1)
                 const body = generateStyle(style[prop])
                 styles.push({ name: name + key, body })
